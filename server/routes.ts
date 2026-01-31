@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { fetchCamps, getCampBySlug, getSessionsForCamp, getSimilarCamps } from "./airtable";
+import { fetchCamps, getCampBySlug, getSessionsForCamp, getSimilarCamps, submitContactForm } from "./airtable";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -71,7 +71,7 @@ export async function registerRoutes(
     }
   });
 
-  // Contact form submission
+  // Contact form submission - saves to Airtable Feedback table
   app.post("/api/contact", async (req, res) => {
     try {
       const { name, email, subject, message } = req.body;
@@ -80,9 +80,18 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Missing required fields" });
       }
       
-      // For now, just log the contact form submission
-      // In production, this would send an email or save to database
-      console.log("Contact form submission:", { name, email, subject, message });
+      // Basic email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
+      
+      const success = await submitContactForm({ name, email, subject, message });
+      
+      if (!success) {
+        // Still return success to user even if Airtable fails - log for review
+        console.log("Contact form (fallback log):", { name, email, subject, message });
+      }
       
       res.json({ success: true, message: "Message received" });
     } catch (error) {

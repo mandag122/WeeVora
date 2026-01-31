@@ -15,44 +15,46 @@ interface AirtableResponse<T> {
   offset?: string;
 }
 
+// Based on actual Airtable field names from the Camps table
 interface AirtableCampFields {
-  Name?: string;
-  Slug?: string;
-  Organization?: string;
-  Description?: string;
-  Categories?: string[];
-  "Age Min"?: number;
-  "Age Max"?: number;
+  "Camp Name"?: string;
+  "Organization"?: string;
+  "Description"?: string;
+  "Interests"?: string[];
+  "Age Group"?: string;
+  "Location"?: string;
   "Location City"?: string;
-  "Location Address"?: string;
   "Price Min"?: number;
   "Price Max"?: number;
   "Registration Opens"?: string;
   "Registration Closes"?: string;
-  "Season Start"?: string;
-  "Season End"?: string;
-  "Camp Hours"?: string;
-  "Extended Hours"?: boolean;
-  "Extended Hours Info"?: string;
-  "Waitlist Only"?: boolean;
-  "Sibling Discount Note"?: string;
-  "Website URL"?: string;
-  Color?: string;
-  "Additional Info"?: string;
-}
-
-interface AirtableRegistrationFields {
-  "Session Name"?: string;
-  Camp?: string[];
   "Start Date"?: string;
   "End Date"?: string;
-  Price?: number;
-  "Age Min"?: number;
-  "Age Max"?: number;
-  "Registration Opens"?: string;
-  "Registration Closes"?: string;
+  "camp_hours"?: string;
+  "extended_hours"?: string;
+  "Is Registration Open?"?: string;
   "Waitlist Only"?: boolean;
-  Color?: string;
+  "Sibling Discount"?: string;
+  "Website"?: string;
+  "Color"?: string;
+  "Additional Info"?: string;
+  "camp_id"?: number;
+  "Registration_Options"?: string[];
+}
+
+// Based on actual Airtable field names from Registration_Options table
+interface AirtableRegistrationFields {
+  "option_name"?: string;
+  "Camps"?: string[];
+  "Camp Name (from Camps 2)"?: string[];
+  "dates_csv"?: string;
+  "price"?: string;
+  "age_min"?: number;
+  "age_max"?: number;
+  "registration_opens"?: string;
+  "registration_closes"?: string;
+  "waitlist_only"?: boolean;
+  "color"?: string;
 }
 
 async function fetchFromAirtable<T>(tableName: string): Promise<AirtableRecord<T>[]> {
@@ -91,42 +93,88 @@ async function fetchFromAirtable<T>(tableName: string): Promise<AirtableRecord<T
   return allRecords;
 }
 
-function generateSlug(name: string): string {
-  return name
+function generateSlug(name: string, id: string): string {
+  const base = name
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .trim();
+  return base || id;
+}
+
+// Parse age group string like "5-12" or "4-12" into min/max
+function parseAgeGroup(ageGroup: string | undefined): { min: number | null; max: number | null } {
+  if (!ageGroup) return { min: null, max: null };
+  
+  const match = ageGroup.match(/(\d+)\s*-\s*(\d+)/);
+  if (match) {
+    return { min: parseInt(match[1]), max: parseInt(match[2]) };
+  }
+  
+  const singleMatch = ageGroup.match(/(\d+)\+?/);
+  if (singleMatch) {
+    return { min: parseInt(singleMatch[1]), max: null };
+  }
+  
+  return { min: null, max: null };
+}
+
+// Map Airtable "Interests" to our category names
+function mapInterestsToCategories(interests: string[] | undefined): string[] {
+  if (!interests) return [];
+  
+  const categoryMap: Record<string, string> = {
+    "Sports": "Sports & Athletics",
+    "Arts": "Arts & Crafts",
+    "STEM": "STEM & Technology",
+    "Technology": "STEM & Technology",
+    "Science": "STEM & Technology",
+    "Performing Arts": "Performing Arts",
+    "Theater": "Performing Arts",
+    "Music": "Performing Arts",
+    "Dance": "Performing Arts",
+    "Outdoor": "Outdoor & Nature",
+    "Nature": "Outdoor & Nature",
+    "Adventure": "Outdoor & Nature",
+    "Academic": "Academic",
+    "Education": "Academic",
+    "Multi-Activity": "Multi-Activity",
+    "Other": "Multi-Activity"
+  };
+  
+  const mapped = interests.map(interest => categoryMap[interest] || interest);
+  return [...new Set(mapped)]; // Remove duplicates
 }
 
 export async function fetchCamps(): Promise<Camp[]> {
   try {
     const records = await fetchFromAirtable<AirtableCampFields>("Camps");
+    const ages = records.map(r => parseAgeGroup(r.fields["Age Group"]));
     
-    return records.map(record => ({
+    return records.map((record, index) => ({
       id: record.id,
-      name: record.fields.Name || "Unnamed Camp",
-      slug: record.fields.Slug || generateSlug(record.fields.Name || record.id),
+      name: record.fields["Camp Name"] || "Unnamed Camp",
+      slug: generateSlug(record.fields["Camp Name"] || "", record.id),
       organization: record.fields.Organization || null,
       description: record.fields.Description || null,
-      categories: record.fields.Categories || [],
-      ageMin: record.fields["Age Min"] ?? null,
-      ageMax: record.fields["Age Max"] ?? null,
+      categories: mapInterestsToCategories(record.fields.Interests),
+      ageMin: ages[index].min,
+      ageMax: ages[index].max,
       locationCity: record.fields["Location City"] || null,
-      locationAddress: record.fields["Location Address"] || null,
+      locationAddress: record.fields.Location || null,
       priceMin: record.fields["Price Min"] ?? null,
       priceMax: record.fields["Price Max"] ?? null,
       registrationOpens: record.fields["Registration Opens"] || null,
       registrationCloses: record.fields["Registration Closes"] || null,
-      seasonStart: record.fields["Season Start"] || null,
-      seasonEnd: record.fields["Season End"] || null,
-      campHours: record.fields["Camp Hours"] || null,
-      extendedHours: record.fields["Extended Hours"] || false,
-      extendedHoursInfo: record.fields["Extended Hours Info"] || null,
+      seasonStart: record.fields["Start Date"] || null,
+      seasonEnd: record.fields["End Date"] || null,
+      campHours: record.fields.camp_hours || null,
+      extendedHours: !!record.fields.extended_hours,
+      extendedHoursInfo: record.fields.extended_hours || null,
       waitlistOnly: record.fields["Waitlist Only"] || false,
-      siblingDiscountNote: record.fields["Sibling Discount Note"] || null,
-      websiteUrl: record.fields["Website URL"] || null,
+      siblingDiscountNote: record.fields["Sibling Discount"] || null,
+      websiteUrl: record.fields.Website || null,
       color: record.fields.Color || null,
       additionalInfo: record.fields["Additional Info"] || null
     }));
@@ -139,21 +187,54 @@ export async function fetchCamps(): Promise<Camp[]> {
 export async function fetchRegistrationOptions(): Promise<RegistrationOption[]> {
   try {
     const records = await fetchFromAirtable<AirtableRegistrationFields>("Registration_Options");
+    const results: RegistrationOption[] = [];
     
-    return records.map(record => ({
-      id: record.id,
-      campId: record.fields.Camp?.[0] || "",
-      sessionName: record.fields["Session Name"] || "Session",
-      startDate: record.fields["Start Date"] || null,
-      endDate: record.fields["End Date"] || null,
-      price: record.fields.Price ?? null,
-      ageMin: record.fields["Age Min"] ?? null,
-      ageMax: record.fields["Age Max"] ?? null,
-      registrationOpens: record.fields["Registration Opens"] || null,
-      registrationCloses: record.fields["Registration Closes"] || null,
-      waitlistOnly: record.fields["Waitlist Only"] || false,
-      color: record.fields.Color || null
-    }));
+    for (const record of records) {
+      const campId = record.fields.Camps?.[0] || "";
+      const optionNames = record.fields.option_name?.split(",").map(s => s.trim()) || ["Session"];
+      const datesCsv = record.fields.dates_csv?.split(",").map(s => s.trim()) || [];
+      const prices = record.fields.price?.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n)) || [];
+      
+      // Create a registration option for each session in the CSV
+      optionNames.forEach((name, idx) => {
+        const dateRange = datesCsv[idx] || "";
+        const [startStr, endStr] = dateRange.split("-").map(s => s.trim());
+        
+        // Parse dates from MM/DD/YYYY format
+        let startDate: string | null = null;
+        let endDate: string | null = null;
+        
+        if (startStr) {
+          const [month, day, year] = startStr.split("/");
+          if (month && day && year) {
+            startDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+          }
+        }
+        if (endStr) {
+          const [month, day, year] = endStr.split("/");
+          if (month && day && year) {
+            endDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+          }
+        }
+        
+        results.push({
+          id: `${record.id}-${idx}`,
+          campId,
+          sessionName: name || `Session ${idx + 1}`,
+          startDate,
+          endDate,
+          price: prices[idx] ?? null,
+          ageMin: record.fields.age_min ?? null,
+          ageMax: record.fields.age_max ?? null,
+          registrationOpens: record.fields.registration_opens || null,
+          registrationCloses: record.fields.registration_closes || null,
+          waitlistOnly: record.fields.waitlist_only || false,
+          color: record.fields.color || null
+        });
+      });
+    }
+    
+    return results;
   } catch (error) {
     console.error("Error fetching registration options from Airtable:", error);
     return [];
@@ -196,4 +277,48 @@ export async function getSimilarCamps(camp: Camp, limit: number = 4): Promise<Ca
     .slice(0, limit);
   
   return similar;
+}
+
+// Submit contact form to Airtable Feedback table
+export async function submitContactForm(data: {
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+}): Promise<boolean> {
+  if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
+    console.error("Airtable credentials not configured");
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${AIRTABLE_API_URL}/Feedback`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        records: [{
+          fields: {
+            Name: data.name,
+            Email: data.email,
+            Subject: data.subject || "",
+            Message: data.message
+          }
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Airtable submit error: ${response.status} - ${errorText}`);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error submitting to Airtable:", error);
+    return false;
+  }
 }

@@ -1,83 +1,129 @@
 # WeeVora - Lake County Summer Camp Directory
 
 ## Overview
+WeeVora is a comprehensive summer camp discovery and planning platform for families in Lake County, Illinois. The platform aggregates camp information from Airtable into a searchable directory with calendar planning features.
 
-WeeVora is a summer camp discovery and planning platform for families in Lake County, Illinois. The core value proposition is "Never miss registration again" - it aggregates camp information from multiple providers into a searchable directory with proactive registration status tracking.
+**Tagline:** "Never miss registration again"
 
-Key features:
-- Comprehensive camp directory with filtering by age, location, category, and price
-- Registration status tracking (open, closed, upcoming, waitlist)
-- Session selection with calendar visualization for summer planning
-- Paper-craft aesthetic design with warm, playful branding
+## Recent Changes
+- **Jan 31, 2026:** Initial MVP implementation
+  - Airtable integration for camps and registration options
+  - Camp directory with search, filters, and sorting
+  - Camp detail pages with session selection
+  - Calendar component with expand/print functionality
+  - Contact form saving to Airtable Feedback table
 
-## User Preferences
+## Tech Stack
+- **Frontend:** React + TypeScript + Vite
+- **Styling:** Tailwind CSS with custom WeeVora theme
+- **Backend:** Express.js
+- **Data Source:** Airtable (Camp Copilot base)
+- **State Management:** TanStack Query (React Query)
 
-Preferred communication style: Simple, everyday language.
+## Project Architecture
 
-## System Architecture
-
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Routing**: Wouter (lightweight React router)
-- **State Management**: TanStack React Query for server state
-- **Styling**: Tailwind CSS with custom design tokens for WeeVora brand colors (eggplant purple, sunny gold, etc.)
-- **UI Components**: shadcn/ui component library with Radix UI primitives
-- **Build Tool**: Vite with path aliases (`@/` for client src, `@shared/` for shared code)
-
-### Backend Architecture
-- **Runtime**: Node.js with Express 5
-- **API Pattern**: RESTful endpoints under `/api/` prefix
-- **Data Source**: Airtable as primary database (fetches camps and sessions via Airtable API)
-- **Session Storage**: In-memory storage with connect-pg-simple available for PostgreSQL sessions
-
-### Data Layer
-- **ORM**: Drizzle ORM configured for PostgreSQL (schema in `shared/schema.ts`)
-- **Validation**: Zod schemas for type-safe data validation
-- **Database**: PostgreSQL connection via `DATABASE_URL` environment variable
-
-### Project Structure
+### Frontend Structure
 ```
-client/           # React frontend
-  src/
-    components/   # UI components (CampCard, Filters, Calendar, etc.)
-    pages/        # Route pages (Home, Camps, CampDetail, etc.)
-    hooks/        # Custom React hooks
-    lib/          # Utilities and query client
-server/           # Express backend
-  routes.ts       # API route definitions
-  airtable.ts     # Airtable integration
-  storage.ts      # Data storage abstraction
-shared/           # Shared types and schemas
-  schema.ts       # Zod schemas and TypeScript types
+client/src/
+├── assets/           # Logo, icons, hero images
+├── components/       # Reusable UI components
+│   ├── ui/          # Shadcn components
+│   ├── Header.tsx   # Site header with navigation
+│   ├── Footer.tsx   # Site footer
+│   ├── Hero.tsx     # Homepage hero section
+│   ├── Features.tsx # Features section
+│   ├── Stats.tsx    # Stats section
+│   ├── CampCard.tsx # Camp listing card
+│   ├── CampFilters.tsx    # Filter sidebar/sheet
+│   ├── SessionCalendar.tsx # Calendar with print
+│   └── SessionSelector.tsx # Session picker
+├── pages/           # Route pages
+│   ├── Home.tsx
+│   ├── Camps.tsx
+│   ├── CampDetail.tsx
+│   ├── HowItWorks.tsx
+│   └── Contact.tsx
+└── App.tsx          # Router setup
 ```
 
-### Key Design Patterns
-- Shared schema definitions between frontend and backend via `@shared/` alias
-- API requests use TanStack Query with automatic caching
-- Component-based architecture with shadcn/ui for consistent styling
-- Mobile-first responsive design with dedicated mobile hooks
+### Backend Structure
+```
+server/
+├── airtable.ts      # Airtable API integration
+├── routes.ts        # Express API routes
+├── index.ts         # Server entry point
+└── storage.ts       # Storage interface
+```
 
-## External Dependencies
+### API Routes
+- `GET /api/camps` - Fetch all camps
+- `GET /api/camps/:slug` - Fetch single camp
+- `GET /api/camps/:slug/sessions` - Fetch sessions for a camp
+- `GET /api/camps/:slug/similar` - Fetch similar camps
+- `POST /api/contact` - Submit contact form
 
-### Data Sources
-- **Airtable**: Primary data store for camp and session information
-  - Requires `AIRTABLE_API_KEY` and `AIRTABLE_BASE_ID` environment variables
-  - Tables: Camps, Registration Options (sessions)
+## Airtable Configuration
+The app connects to an Airtable base with the following tables:
+- **Camps** - Main camp listings
+- **Registration_Options** - Session/registration options per camp
+- **Feedback** - Contact form submissions
 
-### Database
-- **PostgreSQL**: Required for Drizzle ORM and session storage
-  - Requires `DATABASE_URL` environment variable
-  - Schema migrations in `/migrations` directory
-  - Push schema with `npm run db:push`
+Required environment secrets:
+- `AIRTABLE_API_KEY` - Personal Access Token with read/write access
+- `AIRTABLE_BASE_ID` - Base ID (starts with "app")
 
-### Frontend Libraries
-- React Query for data fetching
-- date-fns for date manipulation
-- Radix UI primitives for accessible components
-- Embla Carousel for carousel components
-- React Hook Form with Zod resolver for form handling
+## Design System
 
-### Fonts
-- Poppins (primary UI font)
-- Caveat (handwritten/decorative font for hero sections)
-- Loaded via Google Fonts CDN
+### Brand Colors
+- Eggplant Purple: `#5B2C6F` - Primary brand color
+- Sunny Gold: `#F9B233` - CTAs and highlights
+- Forest Green: `#558B2F` - Success states
+- Deep Teal: `#117A8B` - Headers, badges
+- Warm Coral: `#FF7043` - Arts category
+- Rose Pink: `#C2395A` - Performing arts
+
+### Typography
+- Primary: Poppins (400-700)
+- Decorative: Caveat (handwritten style)
+
+### Visual Style
+- Paper-craft aesthetic with organic shapes
+- Elevated cards with subtle shadows
+- Pill-shaped buttons
+- 20px border radius on cards
+
+## Key Features
+
+### Camp Directory
+- Search by name, organization, description
+- Filter by category, age, location, price
+- Filter by registration status (all, open, upcoming)
+- Sort by registration date or name
+
+### Calendar Planning
+- Select camp sessions to add to calendar
+- View monthly calendar with selected sessions
+- Expand to full-screen view
+- Print schedule with session list
+
+### Registration Status
+Priority order:
+1. Closed (past registration deadline)
+2. Upcoming (registration not yet open)
+3. Waitlist Only
+4. Open (registration currently open)
+5. Unknown (no dates available)
+
+## Development
+
+### Running the App
+```bash
+npm run dev
+```
+The app runs on port 5000.
+
+### Environment Variables
+Secrets are managed through Replit Secrets. Required:
+- `AIRTABLE_API_KEY`
+- `AIRTABLE_BASE_ID`
+- `SESSION_SECRET`
