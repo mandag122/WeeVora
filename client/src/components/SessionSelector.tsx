@@ -1,7 +1,10 @@
-import { Plus, Check, Calendar } from "lucide-react";
+import { useState } from "react";
+import { Plus, Check, Calendar, Sun, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import type { Camp, RegistrationOption, SelectedSession } from "@shared/schema";
 import { format, parseISO, isPast, isFuture } from "date-fns";
 
@@ -35,6 +38,11 @@ export function SessionSelector({
   selectedSessions,
   onToggleSession
 }: SessionSelectorProps) {
+  const [showExtended, setShowExtended] = useState(false);
+  
+  const hasExtendedHours = camp.extendedHours;
+  const hasExtendedPricing = sessions.some(s => s.extendedPrice !== null);
+
   if (sessions.length === 0) {
     return (
       <Card className="bg-white border-border/50 shadow-paper" data-testid="card-no-sessions">
@@ -51,33 +59,98 @@ export function SessionSelector({
   return (
     <Card className="bg-white border-border/50 shadow-paper" data-testid="card-sessions">
       <CardHeader>
-        <CardTitle className="text-lg text-eggplant flex items-center gap-2">
-          <Calendar className="w-5 h-5" />
-          Available Sessions
-        </CardTitle>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <CardTitle className="text-lg text-eggplant flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            Available Sessions
+          </CardTitle>
+          
+          {hasExtendedHours && (
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-gold/10">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <Label 
+                htmlFor="extended-toggle" 
+                className={`text-sm cursor-pointer ${!showExtended ? "font-medium text-foreground" : "text-muted-foreground"}`}
+              >
+                Standard
+              </Label>
+              <Switch
+                id="extended-toggle"
+                checked={showExtended}
+                onCheckedChange={setShowExtended}
+                data-testid="switch-extended-hours"
+              />
+              <Sun className="w-4 h-4 text-gold-dark" />
+              <Label 
+                htmlFor="extended-toggle" 
+                className={`text-sm cursor-pointer ${showExtended ? "font-medium text-gold-dark" : "text-muted-foreground"}`}
+              >
+                Extended
+              </Label>
+            </div>
+          )}
+        </div>
+        
+        {hasExtendedHours && (
+          <p className="text-xs text-muted-foreground mt-2">
+            {showExtended ? (
+              <>Extended hours: {camp.extendedHoursInfo || "Extended hours available"}
+                {!hasExtendedPricing && <span className="text-gold-dark ml-1">(pricing not yet available)</span>}
+              </>
+            ) : (
+              <>Standard hours: {camp.campHours || "Regular camp hours"}</>
+            )}
+          </p>
+        )}
       </CardHeader>
       <CardContent className="space-y-3">
         {sessions.map((session) => {
-          const isSelected = selectedSessions.some(
-            (s) => s.sessionId === session.id
+          const standardSelected = selectedSessions.find(
+            (s) => s.sessionId === session.id && !s.isExtended
           );
+          const extendedSelected = selectedSessions.find(
+            (s) => s.sessionId === `${session.id}-ext` && s.isExtended
+          );
+          
+          const isSelected = showExtended ? !!extendedSelected : !!standardSelected;
           const status = getSessionStatus(session);
           const startDate = session.startDate ? parseISO(session.startDate) : null;
           const endDate = session.endDate ? parseISO(session.endDate) : null;
+          
+          const displayPrice = showExtended ? session.extendedPrice : session.price;
+          const hasExtendedOption = session.extendedPrice !== null;
 
           const handleToggle = () => {
             if (!startDate || !endDate) return;
             
-            onToggleSession({
-              campId: camp.id,
-              campName: camp.name,
-              sessionId: session.id,
-              sessionName: session.sessionName,
-              startDate: session.startDate!,
-              endDate: session.endDate!,
-              color: session.color || camp.color || "#5B2C6F"
-            });
+            if (showExtended && hasExtendedOption) {
+              onToggleSession({
+                campId: camp.id,
+                campName: camp.name,
+                sessionId: `${session.id}-ext`,
+                sessionName: `${session.sessionName} (Extended)`,
+                startDate: session.startDate!,
+                endDate: session.endDate!,
+                color: session.color || camp.color || "#5B2C6F",
+                isExtended: true,
+                price: session.extendedPrice
+              });
+            } else {
+              onToggleSession({
+                campId: camp.id,
+                campName: camp.name,
+                sessionId: session.id,
+                sessionName: session.sessionName,
+                startDate: session.startDate!,
+                endDate: session.endDate!,
+                color: session.color || camp.color || "#5B2C6F",
+                isExtended: false,
+                price: session.price
+              });
+            }
           };
+
+          const showDisabledForExtended = showExtended && !hasExtendedOption;
 
           return (
             <div
@@ -88,13 +161,13 @@ export function SessionSelector({
                   ? "border-eggplant bg-eggplant/5" 
                   : "border-border/50 hover:border-eggplant/30"
                 }
-                ${!status.canSelect ? "opacity-60" : ""}
+                ${!status.canSelect || showDisabledForExtended ? "opacity-60" : ""}
               `}
               data-testid={`session-${session.id}`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h4 className="font-medium text-foreground truncate">
                       {session.sessionName}
                     </h4>
@@ -109,6 +182,26 @@ export function SessionSelector({
                     >
                       {status.text}
                     </Badge>
+                    {standardSelected && !showExtended && (
+                      <Badge variant="secondary" className="shrink-0 text-xs bg-eggplant/10 text-eggplant">
+                        Selected
+                      </Badge>
+                    )}
+                    {extendedSelected && showExtended && (
+                      <Badge variant="secondary" className="shrink-0 text-xs bg-gold/20 text-gold-dark">
+                        Extended Selected
+                      </Badge>
+                    )}
+                    {standardSelected && showExtended && (
+                      <Badge variant="outline" className="shrink-0 text-xs">
+                        Standard Added
+                      </Badge>
+                    )}
+                    {extendedSelected && !showExtended && (
+                      <Badge variant="outline" className="shrink-0 text-xs border-gold text-gold-dark">
+                        Extended Added
+                      </Badge>
+                    )}
                   </div>
                   
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -120,25 +213,32 @@ export function SessionSelector({
                     {session.ageMin && session.ageMax && (
                       <span>Ages {session.ageMin}-{session.ageMax}</span>
                     )}
-                    {session.price && (
+                    {displayPrice !== null && (
                       <span className="font-medium text-eggplant">
-                        ${session.price}
+                        ${displayPrice}
+                      </span>
+                    )}
+                    {showDisabledForExtended && (
+                      <span className="italic text-muted-foreground">
+                        Extended hours not available
                       </span>
                     )}
                   </div>
                 </div>
 
-                {startDate && endDate && status.canSelect && (
+                {startDate && endDate && status.canSelect && !showDisabledForExtended && (
                   <Button
                     variant={isSelected ? "default" : "outline"}
                     size="sm"
                     className={`shrink-0 ${
                       isSelected 
-                        ? "bg-eggplant hover:bg-eggplant-light" 
+                        ? showExtended 
+                          ? "bg-gold hover:bg-gold-dark text-eggplant-dark" 
+                          : "bg-eggplant hover:bg-eggplant-light"
                         : "border-eggplant text-eggplant hover:bg-eggplant hover:text-white"
                     }`}
                     onClick={handleToggle}
-                    data-testid={`button-toggle-session-${session.id}`}
+                    data-testid={`button-toggle-session-${session.id}${showExtended ? "-ext" : ""}`}
                   >
                     {isSelected ? (
                       <>

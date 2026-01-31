@@ -123,11 +123,11 @@ export default function Camps() {
   const sortedCamps = useMemo(() => {
     const sorted = [...filteredCamps];
     
-    const hasRegInfo = (camp: Camp) => !!camp.registrationOpens || !!camp.registrationCloses;
+    const hasRegOpens = (camp: Camp) => !!camp.registrationOpens;
     
     sorted.sort((a, b) => {
-      const aHasReg = hasRegInfo(a);
-      const bHasReg = hasRegInfo(b);
+      const aHasReg = hasRegOpens(a);
+      const bHasReg = hasRegOpens(b);
       
       if (aHasReg && !bHasReg) return -1;
       if (!aHasReg && bHasReg) return 1;

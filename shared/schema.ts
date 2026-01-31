@@ -34,6 +34,7 @@ export const registrationOptionSchema = z.object({
   startDate: z.string().nullable(),
   endDate: z.string().nullable(),
   price: z.number().nullable(),
+  extendedPrice: z.number().nullable(),
   ageMin: z.number().nullable(),
   ageMax: z.number().nullable(),
   registrationOpens: z.string().nullable(),
@@ -82,7 +83,9 @@ export const selectedSessionSchema = z.object({
   sessionName: z.string(),
   startDate: z.string(),
   endDate: z.string(),
-  color: z.string()
+  color: z.string(),
+  isExtended: z.boolean().default(false),
+  price: z.number().nullable()
 });
 
 export type SelectedSession = z.infer<typeof selectedSessionSchema>;

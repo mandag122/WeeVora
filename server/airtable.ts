@@ -49,6 +49,7 @@ interface AirtableRegistrationFields {
   "Camp Name (from Camps 2)"?: string[];
   "dates_csv"?: string;
   "price"?: string;
+  "extended_price"?: string;
   "age_min"?: number;
   "age_max"?: number;
   "registration_opens"?: string;
@@ -144,7 +145,7 @@ function mapInterestsToCategories(interests: string[] | undefined): string[] {
   };
   
   const mapped = interests.map(interest => categoryMap[interest] || interest);
-  return [...new Set(mapped)]; // Remove duplicates
+  return Array.from(new Set(mapped)); // Remove duplicates
 }
 
 export async function fetchCamps(): Promise<Camp[]> {
@@ -194,6 +195,7 @@ export async function fetchRegistrationOptions(): Promise<RegistrationOption[]> 
       const optionNames = record.fields.option_name?.split(",").map(s => s.trim()) || ["Session"];
       const datesCsv = record.fields.dates_csv?.split(",").map(s => s.trim()) || [];
       const prices = record.fields.price?.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n)) || [];
+      const extendedPrices = record.fields.extended_price?.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n)) || [];
       
       // Create a registration option for each session in the CSV
       optionNames.forEach((name, idx) => {
@@ -224,6 +226,7 @@ export async function fetchRegistrationOptions(): Promise<RegistrationOption[]> 
           startDate,
           endDate,
           price: prices[idx] ?? null,
+          extendedPrice: extendedPrices[idx] ?? null,
           ageMin: record.fields.age_min ?? null,
           ageMax: record.fields.age_max ?? null,
           registrationOpens: record.fields.registration_opens || null,

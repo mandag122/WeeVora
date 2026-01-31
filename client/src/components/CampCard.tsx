@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { MapPin, Clock, Users, ExternalLink } from "lucide-react";
+import { MapPin, Clock, Users, ExternalLink, Sun } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -36,7 +36,7 @@ function getRegistrationStatus(camp: Camp): {
 
 export function CampCard({ camp }: CampCardProps) {
   const regStatus = getRegistrationStatus(camp);
-  const hasRegistrationInfo = regStatus.status !== "unknown";
+  const hasRegistrationOpens = !!camp.registrationOpens;
   
   const ageRange = camp.ageMin && camp.ageMax 
     ? `Ages ${camp.ageMin}-${camp.ageMax}` 
@@ -53,7 +53,7 @@ export function CampCard({ camp }: CampCardProps) {
   return (
     <Card 
       className={`group relative overflow-visible bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 ${
-        !hasRegistrationInfo ? "opacity-60" : ""
+        !hasRegistrationOpens ? "opacity-60" : ""
       }`}
       data-testid={`card-camp-${camp.id}`}
     >
@@ -69,7 +69,7 @@ export function CampCard({ camp }: CampCardProps) {
               </p>
             )}
           </div>
-          {hasRegistrationInfo && (
+          {hasRegistrationOpens && (
             <div className="flex items-center gap-1.5 shrink-0">
               <span className={`w-2 h-2 rounded-full ${regStatus.dotColor}`} />
               <span className="text-xs text-muted-foreground whitespace-nowrap">
@@ -119,9 +119,16 @@ export function CampCard({ camp }: CampCardProps) {
           )}
         </div>
 
-        {!hasRegistrationInfo && (
+        {camp.extendedHours && camp.extendedHoursInfo && (
+          <div className="flex items-center gap-1.5 text-sm text-gold-dark">
+            <Sun className="w-4 h-4" />
+            <span>Extended hours: {camp.extendedHoursInfo}</span>
+          </div>
+        )}
+
+        {!hasRegistrationOpens && (
           <p className="text-sm text-muted-foreground italic">
-            Registration details not yet available
+            Registration date not yet available
           </p>
         )}
 

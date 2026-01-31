@@ -490,6 +490,9 @@ export function SessionCalendar({
                       <p className="text-xs sm:text-sm font-medium truncate">{session.campName}</p>
                       <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                         {session.sessionName} &bull; {format(parseISO(session.startDate), "MMM d")} - {format(parseISO(session.endDate), "MMM d")}
+                        {session.price !== null && session.price !== undefined && (
+                          <> &bull; ${session.price}</>
+                        )}
                       </p>
                     </div>
                     <Button
