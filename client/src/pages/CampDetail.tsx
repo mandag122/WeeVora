@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
 import { ArrowLeft, MapPin, Clock, Users, Calendar, DollarSign, ExternalLink, Info } from "lucide-react";
@@ -42,6 +42,10 @@ function getRegistrationStatus(camp: Camp) {
 export default function CampDetail() {
   const [, params] = useRoute("/camps/:slug");
   const slug = params?.slug;
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
   
   const [selectedSessions, setSelectedSessions] = useState<SelectedSession[]>([]);
   const [dateRange, setDateRange] = useState<DateRange>(defaultDateRange);
