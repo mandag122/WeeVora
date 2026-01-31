@@ -15,23 +15,22 @@ interface CampCardProps {
 function getRegistrationStatus(camp: Camp): { 
   status: "open" | "closed" | "upcoming" | "waitlist" | "unknown";
   text: string;
-  dotColor: string;
+  badgeClass: string;
 } {
   if (camp.registrationCloses && isPast(parseISO(camp.registrationCloses))) {
-    return { status: "closed", text: "Registration closed", dotColor: "bg-red-500" };
+    return { status: "closed", text: "Closed", badgeClass: "bg-red-500 text-white" };
+  }
+  if (camp.waitlistOnly) {
+    return { status: "waitlist", text: "Waitlist Only", badgeClass: "bg-gold text-white" };
   }
   if (camp.registrationOpens && isFuture(parseISO(camp.registrationOpens))) {
     const date = format(parseISO(camp.registrationOpens), "MMM d");
-    return { status: "upcoming", text: `Opens ${date}`, dotColor: "bg-yellow-500" };
+    return { status: "upcoming", text: `Opens ${date}`, badgeClass: "bg-yellow-500 text-white" };
   }
-  if (camp.waitlistOnly) {
-    return { status: "waitlist", text: "Waitlist only", dotColor: "bg-red-500" };
+  if (camp.registrationOpens && isPast(parseISO(camp.registrationOpens))) {
+    return { status: "open", text: "Registration Open", badgeClass: "bg-forest text-white" };
   }
-  if (camp.registrationCloses) {
-    const date = format(parseISO(camp.registrationCloses), "MMM d");
-    return { status: "open", text: `Closes ${date}`, dotColor: "bg-green-500" };
-  }
-  return { status: "unknown", text: "Registration details TBA", dotColor: "" };
+  return { status: "unknown", text: "", badgeClass: "" };
 }
 
 export function CampCard({ camp }: CampCardProps) {
@@ -58,24 +57,22 @@ export function CampCard({ camp }: CampCardProps) {
       data-testid={`card-camp-${camp.id}`}
     >
       <CardHeader className="pb-3 space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-eggplant truncate group-hover:text-eggplant-light transition-colors" data-testid={`text-camp-name-${camp.id}`}>
-              {camp.name}
-            </h3>
-            {camp.organization && (
-              <p className="text-sm text-muted-foreground truncate" data-testid={`text-camp-org-${camp.id}`}>
-                {camp.organization}
-              </p>
-            )}
-          </div>
-          {hasRegistrationOpens && (
-            <div className="flex items-center gap-1.5 shrink-0">
-              <span className={`w-2 h-2 rounded-full ${regStatus.dotColor}`} />
-              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {regStatus.text}
-              </span>
-            </div>
+        <div className="space-y-1">
+          <h3 className="font-semibold text-lg text-eggplant group-hover:text-eggplant-light transition-colors" data-testid={`text-camp-name-${camp.id}`}>
+            {camp.name}
+          </h3>
+          {camp.organization && (
+            <p className="text-sm text-muted-foreground truncate" data-testid={`text-camp-org-${camp.id}`}>
+              {camp.organization}
+            </p>
+          )}
+          {regStatus.text && (
+            <Badge 
+              className={`${regStatus.badgeClass} text-xs font-medium mt-1`}
+              data-testid={`badge-status-${camp.id}`}
+            >
+              {regStatus.text}
+            </Badge>
           )}
         </div>
 
@@ -126,12 +123,7 @@ export function CampCard({ camp }: CampCardProps) {
           </div>
         )}
 
-        {!hasRegistrationOpens && (
-          <p className="text-sm text-muted-foreground italic">
-            Registration date not yet available
-          </p>
-        )}
-
+        
         {priceRange && (
           <div className="text-sm font-medium text-eggplant">
             {priceRange}
