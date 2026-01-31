@@ -95,7 +95,7 @@ function FilterContent({
 
       <div className="space-y-3">
         <Label className="text-sm font-medium text-foreground">Categories</Label>
-        <div className="space-y-2 max-h-48 overflow-y-auto">
+        <div className="space-y-2">
           {campCategories.map((category) => (
             <div key={category} className="flex items-center gap-2">
               <Checkbox
@@ -123,7 +123,7 @@ function FilterContent({
       {locations.length > 0 && (
         <div className="space-y-3">
           <Label className="text-sm font-medium text-foreground">Location</Label>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
+          <div className="space-y-2">
             {locations.map((location) => (
               <div key={location} className="flex items-center gap-2">
                 <Checkbox
@@ -258,11 +258,13 @@ export function CampFilters(props: CampFiltersProps) {
 
   return (
     <aside 
-      className="w-72 shrink-0 bg-white rounded-lg border border-border/50 p-5 shadow-paper h-fit sticky top-24"
+      className="w-72 shrink-0 bg-white rounded-lg border border-border/50 shadow-paper sticky top-24 max-h-[calc(100vh-7rem)] flex flex-col"
       data-testid="sidebar-filters"
     >
-      <h2 className="font-semibold text-lg text-eggplant mb-4">Filters</h2>
-      <FilterContent {...props} />
+      <h2 className="font-semibold text-lg text-eggplant p-5 pb-0 mb-4">Filters</h2>
+      <div className="overflow-y-auto flex-1 px-5 pb-5">
+        <FilterContent {...props} />
+      </div>
     </aside>
   );
 }
