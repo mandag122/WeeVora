@@ -21,7 +21,7 @@ export function Hero() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
-          <h1 className="font-handwritten text-5xl sm:text-6xl md:text-7xl text-eggplant mb-4 leading-tight" data-testid="text-hero-title">
+          <h1 className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl text-eggplant mb-4 leading-tight tracking-tight" data-testid="text-hero-title">
             Never miss registration again
           </h1>
           <p className="text-lg md:text-xl text-foreground/80 mb-8 leading-relaxed max-w-2xl" data-testid="text-hero-subtitle">

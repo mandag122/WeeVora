@@ -10,6 +10,7 @@ export function Header() {
 
   const navLinks = [
     { href: "/camps", label: "Summer Camps" },
+    { href: "/about", label: "About Us" },
     { href: "/how-it-works", label: "How It Works" },
     { href: "/contact", label: "Contact" },
   ];
@@ -24,7 +25,7 @@ export function Header() {
             <img 
               src={weeVoraLogo} 
               alt="WeeVora" 
-              className="h-14 md:h-16 -my-2 cursor-pointer hover:opacity-90 transition-opacity"
+              className="h-20 md:h-24 -my-4 cursor-pointer hover:opacity-90 transition-opacity"
               data-testid="img-logo"
             />
           </Link>

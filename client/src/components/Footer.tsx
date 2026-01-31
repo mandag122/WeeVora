@@ -17,10 +17,10 @@ export function Footer() {
             <img 
               src={weeVoraLogo} 
               alt="WeeVora" 
-              className="h-12 mb-4 brightness-0 invert opacity-90"
+              className="h-16 mb-4 brightness-0 invert opacity-90"
               data-testid="img-footer-logo"
             />
-            <p className="text-white/70 text-sm leading-relaxed font-handwritten text-lg">
+            <p className="text-white/70 text-base leading-relaxed font-medium">
               Never miss registration again
             </p>
             <div className="flex gap-3 mt-4">
@@ -68,6 +68,13 @@ export function Footer() {
               Resources
             </h3>
             <nav className="flex flex-col gap-2">
+              <Link 
+                href="/about" 
+                className="text-white/70 hover:text-gold text-sm transition-colors"
+                data-testid="link-footer-about"
+              >
+                About Us
+              </Link>
               <Link 
                 href="/how-it-works" 
                 className="text-white/70 hover:text-gold text-sm transition-colors"
