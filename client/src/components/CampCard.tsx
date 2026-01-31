@@ -21,11 +21,11 @@ function getRegistrationStatus(camp: Camp): {
     return { status: "closed", text: "Closed", badgeClass: "bg-red-500 text-white" };
   }
   if (camp.waitlistOnly) {
-    return { status: "waitlist", text: "Waitlist Only", badgeClass: "bg-gold text-white" };
+    return { status: "waitlist", text: "Waitlist Only", badgeClass: "bg-gold text-eggplant-dark" };
   }
   if (camp.registrationOpens && isFuture(parseISO(camp.registrationOpens))) {
     const date = format(parseISO(camp.registrationOpens), "MMM d");
-    return { status: "upcoming", text: `Opens ${date}`, badgeClass: "bg-yellow-500 text-white" };
+    return { status: "upcoming", text: `Opens ${date}`, badgeClass: "bg-gold-light text-eggplant-dark" };
   }
   if (camp.registrationOpens && isPast(parseISO(camp.registrationOpens))) {
     return { status: "open", text: "Registration Open", badgeClass: "bg-forest text-white" };
@@ -125,7 +125,7 @@ export function CampCard({ camp }: CampCardProps) {
         </div>
 
         {camp.extendedHours && (
-          <div className="flex items-center gap-1.5 text-sm text-gold-dark">
+          <div className="flex items-center gap-1.5 text-sm text-sky font-medium">
             <Sun className="w-4 h-4" />
             <span>Extended: {camp.extendedHoursInfo || "Available"}</span>
           </div>
