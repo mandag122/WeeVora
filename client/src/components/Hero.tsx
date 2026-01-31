@@ -9,11 +9,11 @@ export function Hero() {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ 
           backgroundImage: `url(${heroImage})`,
-          opacity: 0.3
+          opacity: 0.5
         }}
       />
       
-      <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/70 to-gold/10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-white/80 to-gold/20" />
       
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-gold/20 rounded-full blur-3xl" />
       <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-eggplant/10 rounded-full blur-3xl" />

@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, MapPin, Mail } from "lucide-react";
+import familyPortrait from "@assets/woven_papercraft_family_1769894346976.png";
 
 export default function About() {
   return (
@@ -27,9 +28,19 @@ export default function About() {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
               <div className="prose prose-lg max-w-none">
-                <p className="text-xl text-foreground/80 leading-relaxed mb-8">
-                  Hi! I'm Amanda, a mom of three in Mundelein, Illinois, and I created WeeVora because I learned the hard way that summer camp planning in our area is no joke.
-                </p>
+                <div className="flex flex-col md:flex-row gap-8 items-start mb-8">
+                  <div className="shrink-0 mx-auto md:mx-0">
+                    <img 
+                      src={familyPortrait} 
+                      alt="The WeeVora family" 
+                      className="w-48 h-48 md:w-56 md:h-56 rounded-2xl shadow-paper object-cover border-4 border-white"
+                      data-testid="img-family-portrait"
+                    />
+                  </div>
+                  <p className="text-xl text-foreground/80 leading-relaxed">
+                    Hi! I'm Amanda, a mom of three in Mundelein, Illinois, and I created WeeVora because I learned the hard way that summer camp planning in our area is no joke.
+                  </p>
+                </div>
 
                 <div className="bg-gold/10 border-l-4 border-gold rounded-r-lg p-6 my-8">
                   <p className="text-foreground/80 italic mb-0">
