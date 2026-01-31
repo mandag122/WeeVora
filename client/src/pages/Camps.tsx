@@ -20,7 +20,8 @@ const defaultFilters: FilterState = {
   priceMin: null,
   priceMax: null,
   registrationStatus: "all",
-  extendedHoursOnly: false
+  extendedHoursOnly: false,
+  campSchedule: []
 };
 
 const defaultDateRange: DateRange = {
@@ -101,6 +102,13 @@ export default function Camps() {
 
       if (filters.extendedHoursOnly && !camp.extendedHours) {
         return false;
+      }
+
+      if (filters.campSchedule.length > 0) {
+        const hasSchedule = filters.campSchedule.some(schedule => 
+          camp.campSchedule.includes(schedule)
+        );
+        if (!hasSchedule) return false;
       }
 
       if (filters.registrationStatus !== "all") {

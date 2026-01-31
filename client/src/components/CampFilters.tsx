@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import type { FilterState } from "@shared/schema";
-import { campCategories } from "@shared/schema";
+import { campCategories, campScheduleOptions } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CampFiltersProps {
@@ -31,7 +31,8 @@ function FilterContent({
     filters.ageMin !== null || filters.ageMax !== null,
     filters.priceMin !== null || filters.priceMax !== null,
     filters.registrationStatus !== "all",
-    filters.extendedHoursOnly
+    filters.extendedHoursOnly,
+    filters.campSchedule.length > 0
   ].filter(Boolean).length;
 
   return (
@@ -176,6 +177,33 @@ function FilterContent({
         >
           Extended hours available
         </Label>
+      </div>
+
+      <div className="space-y-3">
+        <Label className="text-sm font-medium text-foreground">Schedule Availability</Label>
+        <div className="space-y-2">
+          {campScheduleOptions.map((option) => (
+            <div key={option} className="flex items-center gap-2">
+              <Checkbox
+                id={`schedule-${option}`}
+                checked={filters.campSchedule.includes(option)}
+                onCheckedChange={(checked) => {
+                  const newSchedule = checked
+                    ? [...filters.campSchedule, option]
+                    : filters.campSchedule.filter((s) => s !== option);
+                  onFilterChange({ campSchedule: newSchedule });
+                }}
+                data-testid={`checkbox-schedule-${option}`}
+              />
+              <Label 
+                htmlFor={`schedule-${option}`}
+                className="text-sm text-foreground/80 cursor-pointer"
+              >
+                {option}
+              </Label>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

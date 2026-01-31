@@ -45,6 +45,15 @@ export const registrationOptionSchema = z.object({
 
 export type RegistrationOption = z.infer<typeof registrationOptionSchema>;
 
+// Camp schedule options
+export const campScheduleOptions = [
+  "Full Week",
+  "Partial Week",
+  "Daily Drop-in"
+] as const;
+
+export type CampScheduleOption = typeof campScheduleOptions[number];
+
 // Camp schema
 export const campSchema = z.object({
   id: z.string(),
@@ -70,7 +79,8 @@ export const campSchema = z.object({
   siblingDiscountNote: z.string().nullable(),
   websiteUrl: z.string().nullable(),
   color: z.string().nullable(),
-  additionalInfo: z.string().nullable()
+  additionalInfo: z.string().nullable(),
+  campSchedule: z.array(z.string()).default([])
 });
 
 export type Camp = z.infer<typeof campSchema>;
@@ -100,7 +110,8 @@ export const filterStateSchema = z.object({
   priceMin: z.number().nullable().default(null),
   priceMax: z.number().nullable().default(null),
   registrationStatus: z.enum(["all", "open", "upcoming"]).default("all"),
-  extendedHoursOnly: z.boolean().default(false)
+  extendedHoursOnly: z.boolean().default(false),
+  campSchedule: z.array(z.string()).default([])
 });
 
 export type FilterState = z.infer<typeof filterStateSchema>;

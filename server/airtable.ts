@@ -40,6 +40,7 @@ interface AirtableCampFields {
   "Additional Info"?: string;
   "camp_id"?: number;
   "Registration_Options"?: string[];
+  "Camp schedule"?: string[];
 }
 
 // Based on actual Airtable field names from Registration_Options table
@@ -177,7 +178,8 @@ export async function fetchCamps(): Promise<Camp[]> {
       siblingDiscountNote: record.fields["Sibling Discount"] || null,
       websiteUrl: record.fields.Website || null,
       color: record.fields.Color || null,
-      additionalInfo: record.fields["Additional Info"] || null
+      additionalInfo: record.fields["Additional Info"] || null,
+      campSchedule: record.fields["Camp schedule"] || []
     }));
   } catch (error) {
     console.error("Error fetching camps from Airtable:", error);

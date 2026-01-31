@@ -49,13 +49,21 @@ export function CampCard({ camp }: CampCardProps) {
       ? `From $${camp.priceMin}`
       : null;
 
+  const firstCategory = camp.categories[0] as CampCategory | undefined;
+  const bannerColor = camp.color || (firstCategory ? categoryColors[firstCategory] : "#5B2C6F");
+
   return (
     <Card 
-      className={`group relative overflow-visible bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 ${
+      className={`group relative overflow-hidden bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 ${
         !hasRegistrationOpens ? "opacity-60" : ""
       }`}
       data-testid={`card-camp-${camp.id}`}
     >
+      <div 
+        className="h-2 w-full" 
+        style={{ backgroundColor: bannerColor }}
+        data-testid={`banner-${camp.id}`}
+      />
       <CardHeader className="pb-3 space-y-3">
         <div className="space-y-1">
           <h3 className="font-semibold text-lg text-eggplant group-hover:text-eggplant-light transition-colors" data-testid={`text-camp-name-${camp.id}`}>
@@ -116,10 +124,10 @@ export function CampCard({ camp }: CampCardProps) {
           )}
         </div>
 
-        {camp.extendedHours && camp.extendedHoursInfo && (
+        {camp.extendedHours && (
           <div className="flex items-center gap-1.5 text-sm text-gold-dark">
             <Sun className="w-4 h-4" />
-            <span>Extended hours: {camp.extendedHoursInfo}</span>
+            <span>Extended: {camp.extendedHoursInfo || "Available"}</span>
           </div>
         )}
 
