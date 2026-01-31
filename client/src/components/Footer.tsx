@@ -20,7 +20,7 @@ export function Footer() {
               className="h-16 mb-4 brightness-0 invert opacity-90"
               data-testid="img-footer-logo"
             />
-            <p className="text-white/70 text-base leading-relaxed font-medium">
+            <p className="text-white/70 text-base leading-relaxed">
               Never miss registration again
             </p>
             <div className="flex gap-3 mt-4">

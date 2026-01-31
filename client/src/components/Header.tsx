@@ -25,7 +25,7 @@ export function Header() {
             <img 
               src={weeVoraLogo} 
               alt="WeeVora" 
-              className="h-20 md:h-24 -my-4 cursor-pointer hover:opacity-90 transition-opacity"
+              className="h-28 md:h-32 -my-8 cursor-pointer hover:opacity-90 transition-opacity"
               data-testid="img-logo"
             />
           </Link>
