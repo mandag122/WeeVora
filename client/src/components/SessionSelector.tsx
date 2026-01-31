@@ -57,7 +57,12 @@ export function SessionSelector({
   }
 
   return (
-    <Card className="bg-white border-border/50 shadow-paper" data-testid="card-sessions">
+    <Card 
+        className={`border-border/50 shadow-paper transition-colors duration-300 ${
+          showExtended ? "bg-sky/5 border-sky/30" : "bg-white"
+        }`} 
+        data-testid="card-sessions"
+      >
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <CardTitle className="text-lg text-eggplant flex items-center gap-2">
@@ -66,11 +71,13 @@ export function SessionSelector({
           </CardTitle>
           
           {hasExtendedHours && (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-gold/10">
-              <Clock className="w-4 h-4 text-muted-foreground" />
+            <div className={`flex items-center gap-2 p-2 rounded-lg transition-colors duration-300 ${
+              showExtended ? "bg-sky/20" : "bg-gold/10"
+            }`}>
+              <Clock className={`w-4 h-4 ${!showExtended ? "text-eggplant" : "text-muted-foreground"}`} />
               <Label 
                 htmlFor="extended-toggle" 
-                className={`text-sm cursor-pointer ${!showExtended ? "font-medium text-foreground" : "text-muted-foreground"}`}
+                className={`text-sm cursor-pointer ${!showExtended ? "font-semibold text-eggplant" : "text-muted-foreground"}`}
               >
                 Standard
               </Label>
@@ -80,10 +87,10 @@ export function SessionSelector({
                 onCheckedChange={setShowExtended}
                 data-testid="switch-extended-hours"
               />
-              <Sun className="w-4 h-4 text-gold-dark" />
+              <Sun className={`w-4 h-4 ${showExtended ? "text-sky" : "text-muted-foreground"}`} />
               <Label 
                 htmlFor="extended-toggle" 
-                className={`text-sm cursor-pointer ${showExtended ? "font-medium text-gold-dark" : "text-muted-foreground"}`}
+                className={`text-sm cursor-pointer ${showExtended ? "font-semibold text-sky" : "text-muted-foreground"}`}
               >
                 Extended
               </Label>
@@ -92,15 +99,29 @@ export function SessionSelector({
         </div>
         
         {hasExtendedHours && (
-          <p className="text-xs text-muted-foreground mt-2">
-            {showExtended ? (
-              <>Extended hours: {camp.extendedHoursInfo || "Extended hours available"}
-                {!hasExtendedPricing && <span className="text-gold-dark ml-1">(pricing not yet available)</span>}
-              </>
-            ) : (
-              <>Standard hours: {camp.campHours || "Regular camp hours"}</>
+          <div className={`mt-3 p-3 rounded-lg transition-colors duration-300 ${
+            showExtended ? "bg-sky/10" : "bg-eggplant/5"
+          }`}>
+            <div className="flex items-center gap-2 mb-1">
+              {showExtended ? (
+                <Sun className="w-5 h-5 text-sky" />
+              ) : (
+                <Clock className="w-5 h-5 text-eggplant" />
+              )}
+              <span className={`text-sm font-semibold ${showExtended ? "text-sky" : "text-eggplant"}`}>
+                {showExtended ? "Extended Hours" : "Standard Hours"}
+              </span>
+            </div>
+            <p className={`text-lg font-bold ${showExtended ? "text-sky" : "text-eggplant"}`}>
+              {showExtended 
+                ? (camp.extendedHoursInfo || "Extended hours available")
+                : (camp.campHours || "Regular camp hours")
+              }
+            </p>
+            {showExtended && !hasExtendedPricing && (
+              <p className="text-xs text-muted-foreground mt-1">(pricing not yet available for extended hours)</p>
             )}
-          </p>
+          </div>
         )}
       </CardHeader>
       <CardContent className="space-y-3">
