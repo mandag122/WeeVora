@@ -1,0 +1,56 @@
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import heroImage from "../assets/hero-playground.png";
+
+export function Hero() {
+  return (
+    <section className="relative min-h-[600px] md:min-h-[700px] flex items-center overflow-hidden">
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url(${heroImage})`,
+          opacity: 0.3
+        }}
+      />
+      
+      <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/70 to-gold/10" />
+      
+      <div className="absolute -top-20 -right-20 w-64 h-64 bg-gold/20 rounded-full blur-3xl" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-eggplant/10 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 right-1/4 w-48 h-48 bg-coral/10 rounded-full blur-2xl" />
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-3xl">
+          <h1 className="font-handwritten text-5xl sm:text-6xl md:text-7xl text-eggplant mb-4 leading-tight" data-testid="text-hero-title">
+            Never miss registration again
+          </h1>
+          <p className="text-lg md:text-xl text-foreground/80 mb-8 leading-relaxed max-w-2xl" data-testid="text-hero-subtitle">
+            Your copilot for summer camps, activities, and keeping the kids busy. 
+            Find, compare, and plan summer camps across Lake County, Illinois.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/camps">
+              <Button 
+                size="lg" 
+                className="bg-gold hover:bg-gold-dark text-eggplant-dark font-semibold rounded-full px-8 py-6 text-lg shadow-paper-lg hover:shadow-paper-hover transition-all hover:-translate-y-1"
+                data-testid="button-find-camps"
+              >
+                Find Camps Near You
+              </Button>
+            </Link>
+            <Link href="/how-it-works">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-eggplant text-eggplant hover:bg-eggplant hover:text-white rounded-full px-8 py-6 text-lg transition-all"
+                data-testid="button-how-it-works"
+              >
+                How It Works
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

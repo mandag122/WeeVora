@@ -6,11 +6,48 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: ".5625rem", /* 9px */
-        md: ".375rem", /* 6px */
-        sm: ".1875rem", /* 3px */
+        lg: "1.25rem", /* 20px - paper card style */
+        md: ".75rem", /* 12px */
+        sm: ".5rem", /* 8px */
+        xl: "1.5rem", /* 24px */
+        "2xl": "2rem", /* 32px */
       },
       colors: {
+        // WeeVora Brand Colors
+        eggplant: {
+          DEFAULT: "hsl(282 43% 30%)",
+          light: "hsl(282 43% 40%)",
+          dark: "hsl(282 43% 20%)",
+        },
+        gold: {
+          DEFAULT: "hsl(39 95% 59%)",
+          light: "hsl(39 95% 70%)",
+          dark: "hsl(39 95% 45%)",
+        },
+        forest: {
+          DEFAULT: "hsl(95 49% 36%)",
+          light: "hsl(95 49% 50%)",
+        },
+        sky: {
+          DEFAULT: "hsl(193 82% 38%)",
+          light: "hsl(193 82% 50%)",
+        },
+        coral: {
+          DEFAULT: "hsl(14 100% 63%)",
+          light: "hsl(14 100% 75%)",
+        },
+        rose: {
+          DEFAULT: "hsl(340 65% 47%)",
+          light: "hsl(340 65% 60%)",
+        },
+        sage: {
+          DEFAULT: "hsl(150 35% 40%)",
+          light: "hsl(150 35% 55%)",
+        },
+        indigo: {
+          DEFAULT: "hsl(235 50% 45%)",
+          light: "hsl(235 50% 60%)",
+        },
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
@@ -83,9 +120,15 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
+        sans: ["Poppins", "var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+        handwritten: ["Caveat", "cursive"],
+      },
+      boxShadow: {
+        'paper': '0 4px 6px -1px rgba(91, 44, 111, 0.1), 0 2px 4px -1px rgba(91, 44, 111, 0.06)',
+        'paper-hover': '0 10px 15px -3px rgba(91, 44, 111, 0.15), 0 4px 6px -2px rgba(91, 44, 111, 0.1)',
+        'paper-lg': '0 20px 25px -5px rgba(91, 44, 111, 0.12), 0 10px 10px -5px rgba(91, 44, 111, 0.08)',
       },
       keyframes: {
         "accordion-down": {
