@@ -31,7 +31,7 @@ interface AirtableCampFields {
   "Start Date"?: string;
   "End Date"?: string;
   "camp_hours"?: string;
-  "extended_hours"?: string;
+  "ex_hours"?: string;
   "Is Registration Open?"?: string;
   "Waitlist Only"?: boolean;
   "Sibling Discount"?: string;
@@ -50,7 +50,7 @@ interface AirtableRegistrationFields {
   "Camp Name (from Camps 2)"?: string[];
   "dates_csv"?: string;
   "price"?: string;
-  "extended_price"?: string;
+  "ex_hours_price"?: string;
   "age_min"?: number;
   "age_max"?: number;
   "registration_opens"?: string;
@@ -172,8 +172,8 @@ export async function fetchCamps(): Promise<Camp[]> {
       seasonStart: record.fields["Start Date"] || null,
       seasonEnd: record.fields["End Date"] || null,
       campHours: record.fields.camp_hours || null,
-      extendedHours: !!record.fields.extended_hours,
-      extendedHoursInfo: record.fields.extended_hours || null,
+      extendedHours: !!record.fields.ex_hours,
+      extendedHoursInfo: record.fields.ex_hours || null,
       waitlistOnly: record.fields["Waitlist Only"] || false,
       siblingDiscountNote: record.fields["Sibling Discount"] || null,
       websiteUrl: record.fields.Website || null,
@@ -197,7 +197,7 @@ export async function fetchRegistrationOptions(): Promise<RegistrationOption[]> 
       const optionNames = record.fields.option_name?.split(",").map(s => s.trim()) || ["Session"];
       const datesCsv = record.fields.dates_csv?.split(",").map(s => s.trim()) || [];
       const prices = record.fields.price?.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n)) || [];
-      const extendedPrices = record.fields.extended_price?.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n)) || [];
+      const extendedPrices = record.fields.ex_hours_price?.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n)) || [];
       
       // Create a registration option for each session in the CSV
       optionNames.forEach((name, idx) => {
