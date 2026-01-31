@@ -1,0 +1,375 @@
+# WeeVora Product Requirements Document (PRD)
+**Version:** 1.0  
+**Last Updated:** January 31, 2026  
+**Product:** WeeVora - Lake County Summer Camp Directory  
+**Tagline:** "Never miss registration again"
+---
+## 1. Executive Summary
+WeeVora is a comprehensive summer camp discovery and planning platform for families in Lake County, Illinois. The platform aggregates camp information from multiple providers into a single, searchable directory with real-time registration status tracking, helping parents navigate the complex landscape of summer programming without missing critical deadlines.
+### Core Value Proposition
+- **For Parents:** Eliminates the need to track dozens of websites, remembering registration dates, and manually comparing options
+- **Differentiation:** Registration-first approach with proactive status tracking vs. static camp listings
+---
+## 2. Brand Identity & Design System
+### 2.1 Visual Identity
+**Aesthetic Direction:** Paper craft aesthetic with organic shapes, elevated cards, and a warm, playful feel that evokes childhood creativity without being childish.
+**Typography:**
+- **Primary Font:** Poppins (weights: 400, 500, 600, 700)
+- **Hero/Decorative:** Caveat (handwritten style for "fridge note" aesthetic)
+**Logo:**
+- Colorful paper-craft style text logo ("WeeVora")
+- Transparent PNG format
+- File: `src/assets/weevora-logo-new.png`
+- Display size: `h-20 md:h-28` with `-my-2` negative margin to compensate for internal whitespace
+### 2.2 Color Palette
+| Token | Hex | HSL | Usage |
+|-------|-----|-----|-------|
+| Eggplant Purple | #5B2C6F | 282 43% 30% | Primary brand, hover states, navigation active |
+| Sunny Gold | #F9B233 | 39 95% 59% | CTA buttons, highlights |
+| Forest Green | #558B2F | 95 49% 36% | Success states, sports category |
+| Deep Teal Blue | #117A8B | 193 82% 38% | Headers, badges, park district |
+| Warm Coral | #FF7043 | 14 100% 63% | Playful energy, arts category |
+| Rose Pink | #C2395A | 340 65% 47% | Performing arts category |
+| Sage Green | #4A8B6F | 150 35% 40% | Outdoor/nature category |
+| Indigo | #3D4AA3 | 235 50% 45% | Multi-activity category |
+**Background Treatment:**
+- Clean white base (`#FFFFFF`)
+- Subtle radial dot pattern overlay (plum color, 1px size, 32px spacing, 3% opacity)
+- Creates playful texture without visual clutter
+### 2.3 Component Patterns
+**Cards (`.paper-card`):**
+- Border radius: 20px
+- Multi-layer shadow system for depth
+- Hover: translateY(-8px) with enhanced shadow
+- Background: white
+**Buttons:**
+- Pill-shaped (full border radius)
+- Primary: Sunny Gold with dark text
+- Shadow on hover for "lift" effect
+**Icons:**
+- Custom paper-craft style illustrations
+- Border radius: 20px (matching cards)
+- Files: `file-folder-icon.png`, `search-icon.png`, `calendar-icon.png`
+---
+## 3. Information Architecture
+### 3.1 Site Map
+```
+/                       → Homepage (hero, features, stats)
+/camps                  → Camp Directory (search, filter, browse)
+/camps/:slug            → Camp Detail Page
+/how-it-works           → Onboarding/explanation
+/about                  → About WeeVora
+/contact                → Contact form
+/privacy                → Privacy Policy
+/terms                  → Terms of Service
+```
+### 3.2 Navigation Structure
+**Header (sticky, blur backdrop):**
+- Logo (left)
+- Nav links: Summer Camps, How It Works, Contact
+- CTA: "Get Started" button (desktop only)
+- Mobile: Hamburger menu with slide-down panel
+**Footer:**
+- Logo + tagline
+- Lake County Camps by city (quick filters)
+- Resources links
+- Social icons (Instagram, Facebook)
+- Legal links (Privacy, Terms)
+---
+## 4. Data Architecture
+### 4.1 Data Source
+**Primary:** Airtable via Supabase Edge Function  
+**Endpoint:** `fetch-camps` edge function  
+**Caching:** React Query with appropriate stale times
+### 4.2 Camp Data Schema
+| Field | Type | Description |
+|-------|------|-------------|
+| id | string | Unique identifier |
+| name | string | Camp name |
+| slug | string | URL-friendly identifier |
+| organization | string | Provider/organization name |
+| description | string | Camp description |
+| categories | string[] | Activity categories |
+| age_min / age_max | number | Age range |
+| location_city | string | City name |
+| location_address | string | Full address |
+| price_min / price_max | number | Price range |
+| registration_opens | date | When registration begins |
+| registration_closes | date | Registration deadline |
+| season_start / season_end | date | Camp session dates |
+| camp_hours | string | Regular hours (e.g., "9am-3pm") |
+| ex_hours | string | Extended hours option |
+| extended_hours | boolean | Extended hours available |
+| waitlist_only | boolean | Currently waitlist only |
+| sibling_discount_note | string | Sibling discount details |
+| website_url | string | Registration/info link |
+| color | string | Hex color for calendar display |
+| add_info | string | Additional information (long text) |
+### 4.3 Camp Categories
+- Sports & Athletics
+- Arts & Crafts
+- STEM & Technology
+- Performing Arts
+- Outdoor & Nature
+- Academic
+- Park District
+- Multi-Activity
+---
+## 5. Feature Specifications
+### 5.1 Homepage
+**Hero Section:**
+- Full-width with background image (`hero-playground.png` at 30% opacity)
+- Decorative organic blob shapes (subtle, brand colors)
+- Headline: "Never miss registration again"
+- Subhead: "Your copilot for summer camps, activities, and keeping the kids busy."
+- CTAs: "Find Camps Near You" (primary), "How It Works" (secondary)
+- No post-it notes or floating cards (removed for cleaner hero image display)
+**Features Section:**
+- 3-column grid on desktop, stacked on mobile
+- Paper-craft icon illustrations (20px border radius)
+- Features:
+  1. Camp Directory - "Every summer camp in Lake County with registration dates, costs, and details."
+  2. Smart Search & Filters - "Find exactly what you need by age, location, schedule, and activity type."
+  3. Always Up-to-Date - "We keep camp information current so you don't have to hunt across dozens of websites."
+**Stats Section:**
+- "50+ Camps Listed"
+- "100% Free to Use"
+### 5.2 Camp Directory (`/camps`)
+**Layout:**
+- Sidebar filters (desktop) / Bottom sheet filters (mobile)
+- Grid of camp cards (responsive: 1/2/3 columns)
+- Results count header
+**Filter Options:**
+| Filter | Type | Options |
+|--------|------|---------|
+| Search | Text input | Searches name, organization, description |
+| Categories | Multi-select checkboxes | All camp categories |
+| Age | Range slider | Min/max age filter |
+| Location | Multi-select | Cities in Lake County |
+| Price | Range slider | Min/max price |
+| Registration Status | Toggle buttons | All, Open Now, Coming Soon |
+| Extended Hours | Checkbox | Only show camps with extended hours |
+**Mobile Filter Sheet:**
+- Bottom sheet (85vh height)
+- Rounded top corners (24px)
+- Scroll behavior: `overscrollBehavior: 'contain'` (prevents jump to top on selection)
+- Search input with proper padding to prevent focus ring clipping
+**Sorting:**
+- Default: Registration date (soonest first)
+- Options: Name A-Z, Name Z-A, Registration Date
+- **Critical:** Camps without registration details always sorted to bottom
+### 5.3 Camp Cards
+**Information Displayed:**
+- Camp name
+- Organization
+- Category badges (color-coded)
+- Age range
+- Location (city)
+- Registration status (see 5.4)
+- "View Details" link
+**Cards Without Registration Dates:**
+- Display "Registration details not yet available" in muted italics
+- No status indicator shown
+- Visual deprioritization: 60% opacity
+- Sorted to bottom of all listings
+**Hover State:**
+- Lift effect (translateY -8px)
+- Enhanced shadow
+### 5.4 Registration Status Logic
+**Priority Order (highest to lowest):**
+1. **Closed** (if `registration_closes` date has passed)
+   - Red dot indicator
+   - Text: "Registration closed"
+2. **Upcoming** (if `registration_opens` is in the future)
+   - Yellow dot indicator
+   - Text: "Registration opens [date]"
+3. **Waitlist Only** (if `waitlist_only` checkbox is true)
+   - Red dot indicator
+   - Text: "Waitlist only"
+4. **Open** (if registration is currently open)
+   - Green dot indicator
+   - Text: "Registration closes [date]"
+5. **No Data** (if both dates are missing)
+   - No status indicator
+   - Text: "Registration details not yet available"
+   - Muted, italic styling
+### 5.5 Camp Detail Page (`/camps/:slug`)
+**Layout:**
+- Breadcrumb navigation
+- Hero section with camp name, organization, key details
+- Tabbed content or sections for:
+  - Overview/Description
+  - Schedule & Dates
+  - Pricing
+  - Location
+  - Additional Information
+**Similar Camps Section:**
+- "You might also like" recommendations
+- Filter by same category or age range
+- **Critical:** Camps with full registration details prioritized over incomplete entries
+**SEO:**
+- Dynamic Schema.org Event markup
+- Meta tags from camp data
+### 5.6 Contact Form
+**Fields:**
+- Name (required)
+- Email (required)
+- Subject (optional)
+- Message (required)
+**Backend:** Supabase Edge Function (`submit-contact`)
+---
+## 6. Technical Specifications
+### 6.1 Tech Stack
+| Layer | Technology |
+|-------|------------|
+| Framework | React 18 + TypeScript |
+| Build Tool | Vite |
+| Styling | Tailwind CSS + shadcn/ui |
+| Routing | React Router DOM v6 |
+| State Management | React Query (TanStack Query) |
+| Backend | Supabase (Lovable Cloud) |
+| Edge Functions | Deno (Supabase Functions) |
+| Data Source | Airtable |
+### 6.2 Key Dependencies
+```json
+{
+  "@fontsource/poppins": "^5.2.7",
+  "@tanstack/react-query": "^5.83.0",
+  "date-fns": "^3.6.0",
+  "lucide-react": "^0.462.0",
+  "react-helmet-async": "^2.0.5",
+  "react-hook-form": "^7.61.1",
+  "zod": "^3.25.76"
+}
+```
+### 6.3 File Structure
+```
+src/
+├── assets/                 # Images, icons, logo
+├── components/
+│   ├── ui/                # shadcn/ui components
+│   ├── calendar/          # Calendar planning components
+│   ├── seo/               # Schema markup components
+│   ├── CampCard.tsx
+│   ├── Header.tsx
+│   ├── Footer.tsx
+│   └── Logo.tsx
+├── contexts/              # React contexts
+├── data/                  # Mock data
+├── hooks/                 # Custom hooks
+├── integrations/          # Supabase client (auto-generated)
+├── lib/                   # Utilities
+├── pages/                 # Route components
+├── types/                 # TypeScript types
+└── index.css             # Design system tokens
+```
+### 6.4 Design Tokens (CSS Custom Properties)
+All colors defined in `src/index.css` using HSL format for Tailwind compatibility:
+```css
+:root {
+  --eggplant: 282 43% 30%;
+  --gold: 39 95% 59%;
+  --forest: 95 49% 36%;
+  --sky: 193 82% 38%;
+  --coral: 14 100% 63%;
+  --radius: 1.25rem;
+  /* ... see full file for complete list */
+}
+```
+### 6.5 Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `fetch-camps` | Retrieves camp data from Airtable |
+| `submit-contact` | Handles contact form submissions |
+---
+## 7. SEO Requirements
+### 7.1 Technical SEO
+- Server-side meta tags via `react-helmet-async`
+- Canonical URLs on all pages
+- Responsive viewport meta tag
+- robots.txt configuration
+### 7.2 Structured Data
+Implemented via `SchemaMarkup.tsx`:
+| Schema Type | Page |
+|-------------|------|
+| Organization | All pages |
+| WebSite | Homepage |
+| ItemList | Camp directory |
+| Event | Camp detail pages |
+| BreadcrumbList | Camp detail pages |
+### 7.3 Content Guidelines
+- Title tags: Under 60 characters, include main keyword
+- Meta descriptions: Under 160 characters
+- Single H1 per page matching page intent
+- Semantic HTML (`<header>`, `<main>`, `<section>`, `<footer>`)
+- Descriptive alt text on all images
+- Lazy loading for images
+---
+## 8. Accessibility Requirements
+- WCAG 2.1 AA compliance target
+- Keyboard navigation support
+- Focus indicators on interactive elements
+- Sufficient color contrast (especially status indicators)
+- Screen reader-friendly markup
+- Skip links for main content
+---
+## 9. Performance Requirements
+- Lighthouse Performance score: 90+
+- First Contentful Paint: < 1.5s
+- Largest Contentful Paint: < 2.5s
+- Cumulative Layout Shift: < 0.1
+- Image optimization (lazy loading, proper sizing)
+- Code splitting by route
+---
+## 10. Browser Support
+- Chrome (last 2 versions)
+- Firefox (last 2 versions)
+- Safari (last 2 versions)
+- Edge (last 2 versions)
+- Mobile Safari (iOS 14+)
+- Chrome for Android
+---
+## 11. Future Considerations
+### Potential Features (Not in Current Scope)
+- User accounts and saved favorites
+- Email notifications for registration reminders
+- Calendar export (iCal/Google Calendar)
+- Camp comparison tool
+- Reviews and ratings
+- Provider dashboard for camp operators
+- Multiple region expansion beyond Lake County
+---
+## 12. Appendix
+### A. City Coverage (Lake County, IL)
+- Libertyville
+- Lake Forest
+- Mundelein
+- Gurnee
+- Vernon Hills
+- Highland Park
+- Deerfield
+- Lincolnshire
+- Buffalo Grove
+- Lake Bluff
+- Lake Zurich
+- Waukegan
+- North Chicago
+- Antioch
+- Round Lake
+### B. Asset Inventory
+| Asset | Path | Purpose |
+|-------|------|---------|
+| Logo | `src/assets/weevora-logo-new.png` | Brand logo (colorful paper-craft) |
+| Hero Background | `src/assets/hero-playground.png` | Homepage hero section |
+| Folder Icon | `src/assets/file-folder-icon.png` | Camp Directory feature |
+| Search Icon | `src/assets/search-icon.png` | Smart Search feature |
+| Calendar Icon | `src/assets/calendar-icon.png` | Always Up-to-Date feature |
+### C. Status Badge Color Mapping
+| Status | Background | Text Color | Indicator |
+|--------|------------|------------|-----------|
+| Open | Forest Green 15% | Forest Green dark | Green dot |
+| Upcoming/Soon | Yellow 90% | Gold dark | Yellow dot |
+| Closed | Red 94% | Red dark | Red dot |
+| Waitlist | Coral 15% | Coral dark | Red dot |
+| TBD | Gray 93% | Gray dark | None |
+---
