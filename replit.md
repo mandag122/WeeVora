@@ -6,6 +6,15 @@ WeeVora is a comprehensive summer camp discovery and planning platform for famil
 **Tagline:** "Never miss registration again"
 
 ## Recent Changes
+- **Jan 31, 2026:** Extended hours and pricing update
+  - Extended hours toggle in SessionSelector (Standard/Extended modes)
+  - Sessions display separate pricing for standard and extended hours
+  - Both standard and extended selections can be retained simultaneously
+  - Camp cards show extended hours info when available
+  - Cards only gray out when missing registrationOpens (not just unknown status)
+  - Sorting deprioritizes camps without registrationOpens date
+  - Calendar displays pricing for selected sessions
+
 - **Jan 31, 2026:** Initial MVP implementation
   - Airtable integration for camps and registration options
   - Camp directory with search, filters, and sorting
