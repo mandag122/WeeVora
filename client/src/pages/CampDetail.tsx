@@ -122,8 +122,8 @@ export default function CampDetail() {
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camp-detail">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <Breadcrumb className="mb-6">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <Breadcrumb className="mb-4 sm:mb-6 text-sm">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -139,21 +139,21 @@ export default function CampDetail() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             <Card className="bg-white border-border/50 shadow-paper overflow-hidden">
               <div 
                 className="h-4"
                 style={{ backgroundColor: camp.color || "#5B2C6F" }}
               />
-              <CardContent className="p-6 space-y-4">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-eggplant mb-1" data-testid="text-camp-name">
+              <CardContent className="p-4 sm:p-6 space-y-4">
+                <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
+                  <div className="min-w-0 flex-1">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-eggplant mb-1" data-testid="text-camp-name">
                       {camp.name}
                     </h1>
                     {camp.organization && (
-                      <p className="text-lg text-muted-foreground">
+                      <p className="text-sm sm:text-lg text-muted-foreground">
                         {camp.organization}
                       </p>
                     )}
@@ -181,7 +181,7 @@ export default function CampDetail() {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-border/30">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-4 border-t border-border/30">
                   {(camp.ageMin || camp.ageMax) && (
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-md bg-sky/10">
@@ -314,11 +314,11 @@ export default function CampDetail() {
             />
 
             {similarCamps.length > 0 && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-eggplant">
+              <div className="space-y-3 sm:space-y-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-eggplant">
                   You might also like
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                   {similarCamps.slice(0, 4).map(similar => (
                     <CampCard key={similar.id} camp={similar} />
                   ))}

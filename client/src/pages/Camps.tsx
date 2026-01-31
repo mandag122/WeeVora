@@ -53,7 +53,7 @@ export default function Camps() {
     const cities = camps
       .map(c => c.locationCity)
       .filter((city): city is string => !!city);
-    return [...new Set(cities)].sort();
+    return Array.from(new Set(cities)).sort();
   }, [camps]);
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
@@ -152,17 +152,17 @@ export default function Camps() {
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camps">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-eggplant mb-2" data-testid="text-camps-title">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-eggplant mb-1 sm:mb-2" data-testid="text-camps-title">
             Summer Camps in Lake County
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Browse and plan your family's summer activities
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           <CampFilters
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -171,12 +171,12 @@ export default function Camps() {
           />
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-4 mb-4">
-              <p className="text-sm text-muted-foreground" data-testid="text-results-count">
+            <div className="flex items-center justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
+              <p className="text-xs sm:text-sm text-muted-foreground" data-testid="text-results-count">
                 {isLoading ? "Loading..." : `${sortedCamps.length} camp${sortedCamps.length !== 1 ? 's' : ''} found`}
               </p>
               <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-                <SelectTrigger className="w-48" data-testid="select-sort">
+                <SelectTrigger className="w-36 sm:w-48 text-xs sm:text-sm" data-testid="select-sort">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -216,7 +216,7 @@ export default function Camps() {
             )}
           </div>
 
-          <div className="lg:w-80 shrink-0">
+          <div className="w-full lg:w-80 shrink-0">
             <div className="lg:sticky lg:top-24">
               <SessionCalendar
                 selectedSessions={selectedSessions}

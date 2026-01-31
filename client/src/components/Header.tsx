@@ -30,12 +30,13 @@ export function Header() {
             />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1" data-testid="nav-desktop">
+          <nav className="hidden md:flex items-center gap-2" data-testid="nav-desktop">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}>
                 <Button
                   variant="ghost"
-                  className={`text-sm font-medium transition-colors ${
+                  size="lg"
+                  className={`text-base font-medium transition-colors px-4 ${
                     isActive(link.href)
                       ? "text-eggplant bg-eggplant/5"
                       : "text-foreground/70 hover:text-eggplant"
@@ -51,7 +52,8 @@ export function Header() {
           <div className="hidden md:flex items-center gap-3">
             <Link href="/camps">
               <Button 
-                className="bg-gold hover:bg-gold-dark text-eggplant-dark font-semibold rounded-full px-6 shadow-paper hover:shadow-paper-hover transition-all"
+                size="lg"
+                className="bg-gold hover:bg-gold-dark text-eggplant-dark font-semibold rounded-full px-8 text-base shadow-paper hover:shadow-paper-hover transition-all"
                 data-testid="button-get-started"
               >
                 Get Started
