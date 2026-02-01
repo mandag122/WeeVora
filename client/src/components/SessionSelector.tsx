@@ -5,8 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import type { Camp, RegistrationOption, SelectedSession } from "@shared/schema";
+import type { Camp, RegistrationOption, SelectedSession, CampCategory } from "@shared/schema";
+import { categoryColors } from "@shared/schema";
 import { format, parseISO, isPast, isFuture } from "date-fns";
+
+function getCampBannerColor(camp: Camp): string {
+  if (camp.color) return camp.color;
+  const firstCategory = camp.categories?.[0] as CampCategory | undefined;
+  return firstCategory ? categoryColors[firstCategory] || "#5B2C6F" : "#5B2C6F";
+}
 
 interface SessionSelectorProps {
   camp: Camp;
@@ -144,6 +151,7 @@ export function SessionSelector({
           const handleToggle = () => {
             if (!startDate || !endDate) return;
             
+            const bannerColor = getCampBannerColor(camp);
             if (showExtended && hasExtendedOption) {
               onToggleSession({
                 campId: camp.id,
@@ -152,7 +160,7 @@ export function SessionSelector({
                 sessionName: `${session.sessionName} (Extended)`,
                 startDate: session.startDate!,
                 endDate: session.endDate!,
-                color: session.color || camp.color || "#5B2C6F",
+                color: session.color || bannerColor,
                 isExtended: true,
                 price: session.extendedPrice
               });
@@ -164,7 +172,7 @@ export function SessionSelector({
                 sessionName: session.sessionName,
                 startDate: session.startDate!,
                 endDate: session.endDate!,
-                color: session.color || camp.color || "#5B2C6F",
+                color: session.color || bannerColor,
                 isExtended: false,
                 price: session.price
               });
