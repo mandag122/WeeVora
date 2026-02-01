@@ -48,8 +48,9 @@ async function getCamps(): Promise<Record<string, unknown>[]> {
     offset = data.offset;
   } while (offset);
 
-  const ages = allRecords.map((r) => parseAgeGroup(r.fields?.["Age Group"] as string | undefined));
-  return allRecords.map((record, index) => {
+  const visible = allRecords.filter((r) => r.fields?.hide !== true && r.fields?.Hide !== true);
+  const ages = visible.map((r) => parseAgeGroup(r.fields?.["Age Group"] as string | undefined));
+  return visible.map((record, index) => {
     const fields = record.fields || {};
     const age = ages[index] ?? { min: null, max: null };
     const name = (fields["Camp Name"] as string) || "Unnamed Camp";

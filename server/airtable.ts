@@ -42,6 +42,8 @@ interface AirtableCampFields {
   "camp_id"?: number;
   "Registration_Options"?: string[];
   "Camp schedule"?: string[];
+  "hide"?: boolean;
+  "Hide"?: boolean;
 }
 
 // Based on actual Airtable field names from Registration_Options table
@@ -137,9 +139,10 @@ function getInterests(interests: string[] | undefined): string[] {
 export async function fetchCamps(): Promise<Camp[]> {
   try {
     const records = await fetchFromAirtable<AirtableCampFields>(AIRTABLE_TABLE_NAME);
-    const ages = records.map(r => parseAgeGroup(r.fields["Age Group"]));
-    
-    return records.map((record, index) => ({
+    const visible = records.filter((r) => r.fields["hide"] !== true && r.fields["Hide"] !== true);
+    const ages = visible.map(r => parseAgeGroup(r.fields["Age Group"]));
+
+    return visible.map((record, index) => ({
       id: record.id,
       name: record.fields["Camp Name"] || "Unnamed Camp",
       slug: generateSlug(record.fields["Camp Name"] || "", record.id),
