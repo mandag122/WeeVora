@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { MapPin, Clock, Users, ExternalLink, Sun } from "lucide-react";
+import { trackCampCardClick, trackRegisterWebsiteClick } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -10,6 +11,8 @@ import { format, parseISO, isPast, isFuture } from "date-fns";
 interface CampCardProps {
   camp: Camp;
   onAddToCalendar?: () => void;
+  /** Where the card is shown – used for analytics */
+  source?: "list" | "similar";
 }
 
 function getRegistrationStatus(camp: Camp): {
@@ -33,7 +36,7 @@ function getRegistrationStatus(camp: Camp): {
   return { status: "unknown", text: "", badgeClass: "" };
 }
 
-export function CampCard({ camp }: CampCardProps) {
+export function CampCard({ camp, source }: CampCardProps) {
   const regStatus = getRegistrationStatus(camp);
   const hasRegistrationOpens = !!camp.registrationOpens;
 
@@ -61,7 +64,18 @@ export function CampCard({ camp }: CampCardProps) {
     "#5B2C6F";
 
   return (
-    <Link href={`/camps/${camp.slug}`} className="block">
+    <Link
+      href={`/camps/${camp.slug}`}
+      className="block"
+      onClick={() =>
+        trackCampCardClick({
+          campId: camp.id,
+          campName: camp.name,
+          campSlug: camp.slug,
+          source,
+        })
+      }
+    >
       <Card
         className={`group relative overflow-hidden bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
           !hasRegistrationOpens ? "opacity-60" : ""
@@ -171,6 +185,11 @@ export function CampCard({ camp }: CampCardProps) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                trackRegisterWebsiteClick({
+                  campId: camp.id,
+                  campName: camp.name,
+                  url: camp.websiteUrl!,
+                });
                 window.open(camp.websiteUrl!, "_blank");
               }}
               data-testid={`button-external-${camp.id}`}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Check, Calendar, Sun, Clock } from "lucide-react";
+import { trackAddToCalendar } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -153,6 +154,15 @@ export function SessionSelector({
             
             const bannerColor = getCampBannerColor(camp);
             if (showExtended && hasExtendedOption) {
+              if (!extendedSelected) {
+                trackAddToCalendar({
+                  campId: camp.id,
+                  campName: camp.name,
+                  sessionId: `${session.id}-ext`,
+                  sessionName: `${session.sessionName} (Extended)`,
+                  isExtended: true,
+                });
+              }
               onToggleSession({
                 campId: camp.id,
                 campName: camp.name,
@@ -165,6 +175,15 @@ export function SessionSelector({
                 price: session.extendedPrice
               });
             } else {
+              if (!standardSelected) {
+                trackAddToCalendar({
+                  campId: camp.id,
+                  campName: camp.name,
+                  sessionId: session.id,
+                  sessionName: session.sessionName,
+                  isExtended: false,
+                });
+              }
               onToggleSession({
                 campId: camp.id,
                 campName: camp.name,

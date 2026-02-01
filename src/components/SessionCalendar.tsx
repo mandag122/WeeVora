@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Calendar, ChevronLeft, ChevronRight, Maximize2, Printer, Trash2, CalendarRange, AlertTriangle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { trackCalendarOpened, trackSessionRemovedFromCalendar } from "@/lib/analytics";
 import type { SelectedSession, DateRange } from "@shared/schema";
 import { 
   format, 
@@ -504,6 +505,10 @@ export function SessionCalendar({
   const [showOverlapAlert, setShowOverlapAlert] = useState(false);
   const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
 
+  useEffect(() => {
+    if (isExpanded) trackCalendarOpened();
+  }, [isExpanded]);
+
   const overlaps = useMemo(() => detectOverlaps(selectedSessions), [selectedSessions]);
 
   const summerMonths = useMemo(() => {
@@ -533,6 +538,12 @@ export function SessionCalendar({
 
   const confirmRemove = () => {
     if (sessionToRemove) {
+      trackSessionRemovedFromCalendar({
+        campId: sessionToRemove.campId,
+        campName: sessionToRemove.campName,
+        sessionId: sessionToRemove.sessionId,
+        sessionName: sessionToRemove.sessionName,
+      });
       onRemoveSession(sessionToRemove.sessionId);
       toast({
         title: "Session removed",
