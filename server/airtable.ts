@@ -2,6 +2,7 @@ import type { Camp, RegistrationOption } from "@shared/schema";
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "Camps";
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}`;
 
 interface AirtableRecord<T> {
@@ -84,6 +85,11 @@ async function fetchFromAirtable<T>(tableName: string): Promise<AirtableRecord<T
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`Airtable API error: ${response.status} - ${errorText}`);
+      if (response.status === 404) {
+        console.error(
+          "Airtable 404: Check (1) BASE_ID in .env matches your base URL (airtable.com/.../appXXXXXXXX), (2) table name matches exactly (default 'Camps'). Set AIRTABLE_TABLE_NAME in .env if your table has a different name."
+        );
+      }
       throw new Error(`Airtable API error: ${response.status}`);
     }
 
@@ -130,7 +136,7 @@ function getInterests(interests: string[] | undefined): string[] {
 
 export async function fetchCamps(): Promise<Camp[]> {
   try {
-    const records = await fetchFromAirtable<AirtableCampFields>("Camps");
+    const records = await fetchFromAirtable<AirtableCampFields>(AIRTABLE_TABLE_NAME);
     const ages = records.map(r => parseAgeGroup(r.fields["Age Group"]));
     
     return records.map((record, index) => ({

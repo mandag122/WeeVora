@@ -60,6 +60,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  const hasAirtableKey = Boolean(process.env.AIRTABLE_API_KEY);
+  const hasAirtableBase = Boolean(process.env.AIRTABLE_BASE_ID);
+  if (!hasAirtableKey || !hasAirtableBase) {
+    console.log("\n>>> [WeeVora] Airtable NOT configured — camps will be empty. Add a .env file in the project root (same folder as package.json) with: AIRTABLE_API_KEY=... and AIRTABLE_BASE_ID=...\n");
+  } else {
+    console.log("\n>>> [WeeVora] Airtable configured. Camps should load.\n");
+  }
+
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
@@ -94,10 +102,15 @@ app.use((req, res, next) => {
     {
       port,
       host: "0.0.0.0",
-      reusePort: true,
     },
     () => {
       log(`serving on port ${port}`);
     },
   );
+  httpServer.on("error", (err: NodeJS.ErrnoException) => {
+    console.error("Server failed to start:", err.message);
+    if (err.code === "EADDRINUSE") {
+      console.error(`Port ${port} is already in use. Try another port or stop the other process.`);
+    }
+  });
 })();

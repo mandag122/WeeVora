@@ -62,9 +62,11 @@ export default function Camps() {
     }
   }, [location]);
 
-  const { data: camps = [], isLoading, error } = useQuery<Camp[]>({
+  const { data, isLoading, error } = useQuery<Camp[]>({
     queryKey: ["/api/camps"],
   });
+
+  const camps = Array.isArray(data) ? data : [];
 
   const uniqueLocations = useMemo(() => {
     const cities = camps

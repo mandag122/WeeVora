@@ -29,7 +29,8 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
+    const url = queryKey.join("/") as string;
+    const res = await fetch(url, {
       credentials: "include",
     });
 
@@ -37,8 +38,29 @@ export const getQueryFn: <T>(options: {
       return null;
     }
 
-    await throwIfResNotOk(res);
-    return await res.json();
+    if (!res.ok) {
+      const text = (await res.text()) || res.statusText;
+      if (queryKey[0] === "/api/camps" && queryKey.length === 1) {
+        console.warn(`Camps API failed (${res.status}), showing empty list:`, text.slice(0, 100));
+        return [] as never;
+      }
+      if (queryKey[0] === "/api/camps" && queryKey.length === 2) {
+        console.warn(`Camp detail API failed (${res.status}), skipping:`, text.slice(0, 80));
+        return null as never;
+      }
+      if (queryKey[0] === "/api/camps" && queryKey.length >= 3) {
+        console.warn(`Camp sessions/similar API failed (${res.status}), showing empty:`, text.slice(0, 80));
+        return [] as never;
+      }
+      throw new Error(`${res.status}: ${text}`);
+    }
+
+    const json = await res.json();
+    if (queryKey[0] === "/api/camps" && queryKey.length === 1 && !Array.isArray(json)) {
+      console.warn("Camps API returned non-array, showing empty list");
+      return [] as never;
+    }
+    return json;
   };
 
 export const queryClient = new QueryClient({

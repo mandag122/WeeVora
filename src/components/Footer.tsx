@@ -6,9 +6,11 @@ import { SiInstagram, SiFacebook } from "react-icons/si";
 import type { Camp } from "@shared/schema";
 
 export function Footer() {
-  const { data: camps = [] } = useQuery<Camp[]>({
+  const { data } = useQuery<Camp[]>({
     queryKey: ["/api/camps"]
   });
+
+  const camps = Array.isArray(data) ? data : [];
 
   const availableCities = useMemo(() => {
     const cities = camps
