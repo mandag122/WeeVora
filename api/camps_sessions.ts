@@ -1,8 +1,8 @@
 /**
- * Vercel handler for GET /api/camps_sessions?slug=:slug (invoked via rewrite from /api/camps/:slug/sessions).
+ * Vercel handler for GET /api/camps_sessions?slug=:slug
+ * Self-contained (no shared imports) so Vercel bundles it reliably.
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getCamps } from "../lib/vercel-camps";
 
 interface RegistrationOptionResponse {
   id: string;
@@ -85,6 +85,43 @@ async function fetchRegistrationOptions(): Promise<RegistrationOptionResponse[]>
   return results;
 }
 
+function generateSlug(name: string, id: string): string {
+  const baseSlug = (name || "").toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
+  return baseSlug || id;
+}
+function parseAgeGroup(ageGroup: string | undefined): { min: number | null; max: number | null } {
+  if (!ageGroup) return { min: null, max: null };
+  const match = ageGroup.match(/(\d+)\s*-\s*(\d+)/);
+  if (match) return { min: parseInt(match[1], 10), max: parseInt(match[2], 10) };
+  const single = ageGroup.match(/(\d+)\+?/);
+  if (single) return { min: parseInt(single[1], 10), max: null };
+  return { min: null, max: null };
+}
+async function getCamps(): Promise<{ id: string; slug: string }[]> {
+  const key = process.env.AIRTABLE_API_KEY;
+  const base = process.env.AIRTABLE_BASE_ID;
+  const table = process.env.AIRTABLE_TABLE_NAME || "Camps";
+  if (!key || !base) return [];
+  const allRecords: AirtableRecord[] = [];
+  let offset: string | undefined;
+  do {
+    const url = new URL(`https://api.airtable.com/v0/${base}/${encodeURIComponent(table)}`);
+    if (offset) url.searchParams.set("offset", offset);
+    const r = await fetch(url.toString(), { headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" } });
+    if (!r.ok) return [];
+    const data = (await r.json()) as { records?: AirtableRecord[]; offset?: string };
+    allRecords.push(...(data.records || []));
+    offset = data.offset;
+  } while (offset);
+  const ages = allRecords.map((r) => parseAgeGroup(r.fields?.["Age Group"] as string | undefined));
+  return allRecords.map((record, index) => {
+    const fields = record.fields || {};
+    const age = ages[index] ?? { min: null, max: null };
+    const name = (fields["Camp Name"] as string) || "Unnamed Camp";
+    return { id: record.id, slug: generateSlug(name, record.id) };
+  });
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<VercelResponse | void> {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -96,9 +133,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   try {
     const camps = await getCamps();
     const camp = camps.find((c) => c.slug === slug) ?? null;
-    if (!camp) {
-      return res.status(404).json({ error: "Camp not found" });
-    }
+    if (!camp) return res.status(404).json({ error: "Camp not found" });
     const allOptions = await fetchRegistrationOptions();
     const sessions = allOptions.filter((s) => s.campId === camp.id);
     return res.status(200).json(sessions);
