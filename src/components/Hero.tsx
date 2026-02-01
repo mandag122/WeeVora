@@ -21,7 +21,7 @@ export function Hero() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
           <h1 className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl text-eggplant mb-4 leading-tight tracking-tight">
-            Never miss registration again
+            Weave together your perfect summer
           </h1>
           <p className="text-lg md:text-xl text-foreground/80 mb-8 leading-relaxed max-w-2xl">
             Your copilot for summer camps, activities, and keeping the kids busy.
