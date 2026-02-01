@@ -56,6 +56,7 @@ export function Footer() {
                   href={`/camps?location=${encodeURIComponent(city)}`}
                   className="text-white/70 hover:text-gold text-sm transition-colors"
                   data-testid={`link-city-${city.toLowerCase().replace(/\s+/g, '-')}`}
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >
                   {city}
                 </Link>

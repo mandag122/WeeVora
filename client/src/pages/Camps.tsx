@@ -40,6 +40,7 @@ export default function Camps() {
     const locationParam = params.get("location");
     if (locationParam) {
       setFilters(prev => ({ ...prev, locations: [locationParam] }));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [location]);
 
@@ -56,10 +57,12 @@ export default function Camps() {
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleClearFilters = () => {
     setFilters(defaultFilters);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   
