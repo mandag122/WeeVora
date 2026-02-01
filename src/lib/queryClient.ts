@@ -76,10 +76,18 @@ export const getQueryFn: <T>(options: {
         console.warn(`Camp sessions/similar API failed (${res.status}), showing empty:`, text.slice(0, 80));
         return [] as never;
       }
+      if (queryKey[0] === "/api/camp-ids-with-option-name") {
+        console.warn(`Camp IDs with option name failed (${res.status}), using empty list:`, text.slice(0, 80));
+        return [] as never;
+      }
       throw new Error(`${res.status}: ${text}`);
     }
 
     const json = await res.json();
+    if (queryKey[0] === "/api/camp-ids-with-option-name" && !Array.isArray(json)) {
+      console.warn("Camp IDs with option name returned non-array, using empty list");
+      return [] as never;
+    }
     if (queryKey[0] === "/api/camps" && queryKey.length === 1 && !Array.isArray(json)) {
       console.warn("Camps API returned non-array, showing empty list");
       return [] as never;

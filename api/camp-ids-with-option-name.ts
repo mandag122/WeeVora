@@ -10,9 +10,11 @@ interface AirtableRecord {
 }
 
 function getCampIdFromLink(fields: Record<string, unknown>): string {
-  const raw = fields.Camps?.[0];
-  if (typeof raw === "string") return raw;
-  if (raw && typeof raw === "object" && "id" in raw) return (raw as { id: string }).id ?? "";
+  for (const key of ["Camps", "Camps 2", "Camp"]) {
+    const raw = (fields[key] as unknown[])?.[0];
+    if (typeof raw === "string") return raw;
+    if (raw && typeof raw === "object" && "id" in raw) return (raw as { id: string }).id ?? "";
+  }
   return "";
 }
 
