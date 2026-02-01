@@ -122,10 +122,10 @@ function CalendarGrid({
               </span>
               {daySessions.length > 0 && (
                 <div className={`mt-0.5 space-y-0.5 ${compact ? "" : "sm:space-y-1"}`}>
-                  {daySessions.slice(0, compact ? 1 : 2).map((session) => (
+                  {daySessions.slice(0, compact ? 2 : 2).map((session) => (
                     <div
                       key={session.sessionId}
-                      className={`${compact ? "h-1 sm:h-1.5" : "h-1.5 sm:h-auto sm:px-1 sm:py-0.5"} rounded text-[8px] sm:text-[10px] truncate`}
+                      className={`${compact ? "h-2 sm:h-2.5 print:h-3" : "h-1.5 sm:h-auto sm:px-1 sm:py-0.5"} rounded text-[8px] sm:text-[10px] truncate`}
                       style={{ backgroundColor: session.color || "#5B2C6F" }}
                       title={`${session.campName}: ${session.sessionName}`}
                     >
@@ -136,9 +136,9 @@ function CalendarGrid({
                       )}
                     </div>
                   ))}
-                  {daySessions.length > (compact ? 1 : 2) && (
+                  {daySessions.length > (compact ? 2 : 2) && (
                     <span className="text-[8px] sm:text-[10px] text-muted-foreground">
-                      +{daySessions.length - (compact ? 1 : 2)}
+                      +{daySessions.length - (compact ? 2 : 2)}
                     </span>
                   )}
                 </div>
