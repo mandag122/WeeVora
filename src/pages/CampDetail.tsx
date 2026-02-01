@@ -114,7 +114,7 @@ export default function CampDetail() {
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camp-detail">
       <Header />
-      <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-20 md:pb-8">
         <Breadcrumb className="mb-4 sm:mb-6 text-sm">
           <BreadcrumbList>
             <BreadcrumbItem>

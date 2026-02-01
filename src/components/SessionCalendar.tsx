@@ -907,6 +907,17 @@ export function SessionCalendar({
           months={summerMonths}
         />
       </div>
+
+      {/* Mobile-only sticky button: opens calendar popout */}
+      <Button
+        type="button"
+        className="fixed bottom-0 left-0 right-0 z-50 rounded-none h-14 text-base font-semibold bg-eggplant hover:bg-eggplant-light text-white shadow-lg md:hidden"
+        onClick={() => setIsExpanded(true)}
+        data-testid="button-mobile-view-calendar"
+      >
+        <Calendar className="w-5 h-5 mr-2" />
+        View Calendar
+      </Button>
     </>
   );
 }
