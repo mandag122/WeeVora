@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
 import { ArrowLeft, MapPin, Clock, Users, Calendar, DollarSign, ExternalLink, Info } from "lucide-react";
@@ -12,14 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import type { Camp, RegistrationOption, SelectedSession, DateRange } from "@shared/schema";
+import type { Camp, RegistrationOption } from "@shared/schema";
 import { categoryColors, type CampCategory } from "@shared/schema";
+import { useSessionContext } from "@/context/SessionContext";
 import { format, parseISO, isPast, isFuture } from "date-fns";
-
-const defaultDateRange: DateRange = {
-  start: "2026-06-01",
-  end: "2026-08-31"
-};
 
 function getRegistrationStatus(camp: Camp) {
   if (camp.registrationCloses && isPast(parseISO(camp.registrationCloses))) {
@@ -43,12 +39,11 @@ export default function CampDetail() {
   const [, params] = useRoute("/camps/:slug");
   const slug = params?.slug;
   
+  const { selectedSessions, dateRange, toggleSession, removeSession, setDateRange } = useSessionContext();
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
-  
-  const [selectedSessions, setSelectedSessions] = useState<SelectedSession[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange>(defaultDateRange);
 
   const { data: camp, isLoading: campLoading, error: campError } = useQuery<Camp>({
     queryKey: ["/api/camps", slug],
@@ -64,20 +59,6 @@ export default function CampDetail() {
     queryKey: ["/api/camps", slug, "similar"],
     enabled: !!slug
   });
-
-  const handleToggleSession = (session: SelectedSession) => {
-    setSelectedSessions(prev => {
-      const exists = prev.some(s => s.sessionId === session.sessionId);
-      if (exists) {
-        return prev.filter(s => s.sessionId !== session.sessionId);
-      }
-      return [...prev, session];
-    });
-  };
-
-  const handleRemoveSession = (sessionId: string) => {
-    setSelectedSessions(prev => prev.filter(s => s.sessionId !== sessionId));
-  };
 
   if (campLoading) {
     return (
@@ -322,7 +303,7 @@ export default function CampDetail() {
                 camp={camp}
                 sessions={sessions}
                 selectedSessions={selectedSessions}
-                onToggleSession={handleToggleSession}
+                onToggleSession={toggleSession}
               />
             </div>
 
@@ -345,7 +326,7 @@ export default function CampDetail() {
               selectedSessions={selectedSessions}
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
-              onRemoveSession={handleRemoveSession}
+              onRemoveSession={removeSession}
             />
           </div>
         </div>

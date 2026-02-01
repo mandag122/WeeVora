@@ -8,7 +8,8 @@ import { CampFilters } from "@/components/CampFilters";
 import { SessionCalendar } from "@/components/SessionCalendar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Camp, FilterState, SelectedSession, DateRange } from "@shared/schema";
+import type { Camp, FilterState } from "@shared/schema";
+import { useSessionContext } from "@/context/SessionContext";
 import { parseISO, isPast, isFuture } from "date-fns";
 
 const defaultFilters: FilterState = {
@@ -25,19 +26,13 @@ const defaultFilters: FilterState = {
   dateEnd: null
 };
 
-const defaultDateRange: DateRange = {
-  start: "2026-06-01",
-  end: "2026-08-31"
-};
-
 type SortOption = "registration" | "name-asc" | "name-desc";
 
 export default function Camps() {
   const [location] = useLocation();
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortBy, setSortBy] = useState<SortOption>("registration");
-  const [selectedSessions, setSelectedSessions] = useState<SelectedSession[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange>(defaultDateRange);
+  const { selectedSessions, dateRange, removeSession, setDateRange } = useSessionContext();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -66,10 +61,7 @@ export default function Camps() {
     setFilters(defaultFilters);
   };
 
-  const handleRemoveSession = (sessionId: string) => {
-    setSelectedSessions(prev => prev.filter(s => s.sessionId !== sessionId));
-  };
-
+  
   const filteredCamps = useMemo(() => {
     return camps.filter(camp => {
       if (filters.search) {
@@ -240,7 +232,7 @@ export default function Camps() {
                 selectedSessions={selectedSessions}
                 dateRange={dateRange}
                 onDateRangeChange={setDateRange}
-                onRemoveSession={handleRemoveSession}
+                onRemoveSession={removeSession}
               />
             </div>
           </div>
