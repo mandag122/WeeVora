@@ -9,6 +9,7 @@ export const campInterests = [
   "Music",
   "Drama",
   "Equestrian",
+  "Multi-Activity",
   "Other"
 ] as const;
 
@@ -23,6 +24,7 @@ export const interestColors: Record<CampInterest, string> = {
   "Music": "#3D4AA3",
   "Drama": "#C2395A",
   "Equestrian": "#F9B233",
+  "Multi-Activity": "#8B5CF6",
   "Other": "#6B7280"
 };
 
