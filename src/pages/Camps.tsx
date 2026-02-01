@@ -38,13 +38,9 @@ const defaultFilters: FilterState = {
 
 type SortOption = "registration" | "name-asc" | "name-desc" | "detail";
 
-/**
- * Score: highest weight = has Registration_Options with option_name, dates_csv, price (100 pts so it always wins);
- * next = description; then rest of visible detail (1 pt each).
- */
-function getCampDetailScore(camp: Camp): number {
+/** Rest of detail score (description + other fields). Used for tiebreaker within detail / no-detail groups. */
+function getRestDetailScore(camp: Camp): number {
   let score = 0;
-  if (camp.hasRegistrationDetail) score += 100;
   const desc = camp.description?.trim() ?? "";
   if (desc.length >= 50) score += 3;
   else if (desc.length >= 20) score += 1;
@@ -62,6 +58,11 @@ function getCampDetailScore(camp: Camp): number {
   if (addl.length >= 20) score += 1;
   if (camp.campSchedule?.length) score += 1;
   return score;
+}
+
+/** True only if API says so; undefined treated as false. */
+function hasRegistrationDetail(camp: Camp): boolean {
+  return camp.hasRegistrationDetail === true;
 }
 
 export default function Camps() {
@@ -196,9 +197,15 @@ export default function Camps() {
         case "name-desc":
           return b.name.localeCompare(a.name);
         case "detail": {
-          const scoreA = getCampDetailScore(a);
-          const scoreB = getCampDetailScore(b);
-          if (scoreB !== scoreA) return scoreB - scoreA; // higher score first
+          const aHas = hasRegistrationDetail(a);
+          const bHas = hasRegistrationDetail(b);
+          if (aHas !== bHas) return bHas ? 1 : -1; // with registration detail first
+          const aRest = getRestDetailScore(a);
+          const bRest = getRestDetailScore(b);
+          if (aRest !== bRest) {
+            if (aHas) return bRest - aRest; // both have detail: more rest first
+            return aRest - bRest; // both no detail: less rest first → fullest last
+          }
           return a.name.localeCompare(b.name);
         }
         case "registration":
