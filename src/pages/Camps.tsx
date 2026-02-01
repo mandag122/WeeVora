@@ -38,25 +38,28 @@ const defaultFilters: FilterState = {
 
 type SortOption = "registration" | "name-asc" | "name-desc" | "detail";
 
-/** Score 0–N: higher = more fields filled (description, org, location, dates, etc.) */
+/**
+ * Score 0–N: highest weight = has Registration_Options with option_name, dates_csv, price;
+ * next = description; then rest of visible detail.
+ */
 function getCampDetailScore(camp: Camp): number {
   let score = 0;
+  if (camp.hasRegistrationDetail) score += 10;
+  const desc = camp.description?.trim() ?? "";
+  if (desc.length >= 50) score += 3;
+  else if (desc.length >= 20) score += 1;
   if (camp.organization?.trim()) score += 1;
-  if (camp.description?.trim()) score += 2; // description is high value
   if (camp.categories?.length) score += 1;
   if (camp.ageMin != null || camp.ageMax != null) score += 1;
   if (camp.locationCity?.trim()) score += 1;
   if (camp.locationAddress?.trim()) score += 1;
   if (camp.priceMin != null || camp.priceMax != null) score += 1;
-  if (camp.registrationOpens?.trim()) score += 1;
-  if (camp.registrationCloses?.trim()) score += 1;
-  if (camp.seasonStart?.trim()) score += 1;
-  if (camp.seasonEnd?.trim()) score += 1;
+  if (camp.websiteUrl?.trim()) score += 1;
   if (camp.campHours?.trim()) score += 1;
   if (camp.extendedHoursInfo?.trim()) score += 1;
   if (camp.siblingDiscountNote?.trim()) score += 1;
-  if (camp.websiteUrl?.trim()) score += 1;
-  if (camp.additionalInfo?.trim()) score += 1;
+  const addl = camp.additionalInfo?.trim() ?? "";
+  if (addl.length >= 20) score += 1;
   if (camp.campSchedule?.length) score += 1;
   return score;
 }

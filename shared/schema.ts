@@ -87,7 +87,9 @@ export const campSchema = z.object({
   websiteUrl: z.string().nullable(),
   color: z.string().nullable(),
   additionalInfo: z.string().nullable(),
-  campSchedule: z.array(z.string()).default([])
+  campSchedule: z.array(z.string()).default([]),
+  /** True if camp has at least one Registration_Options row with option_name, dates_csv, price filled. Used for "Most detail first" sort. */
+  hasRegistrationDetail: z.boolean().optional()
 });
 
 export type Camp = z.infer<typeof campSchema>;
