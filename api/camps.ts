@@ -2,82 +2,46 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const TABLE_NAME = "Camps";
 
-type AirtableRecord = {
-  id: string;
-  createdTime: string;
-  fields: Record<string, unknown>;
-};
-
-type AirtableListResponse = {
-  records: AirtableRecord[];
-  offset?: string;
-};
-
-function requiredEnv(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing environment variable: ${name}`);
-  return v;
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  return value;
 }
 
-function setCommonHeaders(res: VercelResponse) {
-  // Same-origin by default; if you need cross-origin, uncomment the next line:
-  // res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-}
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse
+) {
+  if (req.method !== "GET") {
+    res.setHeader("Allow", ["GET"]);
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-async function airtableListAll(tableName: string): Promise<AirtableRecord[]> {
-  const apiKey = requiredEnv("AIRTABLE_API_KEY");
-  const baseId = requiredEnv("AIRTABLE_BASE_ID");
+  try {
+    const AIRTABLE_API_KEY = requireEnv("AIRTABLE_API_KEY");
+    const AIRTABLE_BASE_ID = requireEnv("AIRTABLE_BASE_ID");
 
-  const records: AirtableRecord[] = [];
-  let offset: string | undefined;
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(
+      TABLE_NAME
+    )}`;
 
-  do {
-    const url = new URL(
-      `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`
-    );
-    url.searchParams.set("pageSize", "100");
-    if (offset) url.searchParams.set("offset", offset);
-
-    const resp = await fetch(url.toString(), {
+    const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
       },
     });
 
-    if (!resp.ok) {
-      const text = await resp.text();
-      throw new Error(`Airtable list failed (${resp.status}): ${text}`);
+    if (!response.ok) {
+      const text = await response.text();
+      return res.status(response.status).json({ error: text });
     }
 
-    const data = (await resp.json()) as AirtableListResponse;
-    records.push(...data.records);
-    offset = data.offset;
-  } while (offset);
-
-  return records;
-}
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  try {
-    setCommonHeaders(res);
-
-    if (req.method !== "GET") {
-      res.setHeader("Allow", "GET");
-      return res.status(405).json({ error: "Method Not Allowed" });
-    }
-
-    const records = await airtableListAll(TABLE_NAME);
-
-    return res.status(200).json({
-      records: records.map((r) => ({
-        id: r.id,
-        createdTime: r.createdTime,
-        fields: r.fields,
-      })),
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return res.status(500).json({ error: message });
+    const data = await response.json();
+    return res.status(200).json(data.records);
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
   }
 }
