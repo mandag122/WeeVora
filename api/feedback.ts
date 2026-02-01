@@ -17,6 +17,13 @@ function requiredEnv(name: string): string {
   return v;
 }
 
+function setCommonHeaders(res: VercelResponse) {
+  // If your contact form is on the same domain, you don't need CORS.
+  // If you later post from another domain, uncomment:
+  // res.setHeader("Access-Control-Allow-Origin", "https://weevora.com");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+}
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -27,48 +34,32 @@ function asString(v: unknown): string | undefined {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
+    setCommonHeaders(res);
+
     if (req.method !== "POST") {
       res.setHeader("Allow", "POST");
       return res.status(405).json({ error: "Method Not Allowed" });
-    }
-
-    // Basic origin protection (adjust to your domains)
-    const origin = req.headers.origin;
-    const allowedOrigins = new Set([
-      "https://weevora.com",
-      "https://www.weevora.com",
-      // add your preview domains if needed
-    ]);
-    if (origin && !allowedOrigins.has(origin)) {
-      return res.status(403).json({ error: "Forbidden origin" });
     }
 
     if (!isPlainObject(req.body)) {
       return res.status(400).json({ error: "Body must be a JSON object." });
     }
 
-    const body = req.body;
-
-    // Honeypot: your form can include <input name="website" style="display:none" />
-    // Bots often fill it; humans won't.
-    const honeypot = asString(body["website"]);
+    // Honeypot (optional): if your form includes a hidden "website" field, bots often fill it.
+    const honeypot = asString(req.body["website"]);
     if (honeypot) {
-      return res.status(200).json({ ok: true }); // pretend success
+      // Pretend success (reduces bot retries)
+      return res.status(200).json({ ok: true });
     }
 
-    // Accept either "friendly" keys or exact Airtable field names
-    const name = asString(body["name"]) ?? asString(body[F_NAME]);
-    const email = asString(body["email"]) ?? asString(body[F_EMAIL]);
-    const reason = asString(body["reason"]) ?? asString(body[F_REASON]);
-    const message = asString(body["message"]) ?? asString(body[F_MESSAGE]);
+    // Friendly keys
+    const name = asString(req.body["name"]);
+    const email = asString(req.body["email"]);
+    const reason = asString(req.body["reason"]);
+    const message = asString(req.body["message"]);
 
-    // Optional: allow linking to a Camp record (Airtable record id like "recXXXX...")
-    const relatedCampRecId =
-      asString(body["relatedCampId"]) ??
-      (Array.isArray(body[F_RELATED_CAMP]) ? undefined : asString(body[F_RELATED_CAMP]));
-
-    // Optional status (usually you might *not* want the public form setting this)
-    const status = asString(body[F_STATUS]) ?? asString(body["status"]);
+    // Optional: allow linking to a Camp record id
+    const relatedCampId = asString(req.body["relatedCampId"]);
 
     if (!message || (!email && !name)) {
       return res.status(400).json({
@@ -84,17 +75,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (name) fieldsToWrite[F_NAME] = name;
     if (email) fieldsToWrite[F_EMAIL] = email;
     if (reason) fieldsToWrite[F_REASON] = reason;
+
+    // Optional status (you can remove this if you don't want public setting it)
+    const status = asString(req.body["status"]);
     if (status) fieldsToWrite[F_STATUS] = status;
 
-    // Related Camp is a multipleRecordLinks field -> must be an array of record IDs
-    if (relatedCampRecId) {
-      fieldsToWrite[F_RELATED_CAMP] = [relatedCampRecId];
-    }
+    // Linked record field expects an array of record IDs
+    if (relatedCampId) fieldsToWrite[F_RELATED_CAMP] = [relatedCampId];
 
     const apiKey = requiredEnv("AIRTABLE_API_KEY");
     const baseId = requiredEnv("AIRTABLE_BASE_ID");
 
-    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}`;
+    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(
+      TABLE_NAME
+    )}`;
 
     const resp = await fetch(url, {
       method: "POST",
