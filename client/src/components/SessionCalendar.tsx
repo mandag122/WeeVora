@@ -305,12 +305,20 @@ function PrintableCalendar({
   selectedSessions: SelectedSession[];
   months: Date[];
 }) {
+  const estimatedTotal = selectedSessions.reduce((sum, s) => sum + (s.price ?? 0), 0);
+  
   return (
     <div className="p-4 sm:p-8 print:p-4" id="printable-calendar">
-      <div className="text-center mb-6 sm:mb-8">
+      <div className="text-center mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-eggplant mb-2">Summer Camp Schedule</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
           {format(months[0], "MMMM yyyy")} - {format(months[months.length - 1], "MMMM yyyy")}
+        </p>
+      </div>
+
+      <div className="mb-4 sm:mb-6 p-3 bg-gold/10 border-2 border-gold rounded-lg">
+        <p className="text-sm font-semibold text-gold-dark text-center">
+          This is a planning tool only. All registrations and payments must be made directly on each camp's website.
         </p>
       </div>
 
@@ -338,19 +346,33 @@ function PrintableCalendar({
               className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-muted/30 rounded-lg"
             >
               <div 
-                className="w-2 h-2 sm:w-3 sm:h-3 rounded-full shrink-0"
+                className="w-3 h-3 sm:w-4 sm:h-4 rounded-full shrink-0 border border-black/10"
                 style={{ backgroundColor: session.color || "#5B2C6F" }}
               />
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm sm:text-base truncate">{session.campName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-sm sm:text-base">{session.campName}</p>
+                </div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{session.sessionName}</p>
               </div>
-              <div className="text-xs sm:text-sm text-muted-foreground shrink-0">
-                {format(parseISO(session.startDate), "MMM d")} - {format(parseISO(session.endDate), "MMM d")}
+              <div className="text-right shrink-0">
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  {format(parseISO(session.startDate), "MMM d")} - {format(parseISO(session.endDate), "MMM d")}
+                </div>
+                {session.price !== null && session.price !== undefined && (
+                  <div className="text-sm font-semibold text-eggplant">${session.price}</div>
+                )}
               </div>
             </div>
           ))}
         </div>
+        
+        {estimatedTotal > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t-2 border-dashed">
+            <span className="text-base font-semibold">Estimated Total</span>
+            <span className="text-lg font-bold text-eggplant">${estimatedTotal.toLocaleString()}</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -685,12 +707,14 @@ export function SessionCalendar({
                       style={{ backgroundColor: session.color || "#5B2C6F" }}
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-medium truncate">{session.campName}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs sm:text-sm font-medium truncate">{session.campName}</p>
+                        {session.price !== null && session.price !== undefined && (
+                          <span className="text-xs font-semibold text-eggplant shrink-0">${session.price}</span>
+                        )}
+                      </div>
                       <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                         {session.sessionName} &bull; {format(parseISO(session.startDate), "MMM d")} - {format(parseISO(session.endDate), "MMM d")}
-                        {session.price !== null && session.price !== undefined && (
-                          <> &bull; ${session.price}</>
-                        )}
                       </p>
                     </div>
                     <Button
@@ -704,8 +728,27 @@ export function SessionCalendar({
                     </Button>
                   </div>
                 ))}
+                
+                {(() => {
+                  const total = selectedSessions.reduce((sum, s) => sum + (s.price ?? 0), 0);
+                  return total > 0 ? (
+                    <div className="flex items-center justify-between pt-2 mt-2 border-t border-dashed">
+                      <span className="text-xs sm:text-sm font-medium text-muted-foreground">Estimated Total</span>
+                      <span className="text-sm sm:text-base font-bold text-eggplant">${total.toLocaleString()}</span>
+                    </div>
+                  ) : null;
+                })()}
               </div>
             )}
+          </div>
+
+          <div className="border-t pt-3 mt-3">
+            <div className="flex items-start gap-2 p-2 bg-gold/10 border border-gold/30 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-gold-dark shrink-0 mt-0.5" />
+              <p className="text-[10px] sm:text-xs text-gold-dark leading-relaxed">
+                <strong>Planning Tool Only:</strong> WeeVora helps you organize and compare camps. All registrations and payments must be made directly on each camp's website.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
