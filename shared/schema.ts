@@ -88,7 +88,7 @@ export const campSchema = z.object({
   color: z.string().nullable(),
   additionalInfo: z.string().nullable(),
   campSchedule: z.array(z.string()).default([]),
-  /** True if camp has at least one Registration_Options row with option_name, dates_csv, price filled. Used for "Most detail first" sort. */
+  /** True if camp has at least one Registration_Options row with option_name filled. Used for "Most detail first" sort. */
   hasRegistrationDetail: z.boolean().optional()
 });
 

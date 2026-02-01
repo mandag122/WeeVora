@@ -149,9 +149,7 @@ export async function fetchCamps(): Promise<Camp[]> {
       const campId = rec.fields.Camps?.[0];
       const f = rec.fields as Record<string, unknown>;
       const optionName = String(f?.option_name ?? f?.["Option Name"] ?? "").trim();
-      const datesCsv = String(f?.dates_csv ?? f?.["Dates CSV"] ?? "").trim();
-      const price = String(f?.price ?? f?.Price ?? "").trim();
-      if (campId && optionName && datesCsv && price) {
+      if (campId && optionName) {
         campIdsWithRegistrationDetail.add(campId);
       }
     }
