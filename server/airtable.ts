@@ -41,7 +41,7 @@ interface AirtableCampFields {
   "Additional Info"?: string;
   "camp_id"?: number;
   "Registration_Options"?: string[];
-  "Camp schedule"?: string[];
+  "Schedule Availability"?: string[];
   "hide"?: boolean;
   "Hide"?: boolean;
 }
@@ -188,7 +188,7 @@ export async function fetchCamps(): Promise<Camp[]> {
       websiteUrl: record.fields.Website || null,
       color: record.fields.Color || null,
       additionalInfo: record.fields["Additional Info"] || null,
-      campSchedule: record.fields["Camp schedule"] || [],
+      campSchedule: record.fields["Schedule Availability"] || [],
       hasRegistrationDetail: campIdsWithRegistrationDetail.has(record.id)
     }));
   } catch (error) {
