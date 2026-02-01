@@ -11,6 +11,8 @@ import CampDetail from "@/pages/CampDetail";
 import About from "@/pages/About";
 import HowItWorks from "@/pages/HowItWorks";
 import Contact from "@/pages/Contact";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
 import NotFound from "@/pages/not-found";
 
 const GA_MEASUREMENT_ID = "G-3LK35KT7RL";
@@ -46,6 +48,8 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/how-it-works" component={HowItWorks} />
       <Route path="/contact" component={Contact} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
     </>
