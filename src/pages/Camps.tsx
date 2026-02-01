@@ -183,8 +183,10 @@ export default function Camps() {
         const regCloses = camp.registrationCloses ? parseISO(camp.registrationCloses) : null;
 
         if (filters.registrationStatus === "open") {
-          if (!regOpens || !regCloses) return false;
-          if (isFuture(regOpens) || isPast(regCloses)) return false;
+          // Match CampCard "Registration Open" badge: opens in past, not closed, not waitlist
+          if (!regOpens || !isPast(regOpens)) return false;
+          if (regCloses && isPast(regCloses)) return false;
+          if (camp.waitlistOnly) return false;
         }
         if (filters.registrationStatus === "upcoming") {
           if (!regOpens || !isFuture(regOpens)) return false;
@@ -199,17 +201,18 @@ export default function Camps() {
     const sorted = [...filteredCamps];
 
     sorted.sort((a, b) => {
+      // First: camps with option_name in Registration_Options above camps without (so YMCA with options is never below Kamins/On Course without)
+      const aHas = campHasOptionName(a.id, idsWithOptionNameSet);
+      const bHas = campHasOptionName(b.id, idsWithOptionNameSet);
+      if (aHas && !bHas) return -1;
+      if (!aHas && bHas) return 1;
+      // Same group: respect the chosen sort (Registration Date, Name, etc.)
       switch (sortBy) {
         case "name-asc":
           return a.name.localeCompare(b.name);
         case "name-desc":
           return b.name.localeCompare(a.name);
         case "detail": {
-          const aHas = campHasOptionName(a.id, idsWithOptionNameSet);
-          const bHas = campHasOptionName(b.id, idsWithOptionNameSet);
-          // Camp with option_name in Registration_Options always above camp without
-          if (aHas && !bHas) return -1;
-          if (!aHas && bHas) return 1;
           const aRest = getRestDetailScore(a);
           const bRest = getRestDetailScore(b);
           if (aRest !== bRest) return bRest - aRest;
