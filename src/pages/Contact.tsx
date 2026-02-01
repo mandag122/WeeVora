@@ -227,7 +227,7 @@ export default function Contact() {
                 <Mail className="w-4 h-4" />
                 Or email us directly at{" "}
                 <a 
-                  href="mailto:hello@weevora.com" 
+                  href="mailto:support@weevora.com" 
                   className="text-eggplant hover:underline"
                 >
                   hello@weevora.com
