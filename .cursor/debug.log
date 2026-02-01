@@ -1,0 +1,187 @@
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955164330,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955164335,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955164739,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955185971,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955185973,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955185977,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955185978,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955186027,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955314822,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955314827,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955315164,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955316867,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955316868,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955316869,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955316870,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955316887,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955411251,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955411256,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955411592,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955413193,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955413195,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955413197,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955413196,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955413233,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955418152,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955418154,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955418155,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955418155,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955418169,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955484842,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955484848,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955485182,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955486817,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955486818,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955486820,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955486819,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955486852,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955602791,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955602829,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955602823,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955602825,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955602826,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955656907,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955656912,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955657250,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955658996,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955658997,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955658998,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955658999,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955659011,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955670064,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955670066,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955670067,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955670069,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955670078,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955730594,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955730599,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955730935,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955732565,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955732569,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955732570,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955732571,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955732582,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955796998,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955797003,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955797354,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955798960,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955798962,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955798963,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955798967,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955798975,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955861961,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955861966,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955862317,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955863961,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955863963,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":false,"hasBase":false},"timestamp":1769955863966,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955863967,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955863976,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769955904377,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769955904382,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769955904729,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955906400,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955906400,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769955906401,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955906607,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955906611,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769955914978,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769955914978,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769955914979,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769955915168,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769955915171,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769956546339,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769956546344,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769956546698,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769956548670,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769956548672,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769956548673,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769956548881,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769956548885,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769956838508,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769956838513,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769956838873,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769956840516,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769956840517,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769956840518,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769956840710,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769956840712,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769956863728,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769956863730,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769956863731,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769956863919,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769956863921,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769956988224,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769956988228,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769956988576,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769956990255,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769956990257,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769956990258,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769956990457,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769956990460,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769957079455,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769957079460,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769957079823,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769957081668,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957081669,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957081670,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769957081866,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769957081870,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769957315705,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957315708,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957315709,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769957315903,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769957315905,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769957317881,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957317883,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957317883,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769957317935,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769957317937,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769957355550,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957355552,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957355553,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769957355727,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769957355729,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769957357241,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957357244,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957357245,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":0},"timestamp":1769957357292,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769957357295,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/index.ts:before registerRoutes","message":"Registering routes","data":{},"timestamp":1769957364428,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"server/index.ts:after registerRoutes","message":"Routes registered","data":{},"timestamp":1769957364433,"sessionId":"debug-session","hypothesisId":"D"}
+{"location":"server/index.ts:listen","message":"Server listening","data":{"port":5000},"timestamp":1769957364786,"sessionId":"debug-session","hypothesisId":"A,D"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps","origin":"http://localhost:5000","queryKey":["/api/camps"]},"timestamp":1769957366269,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957366271,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957366274,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":37},"timestamp":1769957368209,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps","status":200,"ok":true},"timestamp":1769957368212,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps/good-times-summer-day-camp","origin":"http://localhost:5000","queryKey":["/api/camps","good-times-summer-day-camp"]},"timestamp":1769957398257,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps/good-times-summer-day-camp/similar","origin":"http://localhost:5000","queryKey":["/api/camps","good-times-summer-day-camp","similar"]},"timestamp":1769957398258,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps/good-times-summer-day-camp/sessions","origin":"http://localhost:5000","queryKey":["/api/camps","good-times-summer-day-camp","sessions"]},"timestamp":1769957398258,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957398464,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957398572,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957398575,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps/good-times-summer-day-camp","status":200,"ok":true},"timestamp":1769957398828,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957398881,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps/good-times-summer-day-camp/sessions","status":200,"ok":true},"timestamp":1769957398946,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps/good-times-summer-day-camp/similar","status":200,"ok":true},"timestamp":1769957398993,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps/canlan-summer-camps","origin":"http://localhost:5000","queryKey":["/api/camps","canlan-summer-camps"]},"timestamp":1769957415750,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps/canlan-summer-camps/sessions","origin":"http://localhost:5000","queryKey":["/api/camps","canlan-summer-camps","sessions"]},"timestamp":1769957415751,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957415755,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API request start","data":{"url":"/api/camps/canlan-summer-camps/similar","origin":"http://localhost:5000","queryKey":["/api/camps","canlan-summer-camps","similar"]},"timestamp":1769957415751,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957416069,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957416072,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps/canlan-summer-camps","status":200,"ok":true},"timestamp":1769957416087,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957416315,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps/canlan-summer-camps/sessions","status":200,"ok":true},"timestamp":1769957416401,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"queryClient.ts:getQueryFn","message":"API response","data":{"url":"/api/camps/canlan-summer-camps/similar","status":200,"ok":true},"timestamp":1769957416448,"sessionId":"debug-session","hypothesisId":"A,C,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957417417,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957417416,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957417419,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957417420,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957417423,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":37},"timestamp":1769957417535,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957417628,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"Handler entered","data":{},"timestamp":1769957690123,"sessionId":"debug-session","hypothesisId":"D,E"}
+{"location":"server/airtable.ts:fetchCamps","message":"fetchCamps entry","data":{"hasKey":true,"hasBase":true},"timestamp":1769957690126,"sessionId":"debug-session","hypothesisId":"B,E"}
+{"location":"server/routes.ts:GET /api/camps","message":"fetchCamps returned","data":{"count":37},"timestamp":1769957692052,"sessionId":"debug-session","hypothesisId":"E"}
