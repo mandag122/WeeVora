@@ -222,25 +222,15 @@ export default function Contact() {
               </Card>
             )}
 
-            <div className="mt-12 text-center space-y-2">
-              <p className="text-muted-foreground flex flex-wrap items-center justify-center gap-2">
-                <Mail className="w-4 h-4 shrink-0" />
+            <div className="mt-12 text-center">
+              <p className="text-muted-foreground flex items-center justify-center gap-2">
+                <Mail className="w-4 h-4" />
                 Or email us at{" "}
                 <a
                   href="mailto:support@weevora.com"
                   className="text-eggplant hover:underline"
                 >
                   support@weevora.com
-                </a>
-              </p>
-              <p className="text-sm text-muted-foreground">
-                <a
-                  href="https://mail.google.com/mail/?view=cm&fs=1&to=support@weevora.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-eggplant hover:underline"
-                >
-                  Open in Gmail
                 </a>
               </p>
             </div>
