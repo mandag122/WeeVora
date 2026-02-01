@@ -9,6 +9,13 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +29,14 @@ const contactSchema = z.object({
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
+
+const SUBJECT_OPTIONS = [
+  "General Question",
+  "Suggest a Camp",
+  "Report Incorrect Info",
+  "Other",
+  "Remove my camp from WeeVora",
+] as const;
 
 export default function Contact() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -145,13 +160,23 @@ export default function Contact() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Subject</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="What's this about?" 
-                                {...field}
-                                data-testid="input-subject"
-                              />
-                            </FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value || ""}
+                            >
+                              <FormControl>
+                                <SelectTrigger data-testid="input-subject">
+                                  <SelectValue placeholder="Select a topic" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {SUBJECT_OPTIONS.map((option) => (
+                                  <SelectItem key={option} value={option}>
+                                    {option}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
