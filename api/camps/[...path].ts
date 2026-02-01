@@ -1,9 +1,9 @@
 /**
- * Vercel serverless handler for GET /api/camps/:slug/sessions.
- * Returns registration options (sessions) for the camp.
+ * Vercel catch-all for /api/camps/:slug, /api/camps/:slug/sessions, /api/camps/:slug/similar.
+ * Vercel often doesn't create separate functions for [slug] in subfolders; this ensures all work.
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getCamps } from "../index";
+import { getCamps } from "./index";
 
 interface RegistrationOptionResponse {
   id: string;
@@ -99,24 +99,67 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const slug = req.query.slug as string | undefined;
-  if (!slug) {
-    return res.status(400).json({ error: "Missing slug" });
+  const pathRaw = req.query.path;
+  const pathSegments = Array.isArray(pathRaw) ? pathRaw : pathRaw ? [pathRaw] : [];
+  if (pathSegments.length === 0) {
+    return res.status(404).json({ error: "Not found" });
   }
+
+  const slug = pathSegments[0];
+  const sub = pathSegments[1];
 
   try {
     const camps = await getCamps();
     const camp = camps.find((c) => c.slug === slug) ?? null;
+
     if (!camp) {
       return res.status(404).json({ error: "Camp not found" });
     }
-    const allOptions = await fetchRegistrationOptions();
-    const sessions = allOptions.filter((s) => s.campId === camp.id);
-    return res.status(200).json(sessions);
+
+    // /api/camps/:slug → single camp
+    if (pathSegments.length === 1) {
+      return res.status(200).json(camp);
+    }
+
+    // /api/camps/:slug/sessions
+    if (pathSegments.length === 2 && sub === "sessions") {
+      const allOptions = await fetchRegistrationOptions();
+      const sessions = allOptions.filter((s) => s.campId === camp.id);
+      return res.status(200).json(sessions);
+    }
+
+    // /api/camps/:slug/similar
+    if (pathSegments.length === 2 && sub === "similar") {
+      const limit = Math.min(4, 20);
+      const similar = camps
+        .filter((c) => c.id !== camp.id)
+        .filter((c) => {
+          const hasOverlappingCategory = c.categories.some((cat) => camp.categories.includes(cat));
+          const hasOverlappingAge =
+            c.ageMin != null &&
+            c.ageMax != null &&
+            camp.ageMin != null &&
+            camp.ageMax != null &&
+            c.ageMin <= (camp.ageMax ?? 18) &&
+            c.ageMax >= (camp.ageMin ?? 0);
+          return hasOverlappingCategory || hasOverlappingAge;
+        })
+        .sort((a, b) => {
+          const aHasReg = !!a.registrationOpens || !!a.registrationCloses;
+          const bHasReg = !!b.registrationOpens || !!b.registrationCloses;
+          if (aHasReg && !bHasReg) return -1;
+          if (!aHasReg && bHasReg) return 1;
+          return 0;
+        })
+        .slice(0, limit);
+      return res.status(200).json(similar);
+    }
+
+    return res.status(404).json({ error: "Not found" });
   } catch (e) {
-    console.error("Sessions API error:", e);
+    console.error("Camps catch-all API error:", e);
     return res.status(500).json({
-      error: "Failed to fetch sessions",
+      error: "Failed",
       message: (e as Error)?.message ?? String(e),
     });
   }
