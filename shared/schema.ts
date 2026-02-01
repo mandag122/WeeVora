@@ -111,6 +111,7 @@ export type SelectedSession = z.infer<typeof selectedSessionSchema>;
 export const filterStateSchema = z.object({
   search: z.string().default(""),
   categories: z.array(z.string()).default([]),
+  ageMin: z.number().nullable().default(null),
   ageMax: z.number().nullable().default(null),
   locations: z.array(z.string()).default([]),
   priceMin: z.number().nullable().default(null),

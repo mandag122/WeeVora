@@ -41,7 +41,7 @@ function FilterContent({
     filters.search,
     filters.categories.length > 0,
     filters.locations.length > 0,
-    filters.ageMax !== null,
+    filters.ageMin !== null || filters.ageMax !== null,
     filters.dateStart !== null || filters.dateEnd !== null,
     filters.registrationStatus !== "all",
     filters.extendedHoursOnly,
@@ -122,14 +122,16 @@ function FilterContent({
 
       <div className="space-y-3">
         <Label className="text-sm font-medium text-foreground">
-          Child's Age: {filters.ageMax !== null ? `Up to ${filters.ageMax} years` : "Any age"}
+          Child's Age: {(filters.ageMin !== null || filters.ageMax !== null) 
+            ? `${filters.ageMin ?? 3} - ${filters.ageMax ?? 18} years` 
+            : "Any age (3-18)"}
         </Label>
         <Slider
-          value={[filters.ageMax ?? 18]}
+          value={[filters.ageMin ?? 3, filters.ageMax ?? 18]}
           min={3}
           max={18}
           step={1}
-          onValueChange={([max]) => onFilterChange({ ageMax: max })}
+          onValueChange={([min, max]) => onFilterChange({ ageMin: min, ageMax: max })}
           className="mt-2"
           data-testid="slider-age"
         />

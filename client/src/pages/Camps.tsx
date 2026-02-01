@@ -15,6 +15,7 @@ import { parseISO, isPast, isFuture } from "date-fns";
 const defaultFilters: FilterState = {
   search: "",
   categories: [],
+  ageMin: null,
   ageMax: null,
   locations: [],
   priceMin: null,
@@ -86,8 +87,12 @@ export default function Camps() {
         }
       }
 
-      if (filters.ageMax !== null && camp.ageMin !== null) {
-        if (camp.ageMin > filters.ageMax) return false;
+      if (filters.ageMin !== null || filters.ageMax !== null) {
+        const filterMin = filters.ageMin ?? 3;
+        const filterMax = filters.ageMax ?? 18;
+        const campMin = camp.ageMin ?? 3;
+        const campMax = camp.ageMax ?? 18;
+        if (campMax < filterMin || campMin > filterMax) return false;
       }
 
       if (filters.dateStart && filters.dateEnd) {
