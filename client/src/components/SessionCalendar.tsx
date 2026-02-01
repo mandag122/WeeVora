@@ -125,8 +125,13 @@ function CalendarGrid({
                   {daySessions.slice(0, compact ? 2 : 2).map((session) => (
                     <div
                       key={session.sessionId}
-                      className={`${compact ? "h-2 sm:h-2.5 print:h-3" : "h-1.5 sm:h-auto sm:px-1 sm:py-0.5"} rounded text-[8px] sm:text-[10px] truncate`}
-                      style={{ backgroundColor: session.color || "#5B2C6F" }}
+                      data-session-bar="true"
+                      className={`${compact ? "h-2 sm:h-2.5" : "h-1.5 sm:h-auto sm:px-1 sm:py-0.5"} rounded text-[8px] sm:text-[10px] truncate`}
+                      style={{ 
+                        backgroundColor: session.color || "#5B2C6F",
+                        WebkitPrintColorAdjust: 'exact',
+                        printColorAdjust: 'exact'
+                      } as React.CSSProperties}
                       title={`${session.campName}: ${session.sessionName}`}
                     >
                       {!compact && (
@@ -814,12 +819,21 @@ export function SessionCalendar({
       </Dialog>
 
       <style>{`
+        .printable-calendar-wrapper {
+          display: none;
+        }
         @media print {
           body * {
             visibility: hidden;
           }
+          .printable-calendar-wrapper {
+            display: block !important;
+          }
           #printable-calendar, #printable-calendar * {
-            visibility: visible;
+            visibility: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
           #printable-calendar {
             position: absolute;
@@ -827,10 +841,14 @@ export function SessionCalendar({
             top: 0;
             width: 100%;
           }
+          #printable-calendar [data-session-bar] {
+            min-height: 10px !important;
+            border: 1px solid currentColor;
+          }
         }
       `}</style>
 
-      <div className="hidden print:block">
+      <div className="printable-calendar-wrapper">
         <PrintableCalendar 
           selectedSessions={selectedSessions}
           months={summerMonths}
