@@ -16,23 +16,24 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import type { Camp, RegistrationOption } from "@shared/schema";
 import { categoryColors, type CampCategory } from "@shared/schema";
 import { useSessionContext } from "@/context/SessionContext";
-import { format, parseISO, isPast, isFuture } from "date-fns";
+import { format, isPast, isFuture } from "date-fns";
+import { safeParseISO } from "@/lib/dateUtils";
 import { trackRegisterWebsiteClick, trackViewAvailableSessions } from "@/lib/analytics";
 
 function getRegistrationStatus(camp: Camp) {
-  if (camp.registrationCloses && isPast(parseISO(camp.registrationCloses))) {
+  const regCloses = safeParseISO(camp.registrationCloses);
+  if (regCloses && isPast(regCloses)) {
     return { status: "closed", text: "Registration Closed", color: "bg-red-100 text-red-700" };
   }
-  if (camp.registrationOpens && isFuture(parseISO(camp.registrationOpens))) {
-    const date = format(parseISO(camp.registrationOpens), "MMMM d, yyyy");
-    return { status: "upcoming", text: `Opens ${date}`, color: "bg-yellow-100 text-yellow-700" };
+  const regOpens = safeParseISO(camp.registrationOpens);
+  if (regOpens && isFuture(regOpens)) {
+    return { status: "upcoming", text: `Opens ${format(regOpens, "MMMM d, yyyy")}`, color: "bg-yellow-100 text-yellow-700" };
   }
   if (camp.waitlistOnly) {
     return { status: "waitlist", text: "Waitlist Only", color: "bg-orange-100 text-orange-700" };
   }
-  if (camp.registrationCloses) {
-    const date = format(parseISO(camp.registrationCloses), "MMMM d, yyyy");
-    return { status: "open", text: `Open until ${date}`, color: "bg-green-100 text-green-700" };
+  if (regCloses) {
+    return { status: "open", text: `Open until ${format(regCloses, "MMMM d, yyyy")}`, color: "bg-green-100 text-green-700" };
   }
   return null;
 }
@@ -246,7 +247,11 @@ export default function CampDetail() {
                     </div>
                   )}
 
-                  {camp.seasonStart && camp.seasonEnd && (
+                  {camp.seasonStart && camp.seasonEnd && (() => {
+                    const start = safeParseISO(camp.seasonStart);
+                    const end = safeParseISO(camp.seasonEnd);
+                    if (!start || !end) return null;
+                    return (
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-md bg-rose/10">
                         <Calendar className="w-5 h-5 text-rose" />
@@ -254,11 +259,12 @@ export default function CampDetail() {
                       <div>
                         <p className="text-sm text-muted-foreground">Season</p>
                         <p className="font-medium">
-                          {format(parseISO(camp.seasonStart), "MMM d")} - {format(parseISO(camp.seasonEnd), "MMM d, yyyy")}
+                          {format(start, "MMM d")} - {format(end, "MMM d, yyyy")}
                         </p>
                       </div>
                     </div>
-                  )}
+                    );
+                  })()}
                 </div>
 
                 <div className="pt-4 flex flex-wrap gap-3">
