@@ -26,7 +26,7 @@ function getRegistrationStatus(camp: Camp): {
     return { status: "closed", text: "Closed", badgeClass: "bg-red-500 text-white" };
   }
   if (camp.waitlistOnly) {
-    return { status: "waitlist", text: "Waitlist Only", badgeClass: "bg-gold text-eggplant-dark" };
+    return { status: "waitlist", text: "WAITLIST ONLY", badgeClass: "bg-rose text-white" };
   }
   const regOpens = safeParseISO(camp.registrationOpens);
   if (regOpens && isFuture(regOpens)) {
@@ -79,8 +79,10 @@ export function CampCard({ camp, source }: CampCardProps) {
       }
     >
       <Card
-        className={`group relative overflow-hidden bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
+        className={`group relative overflow-hidden border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
           !hasRegistrationOpens ? "opacity-60" : ""
+        } ${
+          camp.waitlistOnly ? "bg-rose/5 border-rose/30" : "bg-white"
         }`}
         data-testid={`card-camp-${camp.id}`}
       >
