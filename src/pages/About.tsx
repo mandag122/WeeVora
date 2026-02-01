@@ -38,7 +38,7 @@ export default function About() {
                     />
                   </div>
                   <p className="text-xl text-foreground/80 leading-relaxed">
-                    Hi! I'm Amanda, a mom of three in Mundelein, Illinois, and I created WeeVora because I learned the hard way that summer camp planning in our area is no joke.
+                    Hi! I'm Amanda, a mom of three in Mundelein, and I created WeeVora because I learned the hard way that summer camp planning in our area is no joke.
                   </p>
                 </div>
 
