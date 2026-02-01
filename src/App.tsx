@@ -13,6 +13,8 @@ import HowItWorks from "@/pages/HowItWorks";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
+const GA_MEASUREMENT_ID = "G-3LK35KT7RL";
+
 function ScrollToTop() {
   const [location] = useLocation();
   useEffect(() => {
@@ -21,10 +23,22 @@ function ScrollToTop() {
   return null;
 }
 
+function GoogleAnalytics() {
+  const [location] = useLocation();
+  useEffect(() => {
+    const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+    if (gtag) {
+      gtag("config", GA_MEASUREMENT_ID, { page_path: location });
+    }
+  }, [location]);
+  return null;
+}
+
 function Router() {
   return (
     <>
       <ScrollToTop />
+      <GoogleAnalytics />
       <Switch>
       <Route path="/" component={Home} />
       <Route path="/camps" component={Camps} />
