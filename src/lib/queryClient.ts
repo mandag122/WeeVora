@@ -24,12 +24,32 @@ export async function apiRequest(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
+function buildApiUrl(queryKey: unknown[]): string {
+  // Camp list: ["/api/camps"] -> /api/camps
+  if (queryKey[0] === "/api/camps" && queryKey.length === 1) {
+    return "/api/camps";
+  }
+  // Camp by slug: ["/api/camps", slug] -> /api/camps_slug?slug=...
+  if (queryKey[0] === "/api/camps" && queryKey.length === 2 && typeof queryKey[1] === "string") {
+    return `/api/camps_slug?slug=${encodeURIComponent(queryKey[1])}`;
+  }
+  // Sessions: ["/api/camps", slug, "sessions"] -> /api/camps_sessions?slug=...
+  if (queryKey[0] === "/api/camps" && queryKey.length === 3 && queryKey[2] === "sessions" && typeof queryKey[1] === "string") {
+    return `/api/camps_sessions?slug=${encodeURIComponent(queryKey[1])}`;
+  }
+  // Similar: ["/api/camps", slug, "similar"] -> /api/camps_similar?slug=...
+  if (queryKey[0] === "/api/camps" && queryKey.length === 3 && queryKey[2] === "similar" && typeof queryKey[1] === "string") {
+    return `/api/camps_similar?slug=${encodeURIComponent(queryKey[1])}`;
+  }
+  return queryKey.join("/") as string;
+}
+
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const url = queryKey.join("/") as string;
+    const url = buildApiUrl(queryKey);
     const res = await fetch(url, {
       credentials: "include",
     });

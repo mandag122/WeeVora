@@ -71,6 +71,46 @@ export async function registerRoutes(
     }
   });
 
+  // Same handlers via query param (so frontend can call these on Vercel without rewrites)
+  app.get("/api/camps_slug", async (req, res) => {
+    try {
+      const slug = (req.query.slug as string) || "";
+      if (!slug) return res.status(400).json({ error: "Missing slug" });
+      const camp = await getCampBySlug(slug);
+      if (!camp) return res.status(404).json({ error: "Camp not found" });
+      res.json(camp);
+    } catch (error) {
+      console.error("Error fetching camp:", error);
+      res.status(500).json({ error: "Failed to fetch camp" });
+    }
+  });
+  app.get("/api/camps_sessions", async (req, res) => {
+    try {
+      const slug = (req.query.slug as string) || "";
+      if (!slug) return res.status(400).json({ error: "Missing slug" });
+      const camp = await getCampBySlug(slug);
+      if (!camp) return res.status(404).json({ error: "Camp not found" });
+      const sessions = await getSessionsForCamp(camp.id);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+      res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+  });
+  app.get("/api/camps_similar", async (req, res) => {
+    try {
+      const slug = (req.query.slug as string) || "";
+      if (!slug) return res.status(400).json({ error: "Missing slug" });
+      const camp = await getCampBySlug(slug);
+      if (!camp) return res.status(404).json({ error: "Camp not found" });
+      const similarCamps = await getSimilarCamps(camp, 4);
+      res.json(similarCamps);
+    } catch (error) {
+      console.error("Error fetching similar camps:", error);
+      res.status(500).json({ error: "Failed to fetch similar camps" });
+    }
+  });
+
   // Contact form submission - saves to Airtable Feedback table
   app.post("/api/contact", async (req, res) => {
     try {
