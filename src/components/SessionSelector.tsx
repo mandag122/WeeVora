@@ -8,7 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import type { Camp, RegistrationOption, SelectedSession, CampCategory } from "@shared/schema";
 import { categoryColors } from "@shared/schema";
-import { format, parseISO, isPast, isFuture } from "date-fns";
+import { format, isPast, isFuture } from "date-fns";
+import { safeParseISO } from "@/lib/dateUtils";
 
 function getCampBannerColor(camp: Camp): string {
   if (camp.color) return camp.color;
@@ -28,10 +29,12 @@ function getSessionStatus(session: RegistrationOption): {
   text: string;
   canSelect: boolean;
 } {
-  if (session.registrationCloses && isPast(parseISO(session.registrationCloses))) {
+  const regCloses = safeParseISO(session.registrationCloses);
+  if (regCloses && isPast(regCloses)) {
     return { status: "closed", text: "Closed", canSelect: false };
   }
-  if (session.registrationOpens && isFuture(parseISO(session.registrationOpens))) {
+  const regOpens = safeParseISO(session.registrationOpens);
+  if (regOpens && isFuture(regOpens)) {
     return { status: "upcoming", text: "Coming Soon", canSelect: true };
   }
   if (session.waitlistOnly) {
@@ -143,8 +146,8 @@ export function SessionSelector({
           
           const isSelected = showExtended ? !!extendedSelected : !!standardSelected;
           const status = getSessionStatus(session);
-          const startDate = session.startDate ? parseISO(session.startDate) : null;
-          const endDate = session.endDate ? parseISO(session.endDate) : null;
+          const startDate = safeParseISO(session.startDate);
+          const endDate = safeParseISO(session.endDate);
           
           const displayPrice = showExtended ? session.extendedPrice : session.price;
           const hasExtendedOption = session.extendedPrice !== null;

@@ -20,6 +20,7 @@ import {
 import type { Camp, FilterState } from "@shared/schema";
 import { useSessionContext } from "@/context/SessionContext";
 import { parseISO, isPast, isFuture } from "date-fns";
+import { safeParseISO } from "@/lib/dateUtils";
 
 const defaultFilters: FilterState = {
   search: "",
@@ -155,12 +156,12 @@ export default function Camps() {
       }
 
       if (filters.dateStart && filters.dateEnd) {
-        const filterStart = parseISO(filters.dateStart);
-        const filterEnd = parseISO(filters.dateEnd);
-        const campStart = camp.seasonStart ? parseISO(camp.seasonStart) : null;
-        const campEnd = camp.seasonEnd ? parseISO(camp.seasonEnd) : null;
+        const filterStart = safeParseISO(filters.dateStart);
+        const filterEnd = safeParseISO(filters.dateEnd);
+        const campStart = safeParseISO(camp.seasonStart);
+        const campEnd = safeParseISO(camp.seasonEnd);
 
-        if (campStart && campEnd) {
+        if (filterStart && filterEnd && campStart && campEnd) {
           const overlaps = campStart <= filterEnd && campEnd >= filterStart;
           if (!overlaps) return false;
         }
@@ -179,8 +180,8 @@ export default function Camps() {
       }
 
       if (filters.registrationStatus !== "all") {
-        const regOpens = camp.registrationOpens ? parseISO(camp.registrationOpens) : null;
-        const regCloses = camp.registrationCloses ? parseISO(camp.registrationCloses) : null;
+        const regOpens = safeParseISO(camp.registrationOpens);
+        const regCloses = safeParseISO(camp.registrationCloses);
 
         if (filters.registrationStatus === "open") {
           // Match CampCard "Registration Open" badge: opens in past, not closed, not waitlist
@@ -220,8 +221,10 @@ export default function Camps() {
         }
         case "registration":
         default: {
-          const aDate = a.registrationOpens ? parseISO(a.registrationOpens).getTime() : Number.POSITIVE_INFINITY;
-          const bDate = b.registrationOpens ? parseISO(b.registrationOpens).getTime() : Number.POSITIVE_INFINITY;
+          const aParsed = safeParseISO(a.registrationOpens);
+          const bParsed = safeParseISO(b.registrationOpens);
+          const aDate = aParsed ? aParsed.getTime() : Number.POSITIVE_INFINITY;
+          const bDate = bParsed ? bParsed.getTime() : Number.POSITIVE_INFINITY;
           return aDate - bDate;
         }
       }

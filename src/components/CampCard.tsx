@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import type { Camp } from "@shared/schema";
 import { categoryColors, type CampCategory } from "@shared/schema";
-import { format, parseISO, isPast, isFuture } from "date-fns";
+import { format, isPast, isFuture } from "date-fns";
+import { safeParseISO } from "@/lib/dateUtils";
 
 interface CampCardProps {
   camp: Camp;
@@ -20,17 +21,18 @@ function getRegistrationStatus(camp: Camp): {
   text: string;
   badgeClass: string;
 } {
-  if (camp.registrationCloses && isPast(parseISO(camp.registrationCloses))) {
+  const regCloses = safeParseISO(camp.registrationCloses);
+  if (regCloses && isPast(regCloses)) {
     return { status: "closed", text: "Closed", badgeClass: "bg-red-500 text-white" };
   }
   if (camp.waitlistOnly) {
     return { status: "waitlist", text: "Waitlist Only", badgeClass: "bg-gold text-eggplant-dark" };
   }
-  if (camp.registrationOpens && isFuture(parseISO(camp.registrationOpens))) {
-    const date = format(parseISO(camp.registrationOpens), "MMM d");
-    return { status: "upcoming", text: `Opens ${date}`, badgeClass: "bg-gold-light text-eggplant-dark" };
+  const regOpens = safeParseISO(camp.registrationOpens);
+  if (regOpens && isFuture(regOpens)) {
+    return { status: "upcoming", text: `Opens ${format(regOpens, "MMM d")}`, badgeClass: "bg-gold-light text-eggplant-dark" };
   }
-  if (camp.registrationOpens && isPast(parseISO(camp.registrationOpens))) {
+  if (regOpens && isPast(regOpens)) {
     return { status: "open", text: "Registration Open", badgeClass: "bg-forest text-white" };
   }
   return { status: "unknown", text: "", badgeClass: "" };
