@@ -53,8 +53,9 @@ export function CampCard({ camp }: CampCardProps) {
   const bannerColor = camp.color || (firstCategory ? categoryColors[firstCategory] : "#5B2C6F");
 
   return (
+    <Link href={`/camps/${camp.slug}`} className="block">
     <Card 
-      className={`group relative overflow-hidden bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 ${
+      className={`group relative overflow-hidden bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
         !hasRegistrationOpens ? "opacity-60" : ""
       }`}
       data-testid={`card-camp-${camp.id}`}
@@ -140,21 +141,23 @@ export function CampCard({ camp }: CampCardProps) {
       </CardContent>
 
       <CardFooter className="pt-3 border-t border-border/30 flex gap-2">
-        <Link href={`/camps/${camp.slug}`} className="flex-1">
-          <Button 
-            variant="ghost" 
-            className="w-full text-eggplant hover:text-eggplant-light hover:bg-eggplant/5"
-            data-testid={`button-view-details-${camp.id}`}
-          >
-            View Details
-          </Button>
-        </Link>
+        <Button 
+          variant="ghost" 
+          className="flex-1 text-eggplant hover:text-eggplant-light hover:bg-eggplant/5"
+          data-testid={`button-view-details-${camp.id}`}
+        >
+          View Details
+        </Button>
         {camp.websiteUrl && (
           <Button
             variant="outline"
             size="icon"
             className="shrink-0"
-            onClick={() => window.open(camp.websiteUrl!, "_blank")}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(camp.websiteUrl!, "_blank");
+            }}
             data-testid={`button-external-${camp.id}`}
           >
             <ExternalLink className="w-4 h-4" />
@@ -162,5 +165,6 @@ export function CampCard({ camp }: CampCardProps) {
         )}
       </CardFooter>
     </Card>
+    </Link>
   );
 }
