@@ -230,7 +230,7 @@ export default function Contact() {
                   href="mailto:support@weevora.com" 
                   className="text-eggplant hover:underline"
                 >
-                  hello@weevora.com
+                  support@weevora.com
                 </a>
               </p>
             </div>
