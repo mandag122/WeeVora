@@ -14,14 +14,15 @@ import { parseISO, isPast, isFuture } from "date-fns";
 const defaultFilters: FilterState = {
   search: "",
   categories: [],
-  ageMin: null,
   ageMax: null,
   locations: [],
   priceMin: null,
   priceMax: null,
   registrationStatus: "all",
   extendedHoursOnly: false,
-  campSchedule: []
+  campSchedule: [],
+  dateStart: null,
+  dateEnd: null
 };
 
 const defaultDateRange: DateRange = {
@@ -93,11 +94,20 @@ export default function Camps() {
         }
       }
 
-      if (filters.ageMin !== null && camp.ageMax !== null) {
-        if (camp.ageMax < filters.ageMin) return false;
-      }
       if (filters.ageMax !== null && camp.ageMin !== null) {
         if (camp.ageMin > filters.ageMax) return false;
+      }
+
+      if (filters.dateStart && filters.dateEnd) {
+        const filterStart = parseISO(filters.dateStart);
+        const filterEnd = parseISO(filters.dateEnd);
+        const campStart = camp.seasonStart ? parseISO(camp.seasonStart) : null;
+        const campEnd = camp.seasonEnd ? parseISO(camp.seasonEnd) : null;
+        
+        if (campStart && campEnd) {
+          const overlaps = campStart <= filterEnd && campEnd >= filterStart;
+          if (!overlaps) return false;
+        }
       }
 
       if (filters.extendedHoursOnly && !camp.extendedHours) {

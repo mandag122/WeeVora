@@ -10,6 +10,19 @@ import { Badge } from "@/components/ui/badge";
 import type { FilterState } from "@shared/schema";
 import { campCategories, campScheduleOptions } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { format, addMonths, startOfMonth } from "date-fns";
+
+const SUMMER_START = new Date(2026, 4, 1);
+const SUMMER_END = new Date(2026, 8, 30);
+const TOTAL_DAYS = Math.ceil((SUMMER_END.getTime() - SUMMER_START.getTime()) / (1000 * 60 * 60 * 24));
+
+function dayToDate(day: number): Date {
+  return new Date(SUMMER_START.getTime() + day * 24 * 60 * 60 * 1000);
+}
+
+function dateToDay(date: Date): number {
+  return Math.ceil((date.getTime() - SUMMER_START.getTime()) / (1000 * 60 * 60 * 24));
+}
 
 interface CampFiltersProps {
   filters: FilterState;
@@ -28,12 +41,26 @@ function FilterContent({
     filters.search,
     filters.categories.length > 0,
     filters.locations.length > 0,
-    filters.ageMin !== null || filters.ageMax !== null,
-    filters.priceMin !== null || filters.priceMax !== null,
+    filters.ageMax !== null,
+    filters.dateStart !== null || filters.dateEnd !== null,
     filters.registrationStatus !== "all",
     filters.extendedHoursOnly,
     filters.campSchedule.length > 0
   ].filter(Boolean).length;
+
+  const dateSliderValue = [
+    filters.dateStart ? dateToDay(new Date(filters.dateStart)) : 0,
+    filters.dateEnd ? dateToDay(new Date(filters.dateEnd)) : TOTAL_DAYS
+  ];
+
+  const handleDateChange = ([start, end]: number[]) => {
+    const startDate = dayToDate(start);
+    const endDate = dayToDate(end);
+    onFilterChange({ 
+      dateStart: format(startDate, "yyyy-MM-dd"),
+      dateEnd: format(endDate, "yyyy-MM-dd")
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -94,74 +121,41 @@ function FilterContent({
       </div>
 
       <div className="space-y-3">
-        <Label className="text-sm font-medium text-foreground">Categories</Label>
-        <div className="space-y-2">
-          {campCategories.map((category) => (
-            <div key={category} className="flex items-center gap-2">
-              <Checkbox
-                id={`category-${category}`}
-                checked={filters.categories.includes(category)}
-                onCheckedChange={(checked) => {
-                  const newCategories = checked
-                    ? [...filters.categories, category]
-                    : filters.categories.filter((c) => c !== category);
-                  onFilterChange({ categories: newCategories });
-                }}
-                data-testid={`checkbox-category-${category}`}
-              />
-              <Label 
-                htmlFor={`category-${category}`}
-                className="text-sm text-foreground/80 cursor-pointer"
-              >
-                {category}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {locations.length > 0 && (
-        <div className="space-y-3">
-          <Label className="text-sm font-medium text-foreground">Location</Label>
-          <div className="space-y-2">
-            {locations.map((location) => (
-              <div key={location} className="flex items-center gap-2">
-                <Checkbox
-                  id={`location-${location}`}
-                  checked={filters.locations.includes(location)}
-                  onCheckedChange={(checked) => {
-                    const newLocations = checked
-                      ? [...filters.locations, location]
-                      : filters.locations.filter((l) => l !== location);
-                    onFilterChange({ locations: newLocations });
-                  }}
-                  data-testid={`checkbox-location-${location}`}
-                />
-                <Label 
-                  htmlFor={`location-${location}`}
-                  className="text-sm text-foreground/80 cursor-pointer"
-                >
-                  {location}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-3">
         <Label className="text-sm font-medium text-foreground">
-          Age Range: {filters.ageMin ?? 0} - {filters.ageMax ?? 18}
+          Child's Age: {filters.ageMax !== null ? `Up to ${filters.ageMax} years` : "Any age"}
         </Label>
         <Slider
-          value={[filters.ageMin ?? 0, filters.ageMax ?? 18]}
-          min={0}
+          value={[filters.ageMax ?? 18]}
+          min={3}
           max={18}
           step={1}
-          onValueChange={([min, max]) => onFilterChange({ ageMin: min, ageMax: max })}
+          onValueChange={([max]) => onFilterChange({ ageMax: max })}
           className="mt-2"
           data-testid="slider-age"
         />
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>3 yrs</span>
+          <span>18 yrs</span>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label className="text-sm font-medium text-foreground">
+          Camp Dates: {format(dayToDate(dateSliderValue[0]), "MMM d")} - {format(dayToDate(dateSliderValue[1]), "MMM d")}
+        </Label>
+        <Slider
+          value={dateSliderValue}
+          min={0}
+          max={TOTAL_DAYS}
+          step={1}
+          onValueChange={handleDateChange}
+          className="mt-2"
+          data-testid="slider-dates"
+        />
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>May 1</span>
+          <span>Sep 30</span>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -200,6 +194,62 @@ function FilterContent({
                 className="text-sm text-foreground/80 cursor-pointer"
               >
                 {option}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {locations.length > 0 && (
+        <div className="space-y-3">
+          <Label className="text-sm font-medium text-foreground">Location</Label>
+          <div className="space-y-2">
+            {locations.map((location) => (
+              <div key={location} className="flex items-center gap-2">
+                <Checkbox
+                  id={`location-${location}`}
+                  checked={filters.locations.includes(location)}
+                  onCheckedChange={(checked) => {
+                    const newLocations = checked
+                      ? [...filters.locations, location]
+                      : filters.locations.filter((l) => l !== location);
+                    onFilterChange({ locations: newLocations });
+                  }}
+                  data-testid={`checkbox-location-${location}`}
+                />
+                <Label 
+                  htmlFor={`location-${location}`}
+                  className="text-sm text-foreground/80 cursor-pointer"
+                >
+                  {location}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        <Label className="text-sm font-medium text-foreground">Categories</Label>
+        <div className="space-y-2">
+          {campCategories.map((category) => (
+            <div key={category} className="flex items-center gap-2">
+              <Checkbox
+                id={`category-${category}`}
+                checked={filters.categories.includes(category)}
+                onCheckedChange={(checked) => {
+                  const newCategories = checked
+                    ? [...filters.categories, category]
+                    : filters.categories.filter((c) => c !== category);
+                  onFilterChange({ categories: newCategories });
+                }}
+                data-testid={`checkbox-category-${category}`}
+              />
+              <Label 
+                htmlFor={`category-${category}`}
+                className="text-sm text-foreground/80 cursor-pointer"
+              >
+                {category}
               </Label>
             </div>
           ))}

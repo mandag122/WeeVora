@@ -104,14 +104,15 @@ export type SelectedSession = z.infer<typeof selectedSessionSchema>;
 export const filterStateSchema = z.object({
   search: z.string().default(""),
   categories: z.array(z.string()).default([]),
-  ageMin: z.number().nullable().default(null),
   ageMax: z.number().nullable().default(null),
   locations: z.array(z.string()).default([]),
   priceMin: z.number().nullable().default(null),
   priceMax: z.number().nullable().default(null),
   registrationStatus: z.enum(["all", "open", "upcoming"]).default("all"),
   extendedHoursOnly: z.boolean().default(false),
-  campSchedule: z.array(z.string()).default([])
+  campSchedule: z.array(z.string()).default([]),
+  dateStart: z.string().nullable().default(null),
+  dateEnd: z.string().nullable().default(null)
 });
 
 export type FilterState = z.infer<typeof filterStateSchema>;
