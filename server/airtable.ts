@@ -138,9 +138,22 @@ function getInterests(interests: string[] | undefined): string[] {
 
 export async function fetchCamps(): Promise<Camp[]> {
   try {
-    const records = await fetchFromAirtable<AirtableCampFields>(AIRTABLE_TABLE_NAME);
+    const [records, optionRecords] = await Promise.all([
+      fetchFromAirtable<AirtableCampFields>(AIRTABLE_TABLE_NAME),
+      fetchFromAirtable<AirtableRegistrationFields>("Registration_Options")
+    ]);
     const visible = records.filter((r) => r.fields["hide"] !== true && r.fields["Hide"] !== true);
     const ages = visible.map(r => parseAgeGroup(r.fields["Age Group"]));
+    const campIdsWithRegistrationDetail = new Set<string>();
+    for (const rec of optionRecords) {
+      const campId = rec.fields.Camps?.[0];
+      const optionName = (rec.fields.option_name ?? "").toString().trim();
+      const datesCsv = (rec.fields.dates_csv ?? "").toString().trim();
+      const price = (rec.fields.price ?? "").toString().trim();
+      if (campId && optionName && datesCsv && price) {
+        campIdsWithRegistrationDetail.add(campId);
+      }
+    }
 
     return visible.map((record, index) => ({
       id: record.id,
@@ -167,7 +180,8 @@ export async function fetchCamps(): Promise<Camp[]> {
       websiteUrl: record.fields.Website || null,
       color: record.fields.Color || null,
       additionalInfo: record.fields["Additional Info"] || null,
-      campSchedule: record.fields["Camp schedule"] || []
+      campSchedule: record.fields["Camp schedule"] || [],
+      hasRegistrationDetail: campIdsWithRegistrationDetail.has(record.id)
     }));
   } catch (error) {
     console.error("Error fetching camps from Airtable:", error);

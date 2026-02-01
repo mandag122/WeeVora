@@ -28,12 +28,11 @@ function parseAgeGroup(ageGroup: string | undefined): { min: number | null; max:
   return { min: null, max: null };
 }
 
-async function getCamps(): Promise<Record<string, unknown>[]> {
-  const key = process.env.AIRTABLE_API_KEY;
-  const base = process.env.AIRTABLE_BASE_ID;
-  const table = process.env.AIRTABLE_TABLE_NAME || "Camps";
-  if (!key || !base) return [];
-
+async function fetchRegistrationOptionsTable(
+  key: string,
+  base: string
+): Promise<Set<string>> {
+  const table = "Registration_Options";
   const allRecords: AirtableRecord[] = [];
   let offset: string | undefined;
   do {
@@ -42,11 +41,51 @@ async function getCamps(): Promise<Record<string, unknown>[]> {
     const r = await fetch(url.toString(), {
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     });
-    if (!r.ok) return [];
+    if (!r.ok) return new Set();
     const data = (await r.json()) as { records?: AirtableRecord[]; offset?: string };
     allRecords.push(...(data.records || []));
     offset = data.offset;
   } while (offset);
+
+  const campIdsWithDetail = new Set<string>();
+  for (const rec of allRecords) {
+    const fields = rec.fields || {};
+    const campId = Array.isArray(fields.Camps) ? (fields.Camps[0] as string) : "";
+    const optionName = String(fields.option_name ?? "").trim();
+    const datesCsv = String(fields.dates_csv ?? "").trim();
+    const price = String(fields.price ?? "").trim();
+    if (campId && optionName && datesCsv && price) {
+      campIdsWithDetail.add(campId);
+    }
+  }
+  return campIdsWithDetail;
+}
+
+async function getCamps(): Promise<Record<string, unknown>[]> {
+  const key = process.env.AIRTABLE_API_KEY;
+  const base = process.env.AIRTABLE_BASE_ID;
+  const table = process.env.AIRTABLE_TABLE_NAME || "Camps";
+  if (!key || !base) return [];
+
+  const [allRecords, campIdsWithDetail] = await Promise.all([
+    (async () => {
+      const records: AirtableRecord[] = [];
+      let offset: string | undefined;
+      do {
+        const url = new URL(`https://api.airtable.com/v0/${base}/${encodeURIComponent(table)}`);
+        if (offset) url.searchParams.set("offset", offset);
+        const r = await fetch(url.toString(), {
+          headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        });
+        if (!r.ok) return [];
+        const data = (await r.json()) as { records?: AirtableRecord[]; offset?: string };
+        records.push(...(data.records || []));
+        offset = data.offset;
+      } while (offset);
+      return records;
+    })(),
+    fetchRegistrationOptionsTable(key, base),
+  ]);
 
   const visible = allRecords.filter((r) => r.fields?.hide !== true && r.fields?.Hide !== true);
   const ages = visible.map((r) => parseAgeGroup(r.fields?.["Age Group"] as string | undefined));
@@ -80,6 +119,7 @@ async function getCamps(): Promise<Record<string, unknown>[]> {
       color: (fields.Color as string) || null,
       additionalInfo: (fields["Additional Info"] as string) || null,
       campSchedule: Array.isArray(fields["Camp schedule"]) ? (fields["Camp schedule"] as string[]) : [],
+      hasRegistrationDetail: campIdsWithDetail.has(record.id),
     };
   });
 }
