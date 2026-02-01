@@ -46,16 +46,16 @@ export default function HowItWorks() {
         <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
-              <div className="flex items-start gap-4 p-5 bg-gold/15 border-2 border-gold rounded-xl shadow-md">
-                <div className="shrink-0 flex items-center justify-center w-12 h-12 bg-gold/20 rounded-full">
-                  <AlertTriangle className="w-6 h-6 text-gold-dark" />
+              <div className="flex items-start gap-4 p-5 bg-coral/10 border-2 border-coral rounded-xl shadow-md">
+                <div className="shrink-0 flex items-center justify-center w-12 h-12 bg-coral/20 rounded-full">
+                  <AlertTriangle className="w-6 h-6 text-coral" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-gold-dark mb-2">
-                    Important: <span className="text-foreground">WeeVora is a Planning Tool Only</span>
+                  <h3 className="font-bold text-lg mb-2">
+                    <span className="text-coral">Important:</span> WeeVora is a Planning Tool Only
                   </h3>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    WeeVora helps you discover, compare, and organize summer camp options—but <strong>we do not process registrations or payments</strong>. Once you've built your ideal schedule, you must visit each camp's official website to register and pay. Think of WeeVora as your summer camp planner, not your registration portal.
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    WeeVora helps you discover, compare, and organize summer camp options—but <strong className="text-foreground">we do not process registrations or payments</strong>. Once you've built your ideal schedule, you must visit each camp's official website to register and pay. Think of WeeVora as your summer camp planner, not your registration portal.
                   </p>
                 </div>
               </div>

@@ -743,10 +743,10 @@ export function SessionCalendar({
           </div>
 
           <div className="border-t pt-3 mt-3">
-            <div className="flex items-start gap-2 p-2 bg-gold/10 border border-gold/30 rounded-lg">
-              <AlertTriangle className="w-4 h-4 text-gold-dark shrink-0 mt-0.5" />
-              <p className="text-[10px] sm:text-xs text-gold-dark leading-relaxed">
-                <strong>Planning Tool Only:</strong> WeeVora helps you organize and compare camps. All registrations and payments must be made directly on each camp's website.
+            <div className="flex items-start gap-2 p-2 bg-coral/10 border border-coral/30 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-coral shrink-0 mt-0.5" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">
+                <strong className="text-coral">Important:</strong> WeeVora helps you organize and compare camps. All registrations and payments must be made directly on each camp's website.
               </p>
             </div>
           </div>
