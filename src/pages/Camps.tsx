@@ -36,7 +36,30 @@ const defaultFilters: FilterState = {
   dateEnd: null,
 };
 
-type SortOption = "registration" | "name-asc" | "name-desc";
+type SortOption = "registration" | "name-asc" | "name-desc" | "detail";
+
+/** Score 0–N: higher = more fields filled (description, org, location, dates, etc.) */
+function getCampDetailScore(camp: Camp): number {
+  let score = 0;
+  if (camp.organization?.trim()) score += 1;
+  if (camp.description?.trim()) score += 2; // description is high value
+  if (camp.categories?.length) score += 1;
+  if (camp.ageMin != null || camp.ageMax != null) score += 1;
+  if (camp.locationCity?.trim()) score += 1;
+  if (camp.locationAddress?.trim()) score += 1;
+  if (camp.priceMin != null || camp.priceMax != null) score += 1;
+  if (camp.registrationOpens?.trim()) score += 1;
+  if (camp.registrationCloses?.trim()) score += 1;
+  if (camp.seasonStart?.trim()) score += 1;
+  if (camp.seasonEnd?.trim()) score += 1;
+  if (camp.campHours?.trim()) score += 1;
+  if (camp.extendedHoursInfo?.trim()) score += 1;
+  if (camp.siblingDiscountNote?.trim()) score += 1;
+  if (camp.websiteUrl?.trim()) score += 1;
+  if (camp.additionalInfo?.trim()) score += 1;
+  if (camp.campSchedule?.length) score += 1;
+  return score;
+}
 
 export default function Camps() {
   const [location] = useLocation();
@@ -169,6 +192,12 @@ export default function Camps() {
           return a.name.localeCompare(b.name);
         case "name-desc":
           return b.name.localeCompare(a.name);
+        case "detail": {
+          const scoreA = getCampDetailScore(a);
+          const scoreB = getCampDetailScore(b);
+          if (scoreB !== scoreA) return scoreB - scoreA; // higher score first
+          return a.name.localeCompare(b.name);
+        }
         case "registration":
         default: {
           const aDate = a.registrationOpens ? parseISO(a.registrationOpens).getTime() : Number.POSITIVE_INFINITY;
@@ -219,6 +248,7 @@ export default function Camps() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="registration">Registration Date</SelectItem>
+                  <SelectItem value="detail">Most detail first</SelectItem>
                   <SelectItem value="name-asc">Name A-Z</SelectItem>
                   <SelectItem value="name-desc">Name Z-A</SelectItem>
                 </SelectContent>
