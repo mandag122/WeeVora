@@ -12,7 +12,7 @@ interface CampCardProps {
   onAddToCalendar?: () => void;
 }
 
-function getRegistrationStatus(camp: Camp): { 
+function getRegistrationStatus(camp: Camp): {
   status: "open" | "closed" | "upcoming" | "waitlist" | "unknown";
   text: string;
   badgeClass: string;
@@ -36,135 +36,150 @@ function getRegistrationStatus(camp: Camp): {
 export function CampCard({ camp }: CampCardProps) {
   const regStatus = getRegistrationStatus(camp);
   const hasRegistrationOpens = !!camp.registrationOpens;
-  
-  const ageRange = camp.ageMin && camp.ageMax 
-    ? `Ages ${camp.ageMin}-${camp.ageMax}` 
-    : camp.ageMin 
-      ? `Ages ${camp.ageMin}+` 
-      : null;
 
-  const priceRange = camp.priceMin && camp.priceMax 
-    ? `$${camp.priceMin}-$${camp.priceMax}`
-    : camp.priceMin 
-      ? `From $${camp.priceMin}`
-      : null;
+  const ageRange =
+    camp.ageMin && camp.ageMax
+      ? `Ages ${camp.ageMin}-${camp.ageMax}`
+      : camp.ageMin
+        ? `Ages ${camp.ageMin}+`
+        : null;
 
-  const firstCategory = camp.categories[0] as CampCategory | undefined;
-  const bannerColor = camp.color || (firstCategory ? categoryColors[firstCategory] : "#5B2C6F");
+  const priceRange =
+    camp.priceMin && camp.priceMax
+      ? `$${camp.priceMin}-$${camp.priceMax}`
+      : camp.priceMin
+        ? `From $${camp.priceMin}`
+        : null;
+
+  // ✅ SAFETY: categories may be missing/null depending on API data
+  const categories: string[] = Array.isArray((camp as any).categories) ? (camp as any).categories : [];
+
+  const firstCategory = (categories[0] as CampCategory | undefined) ?? undefined;
+  const bannerColor =
+    camp.color ||
+    (firstCategory && categoryColors[firstCategory]) ||
+    "#5B2C6F";
 
   return (
     <Link href={`/camps/${camp.slug}`} className="block">
-    <Card 
-      className={`group relative overflow-hidden bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
-        !hasRegistrationOpens ? "opacity-60" : ""
-      }`}
-      data-testid={`card-camp-${camp.id}`}
-    >
-      <div 
-        className="h-2 w-full" 
-        style={{ backgroundColor: bannerColor }}
-        data-testid={`banner-${camp.id}`}
-      />
-      <CardHeader className="pb-3 space-y-3">
-        <div className="space-y-1">
-          <h3 className="font-semibold text-lg text-eggplant group-hover:text-eggplant-light transition-colors" data-testid={`text-camp-name-${camp.id}`}>
-            {camp.name}
-          </h3>
-          {camp.organization && (
-            <p className="text-sm text-muted-foreground truncate" data-testid={`text-camp-org-${camp.id}`}>
-              {camp.organization}
-            </p>
-          )}
-          {regStatus.text && (
-            <Badge 
-              className={`${regStatus.badgeClass} text-xs font-medium mt-1`}
-              data-testid={`badge-status-${camp.id}`}
+      <Card
+        className={`group relative overflow-hidden bg-white border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
+          !hasRegistrationOpens ? "opacity-60" : ""
+        }`}
+        data-testid={`card-camp-${camp.id}`}
+      >
+        <div
+          className="h-2 w-full"
+          style={{ backgroundColor: bannerColor }}
+          data-testid={`banner-${camp.id}`}
+        />
+
+        <CardHeader className="pb-3 space-y-3">
+          <div className="space-y-1">
+            <h3
+              className="font-semibold text-lg text-eggplant group-hover:text-eggplant-light transition-colors"
+              data-testid={`text-camp-name-${camp.id}`}
             >
-              {regStatus.text}
-            </Badge>
-          )}
-        </div>
+              {camp.name}
+            </h3>
 
-        <div className="flex flex-wrap gap-1.5">
-          {camp.categories.slice(0, 3).map((category) => (
-            <Badge 
-              key={category}
-              variant="secondary"
-              className="text-xs font-medium"
-              style={{ 
-                backgroundColor: `${categoryColors[category as CampCategory]}15`,
-                color: categoryColors[category as CampCategory] || "inherit"
-              }}
-              data-testid={`badge-category-${category}`}
-            >
-              {category}
-            </Badge>
-          ))}
-        </div>
-      </CardHeader>
+            {camp.organization && (
+              <p className="text-sm text-muted-foreground truncate" data-testid={`text-camp-org-${camp.id}`}>
+                {camp.organization}
+              </p>
+            )}
 
-      <CardContent className="pb-3 space-y-2">
-        <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
-          {ageRange && (
-            <div className="flex items-center gap-1.5">
-              <Users className="w-4 h-4 text-sky" />
-              <span>{ageRange}</span>
-            </div>
-          )}
-          {camp.locationCity && (
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-coral" />
-              <span>{camp.locationCity}</span>
-            </div>
-          )}
-          {camp.campHours && (
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-forest" />
-              <span>{camp.campHours}</span>
-            </div>
-          )}
-        </div>
-
-        {camp.extendedHours && (
-          <div className="flex items-center gap-1.5 text-sm text-sky font-medium">
-            <Sun className="w-4 h-4" />
-            <span>Extended: {camp.extendedHoursInfo || "Available"}</span>
+            {regStatus.text && (
+              <Badge
+                className={`${regStatus.badgeClass} text-xs font-medium mt-1`}
+                data-testid={`badge-status-${camp.id}`}
+              >
+                {regStatus.text}
+              </Badge>
+            )}
           </div>
-        )}
 
-        
-        {priceRange && (
-          <div className="text-sm font-medium text-eggplant">
-            {priceRange}
+          <div className="flex flex-wrap gap-1.5">
+            {categories.slice(0, 3).map((category) => {
+              const color = categoryColors[category as CampCategory];
+              return (
+                <Badge
+                  key={category}
+                  variant="secondary"
+                  className="text-xs font-medium"
+                  style={{
+                    backgroundColor: color ? `${color}15` : undefined,
+                    color: color || "inherit",
+                  }}
+                  data-testid={`badge-category-${category}`}
+                >
+                  {category}
+                </Badge>
+              );
+            })}
           </div>
-        )}
-      </CardContent>
+        </CardHeader>
 
-      <CardFooter className="pt-3 border-t border-border/30 flex gap-2">
-        <Button 
-          variant="ghost" 
-          className="flex-1 text-eggplant hover:text-eggplant-light hover:bg-eggplant/5"
-          data-testid={`button-view-details-${camp.id}`}
-        >
-          View Details
-        </Button>
-        {camp.websiteUrl && (
+        <CardContent className="pb-3 space-y-2">
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+            {ageRange && (
+              <div className="flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-sky" />
+                <span>{ageRange}</span>
+              </div>
+            )}
+
+            {camp.locationCity && (
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-coral" />
+                <span>{camp.locationCity}</span>
+              </div>
+            )}
+
+            {camp.campHours && (
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-forest" />
+                <span>{camp.campHours}</span>
+              </div>
+            )}
+          </div>
+
+          {camp.extendedHours && (
+            <div className="flex items-center gap-1.5 text-sm text-sky font-medium">
+              <Sun className="w-4 h-4" />
+              <span>Extended: {camp.extendedHoursInfo || "Available"}</span>
+            </div>
+          )}
+
+          {priceRange && <div className="text-sm font-medium text-eggplant">{priceRange}</div>}
+        </CardContent>
+
+        <CardFooter className="pt-3 border-t border-border/30 flex gap-2">
           <Button
-            variant="outline"
-            size="icon"
-            className="shrink-0"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              window.open(camp.websiteUrl!, "_blank");
-            }}
-            data-testid={`button-external-${camp.id}`}
+            variant="ghost"
+            className="flex-1 text-eggplant hover:text-eggplant-light hover:bg-eggplant/5"
+            data-testid={`button-view-details-${camp.id}`}
           >
-            <ExternalLink className="w-4 h-4" />
+            View Details
           </Button>
-        )}
-      </CardFooter>
-    </Card>
+
+          {camp.websiteUrl && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(camp.websiteUrl!, "_blank");
+              }}
+              data-testid={`button-external-${camp.id}`}
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
     </Link>
   );
 }
