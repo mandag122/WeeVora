@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { CampCard } from "@/components/CampCard";
 import { CampFilters } from "@/components/CampFilters";
 import { SessionCalendar } from "@/components/SessionCalendar";
+import { MobileCalendarFAB } from "@/components/MobileCalendarFAB";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -263,6 +264,7 @@ export default function Camps() {
       </main>
 
       <Footer />
+      <MobileCalendarFAB />
     </div>
   );
 }
