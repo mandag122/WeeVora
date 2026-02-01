@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-const TABLE_NAME = "Registration_Options";
+const TABLE_NAME = "Camps";
 
 type AirtableRecord = {
   id: string;
@@ -19,6 +19,12 @@ function requiredEnv(name: string): string {
   return v;
 }
 
+function setCommonHeaders(res: VercelResponse) {
+  // Same-origin by default; if you need cross-origin, uncomment the next line:
+  // res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+}
+
 async function airtableListAll(tableName: string): Promise<AirtableRecord[]> {
   const apiKey = requiredEnv("AIRTABLE_API_KEY");
   const baseId = requiredEnv("AIRTABLE_BASE_ID");
@@ -27,14 +33,15 @@ async function airtableListAll(tableName: string): Promise<AirtableRecord[]> {
   let offset: string | undefined;
 
   do {
-    const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`);
+    const url = new URL(
+      `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`
+    );
     url.searchParams.set("pageSize", "100");
     if (offset) url.searchParams.set("offset", offset);
 
     const resp = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
       },
     });
 
@@ -53,6 +60,8 @@ async function airtableListAll(tableName: string): Promise<AirtableRecord[]> {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
+    setCommonHeaders(res);
+
     if (req.method !== "GET") {
       res.setHeader("Allow", "GET");
       return res.status(405).json({ error: "Method Not Allowed" });
