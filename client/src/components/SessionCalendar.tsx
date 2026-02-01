@@ -32,6 +32,7 @@ interface SessionCalendarProps {
   dateRange: DateRange;
   onDateRangeChange: (range: DateRange) => void;
   onRemoveSession: (sessionId: string) => void;
+  onClearAll?: () => void;
 }
 
 function detectOverlaps(sessions: SelectedSession[]): { session1: SelectedSession; session2: SelectedSession }[] {
@@ -491,7 +492,8 @@ export function SessionCalendar({
   selectedSessions,
   dateRange,
   onDateRangeChange,
-  onRemoveSession
+  onRemoveSession,
+  onClearAll
 }: SessionCalendarProps) {
   const { toast } = useToast();
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -500,6 +502,7 @@ export function SessionCalendar({
   const [isExpanded, setIsExpanded] = useState(false);
   const [sessionToRemove, setSessionToRemove] = useState<SelectedSession | null>(null);
   const [showOverlapAlert, setShowOverlapAlert] = useState(false);
+  const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
 
   const overlaps = useMemo(() => detectOverlaps(selectedSessions), [selectedSessions]);
 
@@ -688,9 +691,20 @@ export function SessionCalendar({
           />
 
           <div className="border-t pt-3 sm:pt-4">
-            <h4 className="text-xs sm:text-sm font-medium text-muted-foreground mb-2">
-              Selected Sessions ({selectedSessions.length})
-            </h4>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">
+                Selected Sessions ({selectedSessions.length})
+              </h4>
+              {selectedSessions.length > 0 && onClearAll && (
+                <button
+                  onClick={() => setShowClearAllConfirm(true)}
+                  className="text-xs text-destructive hover:text-destructive/80 hover:underline transition-colors"
+                  data-testid="button-clear-all-sessions"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
             {isEmpty ? (
               <div className="py-4 text-center">
                 <p className="text-xs sm:text-sm text-muted-foreground mb-2">
@@ -774,6 +788,34 @@ export function SessionCalendar({
               data-testid="button-confirm-remove"
             >
               Yes, remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showClearAllConfirm} onOpenChange={setShowClearAllConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all sessions?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove all {selectedSessions.length} session{selectedSessions.length !== 1 ? 's' : ''} from your schedule? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-clear-all">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                onClearAll?.();
+                setShowClearAllConfirm(false);
+                toast({
+                  title: "Schedule cleared",
+                  description: "All sessions have been removed from your schedule.",
+                });
+              }}
+              className="bg-destructive hover:bg-destructive/90"
+              data-testid="button-confirm-clear-all"
+            >
+              Yes, clear all
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

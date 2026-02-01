@@ -33,7 +33,7 @@ export default function Camps() {
   const [location] = useLocation();
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sortBy, setSortBy] = useState<SortOption>("registration");
-  const { selectedSessions, dateRange, removeSession, setDateRange } = useSessionContext();
+  const { selectedSessions, dateRange, removeSession, setDateRange, clearAllSessions } = useSessionContext();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -241,6 +241,7 @@ export default function Camps() {
                 dateRange={dateRange}
                 onDateRangeChange={setDateRange}
                 onRemoveSession={removeSession}
+                onClearAll={clearAllSessions}
               />
             </div>
           </div>

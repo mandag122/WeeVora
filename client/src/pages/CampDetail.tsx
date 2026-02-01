@@ -39,7 +39,7 @@ export default function CampDetail() {
   const [, params] = useRoute("/camps/:slug");
   const slug = params?.slug;
   
-  const { selectedSessions, dateRange, toggleSession, removeSession, setDateRange } = useSessionContext();
+  const { selectedSessions, dateRange, toggleSession, removeSession, setDateRange, clearAllSessions } = useSessionContext();
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -327,6 +327,7 @@ export default function CampDetail() {
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
               onRemoveSession={removeSession}
+              onClearAll={clearAllSessions}
             />
           </div>
         </div>
