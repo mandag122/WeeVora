@@ -9,15 +9,15 @@ export default defineConfig({
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
       "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets")
-    }
+      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+    },
   },
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    sourcemap: true, //
     rollupOptions: {
-      // FORCE root index.html as the entry
-      input: path.resolve(import.meta.dirname, "index.html")
-    }
-  }
+      input: path.resolve(import.meta.dirname, "index.html"),
+    },
+  },
 });
