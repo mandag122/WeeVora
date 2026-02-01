@@ -168,12 +168,16 @@ export default function Camps() {
     return sorted;
   }, [filteredCamps, sortBy]);
 
-  return (
+return (
+  <ErrorBoundary>
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camps">
       <Header />
       <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <div className="mb-4 sm:mb-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-eggplant mb-1 sm:mb-2" data-testid="text-camps-title">
+          <h1
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-eggplant mb-1 sm:mb-2"
+            data-testid="text-camps-title"
+          >
             Summer Camps in Lake County
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
@@ -247,8 +251,8 @@ export default function Camps() {
             </div>
           </div>
         </div>
-      </main>
+       </main>
       <Footer />
     </div>
-  );
-}
+  </ErrorBoundary>
+);
