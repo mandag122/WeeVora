@@ -52,14 +52,23 @@ export const registrationOptionSchema = z.object({
 
 export type RegistrationOption = z.infer<typeof registrationOptionSchema>;
 
-// Camp schedule options
+// Schedule Availability options (Camps table field "Schedule Availability" in Airtable)
 export const campScheduleOptions = [
-  "Full Week",
-  "Partial Week",
-  "Daily Drop-in"
+  "full-time",
+  "part-time",
+  "partial week",
+  "daily drop-in"
 ] as const;
 
 export type CampScheduleOption = typeof campScheduleOptions[number];
+
+/** Display labels for Schedule Availability filter (title case) */
+export const scheduleAvailabilityLabels: Record<CampScheduleOption, string> = {
+  "full-time": "Full-time",
+  "part-time": "Part-time",
+  "partial week": "Partial week",
+  "daily drop-in": "Daily drop-in"
+};
 
 // Camp schema
 export const campSchema = z.object({

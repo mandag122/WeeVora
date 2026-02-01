@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import type { FilterState } from "@shared/schema";
-import { campInterests, interestColors, campScheduleOptions } from "@shared/schema";
+import { campInterests, interestColors, campScheduleOptions, scheduleAvailabilityLabels } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { format, addMonths, startOfMonth } from "date-fns";
 
@@ -199,7 +199,7 @@ function FilterContent({
                 htmlFor={`schedule-${option}`}
                 className="text-sm text-foreground/80 cursor-pointer"
               >
-                {option}
+                {scheduleAvailabilityLabels[option]}
               </Label>
             </div>
           ))}
@@ -451,7 +451,7 @@ function MobileFilterSheetContent({
                       data-testid={`checkbox-schedule-sheet-${option}`}
                     />
                     <Label htmlFor={`schedule-sheet-${option}`} className="text-sm text-foreground/80 cursor-pointer">
-                      {option}
+                      {scheduleAvailabilityLabels[option]}
                     </Label>
                   </div>
                 ))}

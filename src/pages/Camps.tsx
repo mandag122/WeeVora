@@ -172,9 +172,10 @@ export default function Camps() {
       }
 
       if (filters.campSchedule.length > 0) {
-        const campSchedule = camp.campSchedule ?? [];
-        const hasSchedule = filters.campSchedule.some((schedule) =>
-          campSchedule.includes(schedule),
+        const campSchedule = (camp.campSchedule ?? []).map((s) => (s || "").toLowerCase().trim());
+        const selected = filters.campSchedule.map((s) => s.toLowerCase().trim());
+        const hasSchedule = selected.some((schedule) =>
+          campSchedule.some((cs) => cs === schedule),
         );
         if (!hasSchedule) return false;
       }
