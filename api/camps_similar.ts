@@ -2,7 +2,7 @@
  * Vercel handler for GET /api/camps_similar?slug=:slug (invoked via rewrite from /api/camps/:slug/similar).
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getCamps } from "./camps/index";
+import { getCamps } from "../lib/vercel-camps";
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<VercelResponse | void> {
   if (req.method !== "GET") {
