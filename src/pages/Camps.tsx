@@ -199,13 +199,12 @@ export default function Camps() {
         case "detail": {
           const aHas = hasRegistrationDetail(a);
           const bHas = hasRegistrationDetail(b);
-          if (aHas !== bHas) return bHas ? 1 : -1; // with registration detail first
+          // Camp with registration detail always above camp without
+          if (aHas && !bHas) return -1;
+          if (!aHas && bHas) return 1;
           const aRest = getRestDetailScore(a);
           const bRest = getRestDetailScore(b);
-          if (aRest !== bRest) {
-            if (aHas) return bRest - aRest; // both have detail: more rest first
-            return aRest - bRest; // both no detail: less rest first → fullest last
-          }
+          if (aRest !== bRest) return bRest - aRest;
           return a.name.localeCompare(b.name);
         }
         case "registration":
