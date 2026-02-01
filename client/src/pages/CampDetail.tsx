@@ -272,18 +272,26 @@ export default function CampDetail() {
                   )}
                 </div>
 
-                {camp.websiteUrl && (
-                  <div className="pt-4">
+                <div className="pt-4 flex flex-wrap gap-3">
+                  <Button
+                    variant="outline"
+                    className="border-eggplant text-eggplant rounded-full px-6"
+                    onClick={() => document.getElementById('available-sessions')?.scrollIntoView({ behavior: 'smooth' })}
+                    data-testid="button-view-sessions"
+                  >
+                    View Available Sessions
+                  </Button>
+                  {camp.websiteUrl && (
                     <Button
-                      className="bg-gold hover:bg-gold-dark text-eggplant-dark font-semibold rounded-full px-6"
+                      className="bg-gold text-eggplant-dark font-semibold rounded-full px-6"
                       onClick={() => window.open(camp.websiteUrl!, "_blank")}
                       data-testid="button-register"
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Register on Website
                     </Button>
-                  </div>
-                )}
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -310,12 +318,14 @@ export default function CampDetail() {
               </Card>
             )}
 
-            <SessionSelector
-              camp={camp}
-              sessions={sessions}
-              selectedSessions={selectedSessions}
-              onToggleSession={handleToggleSession}
-            />
+            <div id="available-sessions">
+              <SessionSelector
+                camp={camp}
+                sessions={sessions}
+                selectedSessions={selectedSessions}
+                onToggleSession={handleToggleSession}
+              />
+            </div>
 
             {similarCamps.length > 0 && (
               <div className="space-y-3 sm:space-y-4">
