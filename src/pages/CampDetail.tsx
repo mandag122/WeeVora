@@ -113,6 +113,81 @@ export default function CampDetail() {
 
   const regStatus = getRegistrationStatus(camp);
 
+  // Generate schema.org JSON-LD for SEO
+  useEffect(() => {
+    if (!camp) return;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": camp.name,
+      "description": camp.description || `Summer camp in ${camp.locationCity || "Lake County"}, Illinois`,
+      "url": `https://www.weevora.com/camps/${camp.slug}`,
+      ...(camp.seasonStart && { "startDate": camp.seasonStart }),
+      ...(camp.seasonEnd && { "endDate": camp.seasonEnd }),
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      ...(camp.locationCity && {
+        "location": {
+          "@type": "Place",
+          "name": camp.organization || camp.name,
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": camp.locationCity,
+            "addressRegion": "IL",
+            "addressCountry": "US",
+            ...(camp.locationAddress && { "streetAddress": camp.locationAddress })
+          }
+        }
+      }),
+      ...(camp.organization && {
+        "organizer": {
+          "@type": "Organization",
+          "name": camp.organization,
+          ...(camp.websiteUrl && { "url": camp.websiteUrl })
+        }
+      }),
+      ...((camp.priceMin || camp.priceMax) && {
+        "offers": {
+          "@type": "Offer",
+          "url": camp.websiteUrl || `https://www.weevora.com/camps/${camp.slug}`,
+          "availability": camp.waitlistOnly
+            ? "https://schema.org/LimitedAvailability"
+            : "https://schema.org/InStock",
+          "priceCurrency": "USD",
+          ...(camp.priceMin && { "lowPrice": camp.priceMin }),
+          ...(camp.priceMax && { "highPrice": camp.priceMax }),
+          ...(camp.priceMin && !camp.priceMax && { "price": camp.priceMin })
+        }
+      }),
+      ...((camp.ageMin || camp.ageMax) && {
+        "typicalAgeRange": camp.ageMin && camp.ageMax
+          ? `${camp.ageMin}-${camp.ageMax}`
+          : camp.ageMin
+            ? `${camp.ageMin}+`
+            : undefined
+      })
+    };
+
+    // Remove undefined values
+    const cleanSchema = JSON.parse(JSON.stringify(schema));
+
+    const scriptId = "camp-schema-json-ld";
+    let scriptEl = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!scriptEl) {
+      scriptEl = document.createElement("script");
+      scriptEl.id = scriptId;
+      scriptEl.type = "application/ld+json";
+      document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify(cleanSchema);
+
+    return () => {
+      const el = document.getElementById(scriptId);
+      if (el) el.remove();
+    };
+  }, [camp]);
+
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camp-detail">
       <Header />

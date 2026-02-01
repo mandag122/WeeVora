@@ -236,6 +236,40 @@ export default function Camps() {
     return sorted;
   }, [filteredCamps, sortBy, idsWithOptionNameSet]);
 
+  // Inject schema.org ItemList for SEO
+  useEffect(() => {
+    if (!sortedCamps.length) return;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Summer Camps in Lake County, Illinois",
+      "description": "Browse and compare summer camps for kids in Lake County, IL.",
+      "numberOfItems": sortedCamps.length,
+      "itemListElement": sortedCamps.slice(0, 50).map((camp, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "url": `https://www.weevora.com/camps/${camp.slug}`,
+        "name": camp.name
+      }))
+    };
+
+    const scriptId = "camps-list-schema-json-ld";
+    let scriptEl = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!scriptEl) {
+      scriptEl = document.createElement("script");
+      scriptEl.id = scriptId;
+      scriptEl.type = "application/ld+json";
+      document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify(schema);
+
+    return () => {
+      const el = document.getElementById(scriptId);
+      if (el) el.remove();
+    };
+  }, [sortedCamps]);
+
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camps">
       <Header />
