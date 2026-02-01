@@ -242,7 +242,7 @@ export default function Camps() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {sortedCamps.map((camp) => (
-                  <CampCard key={camp.id} camp={camp} />
+                  <CampCard key={camp.id} camp={camp} source="list" />
                 ))}
               </div>
             )}

@@ -16,6 +16,7 @@ import type { Camp, RegistrationOption } from "@shared/schema";
 import { categoryColors, type CampCategory } from "@shared/schema";
 import { useSessionContext } from "@/context/SessionContext";
 import { format, parseISO, isPast, isFuture } from "date-fns";
+import { trackRegisterWebsiteClick, trackViewAvailableSessions } from "@/lib/analytics";
 
 function getRegistrationStatus(camp: Camp) {
   if (camp.registrationCloses && isPast(parseISO(camp.registrationCloses))) {
@@ -262,7 +263,10 @@ export default function CampDetail() {
                 <div className="pt-4 flex flex-wrap gap-3">
                   <Button
                     className="bg-eggplant text-white font-semibold rounded-full px-6"
-                    onClick={() => document.getElementById('available-sessions')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => {
+                      trackViewAvailableSessions({ campId: camp.id, campName: camp.name });
+                      document.getElementById("available-sessions")?.scrollIntoView({ behavior: "smooth" });
+                    }}
                     data-testid="button-view-sessions"
                   >
                     View Available Sessions
@@ -270,7 +274,14 @@ export default function CampDetail() {
                   {camp.websiteUrl && (
                     <Button
                       className="bg-gold text-eggplant-dark font-semibold rounded-full px-6"
-                      onClick={() => window.open(camp.websiteUrl!, "_blank")}
+                      onClick={() => {
+                        trackRegisterWebsiteClick({
+                          campId: camp.id,
+                          campName: camp.name,
+                          url: camp.websiteUrl!,
+                        });
+                        window.open(camp.websiteUrl!, "_blank");
+                      }}
                       data-testid="button-register"
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
@@ -320,7 +331,7 @@ export default function CampDetail() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                   {similarCamps.slice(0, 4).map(similar => (
-                    <CampCard key={similar.id} camp={similar} />
+                    <CampCard key={similar.id} camp={similar} source="similar" />
                   ))}
                 </div>
               </div>
