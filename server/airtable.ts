@@ -122,31 +122,10 @@ function parseAgeGroup(ageGroup: string | undefined): { min: number | null; max:
   return { min: null, max: null };
 }
 
-// Map Airtable "Interests" to our category names
-function mapInterestsToCategories(interests: string[] | undefined): string[] {
+// Pass through Interests directly from Airtable
+function getInterests(interests: string[] | undefined): string[] {
   if (!interests) return [];
-  
-  const categoryMap: Record<string, string> = {
-    "Sports": "Sports & Athletics",
-    "Arts": "Arts & Crafts",
-    "STEM": "STEM & Technology",
-    "Technology": "STEM & Technology",
-    "Science": "STEM & Technology",
-    "Performing Arts": "Performing Arts",
-    "Theater": "Performing Arts",
-    "Music": "Performing Arts",
-    "Dance": "Performing Arts",
-    "Outdoor": "Outdoor & Nature",
-    "Nature": "Outdoor & Nature",
-    "Adventure": "Outdoor & Nature",
-    "Academic": "Academic",
-    "Education": "Academic",
-    "Multi-Activity": "Multi-Activity",
-    "Other": "Multi-Activity"
-  };
-  
-  const mapped = interests.map(interest => categoryMap[interest] || interest);
-  return Array.from(new Set(mapped)); // Remove duplicates
+  return interests;
 }
 
 export async function fetchCamps(): Promise<Camp[]> {
@@ -160,7 +139,7 @@ export async function fetchCamps(): Promise<Camp[]> {
       slug: generateSlug(record.fields["Camp Name"] || "", record.id),
       organization: record.fields.Organization || null,
       description: record.fields.Description || null,
-      categories: mapInterestsToCategories(record.fields.Interests),
+      categories: getInterests(record.fields.Interests),
       ageMin: ages[index].min,
       ageMax: ages[index].max,
       locationCity: record.fields["Location City"] || null,

@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import type { FilterState } from "@shared/schema";
-import { campCategories, campScheduleOptions } from "@shared/schema";
+import { campInterests, interestColors, campScheduleOptions } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { format, addMonths, startOfMonth } from "date-fns";
 
@@ -230,26 +230,30 @@ function FilterContent({
       )}
 
       <div className="space-y-3">
-        <Label className="text-sm font-medium text-foreground">Categories</Label>
+        <Label className="text-sm font-medium text-foreground">Interests</Label>
         <div className="space-y-2">
-          {campCategories.map((category) => (
-            <div key={category} className="flex items-center gap-2">
+          {campInterests.map((interest) => (
+            <div key={interest} className="flex items-center gap-2">
               <Checkbox
-                id={`category-${category}`}
-                checked={filters.categories.includes(category)}
+                id={`interest-${interest}`}
+                checked={filters.categories.includes(interest)}
                 onCheckedChange={(checked) => {
-                  const newCategories = checked
-                    ? [...filters.categories, category]
-                    : filters.categories.filter((c) => c !== category);
-                  onFilterChange({ categories: newCategories });
+                  const newInterests = checked
+                    ? [...filters.categories, interest]
+                    : filters.categories.filter((c) => c !== interest);
+                  onFilterChange({ categories: newInterests });
                 }}
-                data-testid={`checkbox-category-${category}`}
+                data-testid={`checkbox-interest-${interest}`}
+              />
+              <div
+                className="w-3 h-3 rounded-full shrink-0"
+                style={{ backgroundColor: interestColors[interest] }}
               />
               <Label 
-                htmlFor={`category-${category}`}
+                htmlFor={`interest-${interest}`}
                 className="text-sm text-foreground/80 cursor-pointer"
               >
-                {category}
+                {interest}
               </Label>
             </div>
           ))}

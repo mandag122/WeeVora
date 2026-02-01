@@ -1,30 +1,33 @@
 import { z } from "zod";
 
-// Camp category types
-export const campCategories = [
-  "Sports & Athletics",
-  "Arts & Crafts", 
-  "STEM & Technology",
+// Camp interest types (from Airtable Interests column)
+export const campInterests = [
+  "Sports",
+  "Arts",
+  "STEM",
   "Performing Arts",
-  "Outdoor & Nature",
+  "Outdoor",
   "Academic",
-  "Park District",
   "Multi-Activity"
 ] as const;
 
-export type CampCategory = typeof campCategories[number];
+export type CampInterest = typeof campInterests[number];
 
-// Category colors for visual distinction
-export const categoryColors: Record<CampCategory, string> = {
-  "Sports & Athletics": "#558B2F",
-  "Arts & Crafts": "#FF7043",
-  "STEM & Technology": "#117A8B",
+// Interest colors for visual distinction
+export const interestColors: Record<CampInterest, string> = {
+  "Sports": "#558B2F",
+  "Arts": "#FF7043",
+  "STEM": "#117A8B",
   "Performing Arts": "#C2395A",
-  "Outdoor & Nature": "#4A8B6F",
+  "Outdoor": "#4A8B6F",
   "Academic": "#5B2C6F",
-  "Park District": "#117A8B",
   "Multi-Activity": "#3D4AA3"
 };
+
+// Legacy aliases for backwards compatibility
+export const campCategories = campInterests;
+export type CampCategory = CampInterest;
+export const categoryColors = interestColors;
 
 // Registration option schema (sessions within a camp)
 export const registrationOptionSchema = z.object({
