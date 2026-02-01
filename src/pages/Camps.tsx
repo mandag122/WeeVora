@@ -172,8 +172,10 @@ export default function Camps() {
       }
 
       if (filters.campSchedule.length > 0) {
-        const campSchedule = (camp.campSchedule ?? []).map((s) => (s || "").toLowerCase().trim());
-        const selected = filters.campSchedule.map((s) => s.toLowerCase().trim());
+        // Normalize so "Full time" (Airtable) matches "full-time" (filter): lowercase, collapse spaces/hyphens
+        const normalize = (s: string) => (s || "").toLowerCase().trim().replace(/[\s-]+/g, "");
+        const campSchedule = (camp.campSchedule ?? []).map(normalize);
+        const selected = filters.campSchedule.map(normalize);
         const hasSchedule = selected.some((schedule) =>
           campSchedule.some((cs) => cs === schedule),
         );
