@@ -274,8 +274,7 @@ export default function CampDetail() {
 
                 <div className="pt-4 flex flex-wrap gap-3">
                   <Button
-                    variant="outline"
-                    className="border-eggplant text-eggplant rounded-full px-6"
+                    className="bg-eggplant text-white font-semibold rounded-full px-6"
                     onClick={() => document.getElementById('available-sessions')?.scrollIntoView({ behavior: 'smooth' })}
                     data-testid="button-view-sessions"
                   >
