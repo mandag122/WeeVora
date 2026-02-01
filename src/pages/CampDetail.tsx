@@ -69,51 +69,7 @@ export default function CampDetail() {
     enabled: !!slug
   });
 
-  if (campLoading) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-8">
-          <Skeleton className="h-8 w-64 mb-6" />
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <Skeleton className="h-48" />
-              <Skeleton className="h-96" />
-            </div>
-            <Skeleton className="h-96" />
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (campError || !camp) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-8">
-          <div className="text-center py-16">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Camp Not Found</h1>
-            <p className="text-muted-foreground mb-6">
-              The camp you're looking for doesn't exist or has been removed.
-            </p>
-            <Link href="/camps">
-              <Button className="bg-eggplant hover:bg-eggplant-light">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Camps
-              </Button>
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  const regStatus = getRegistrationStatus(camp);
-
-  // Generate schema.org JSON-LD for SEO
+  // Schema.org JSON-LD for SEO - must run before early returns so hook count stays consistent
   useEffect(() => {
     if (!camp) return;
 
@@ -169,7 +125,6 @@ export default function CampDetail() {
       })
     };
 
-    // Remove undefined values
     const cleanSchema = JSON.parse(JSON.stringify(schema));
 
     const scriptId = "camp-schema-json-ld";
@@ -187,6 +142,50 @@ export default function CampDetail() {
       if (el) el.remove();
     };
   }, [camp]);
+
+  if (campLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Header />
+        <main className="flex-1 container mx-auto px-4 py-8">
+          <Skeleton className="h-8 w-64 mb-6" />
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <Skeleton className="h-48" />
+              <Skeleton className="h-96" />
+            </div>
+            <Skeleton className="h-96" />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (campError || !camp) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Header />
+        <main className="flex-1 container mx-auto px-4 py-8">
+          <div className="text-center py-16">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Camp Not Found</h1>
+            <p className="text-muted-foreground mb-6">
+              The camp you're looking for doesn't exist or has been removed.
+            </p>
+            <Link href="/camps">
+              <Button className="bg-eggplant hover:bg-eggplant-light">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Camps
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const regStatus = getRegistrationStatus(camp);
 
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camp-detail">
