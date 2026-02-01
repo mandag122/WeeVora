@@ -136,6 +136,14 @@ function getInterests(interests: string[] | undefined): string[] {
   return interests;
 }
 
+/** Airtable link fields can be string[] or { id: string }[]. Return camp record ID. */
+function getCampIdFromOptionRecord(fields: Record<string, unknown>): string {
+  const raw = fields.Camps?.[0];
+  if (typeof raw === "string") return raw;
+  if (raw && typeof raw === "object" && "id" in raw) return (raw as { id: string }).id ?? "";
+  return "";
+}
+
 export async function fetchCamps(): Promise<Camp[]> {
   try {
     const [records, optionRecords] = await Promise.all([
@@ -146,9 +154,8 @@ export async function fetchCamps(): Promise<Camp[]> {
     const ages = visible.map(r => parseAgeGroup(r.fields["Age Group"]));
     const campIdsWithRegistrationDetail = new Set<string>();
     for (const rec of optionRecords) {
-      const campId = rec.fields.Camps?.[0];
-      const f = rec.fields as Record<string, unknown>;
-      const optionName = String(f?.option_name ?? f?.["Option Name"] ?? "").trim();
+      const campId = getCampIdFromOptionRecord(rec.fields as Record<string, unknown>);
+      const optionName = String((rec.fields as Record<string, unknown>)?.option_name ?? (rec.fields as Record<string, unknown>)?.["Option Name"] ?? "").trim();
       if (campId && optionName) {
         campIdsWithRegistrationDetail.add(campId);
       }
@@ -243,6 +250,23 @@ export async function fetchRegistrationOptions(): Promise<RegistrationOption[]> 
     return results;
   } catch (error) {
     console.error("Error fetching registration options from Airtable:", error);
+    return [];
+  }
+}
+
+/** Camp IDs that have at least one Registration_Options row with option_name filled. Used for sort. */
+export async function getCampIdsWithOptionName(): Promise<string[]> {
+  try {
+    const optionRecords = await fetchFromAirtable<AirtableRegistrationFields>("Registration_Options");
+    const ids = new Set<string>();
+    for (const rec of optionRecords) {
+      const campId = getCampIdFromOptionRecord(rec.fields as Record<string, unknown>);
+      const optionName = String((rec.fields as Record<string, unknown>)?.option_name ?? (rec.fields as Record<string, unknown>)?.["Option Name"] ?? "").trim();
+      if (campId && optionName) ids.add(campId);
+    }
+    return Array.from(ids);
+  } catch (error) {
+    console.error("Error fetching camp IDs with option name:", error);
     return [];
   }
 }

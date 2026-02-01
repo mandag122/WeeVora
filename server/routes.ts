@@ -1,12 +1,23 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { fetchCamps, getCampBySlug, getSessionsForCamp, getSimilarCamps, submitContactForm } from "./airtable";
+import { fetchCamps, getCampBySlug, getCampIdsWithOptionName, getSessionsForCamp, getSimilarCamps, submitContactForm } from "./airtable";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   
+  // Camp IDs that have option_name in Registration_Options (for "Most detail first" sort)
+  app.get("/api/camp-ids-with-option-name", async (req, res) => {
+    try {
+      const ids = await getCampIdsWithOptionName();
+      res.json(ids);
+    } catch (error) {
+      console.error("Error fetching camp IDs with option name:", error);
+      res.status(500).json({ error: "Failed to fetch" });
+    }
+  });
+
   // Get all camps
   app.get("/api/camps", async (req, res) => {
     try {
