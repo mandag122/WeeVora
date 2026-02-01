@@ -4,11 +4,7 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    runtimeErrorOverlay()
-  ],
-
+  plugins: [react(), runtimeErrorOverlay()],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
@@ -16,15 +12,11 @@ export default defineConfig({
       "@assets": path.resolve(import.meta.dirname, "attached_assets")
     }
   },
-
-  // IMPORTANT:
-  // - index.html is at the repo root
-  // - src/ is at the repo root
-  // So we do NOT set `root`
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
     rollupOptions: {
+      // FORCE root index.html as the entry
       input: path.resolve(import.meta.dirname, "index.html")
     }
   }
