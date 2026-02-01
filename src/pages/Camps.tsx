@@ -204,6 +204,7 @@ export default function Camps() {
             onFilterChange={handleFilterChange}
             locations={uniqueLocations}
             onClearFilters={handleClearFilters}
+            resultCount={filteredCamps.length}
           />
 
           <div className="flex-1 min-w-0">
