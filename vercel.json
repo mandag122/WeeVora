@@ -1,5 +1,8 @@
 {
   "rewrites": [
+    { "source": "/api/camps/:slug/sessions", "destination": "/api/camps_sessions" },
+    { "source": "/api/camps/:slug/similar", "destination": "/api/camps_similar" },
+    { "source": "/api/camps/:slug", "destination": "/api/camps_slug" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
