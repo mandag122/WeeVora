@@ -19,6 +19,12 @@ function requiredEnv(name: string): string {
   return v;
 }
 
+function setCommonHeaders(res: VercelResponse) {
+  // Same-origin by default; if you need cross-origin, uncomment the next line:
+  // res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+}
+
 async function airtableListAll(tableName: string): Promise<AirtableRecord[]> {
   const apiKey = requiredEnv("AIRTABLE_API_KEY");
   const baseId = requiredEnv("AIRTABLE_BASE_ID");
@@ -27,15 +33,15 @@ async function airtableListAll(tableName: string): Promise<AirtableRecord[]> {
   let offset: string | undefined;
 
   do {
-    const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`);
-    // Keep within Airtable’s typical page size
+    const url = new URL(
+      `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`
+    );
     url.searchParams.set("pageSize", "100");
     if (offset) url.searchParams.set("offset", offset);
 
     const resp = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
       },
     });
 
@@ -44,4 +50,34 @@ async function airtableListAll(tableName: string): Promise<AirtableRecord[]> {
       throw new Error(`Airtable list failed (${resp.status}): ${text}`);
     }
 
-    const data = (await resp
+    const data = (await resp.json()) as AirtableListResponse;
+    records.push(...data.records);
+    offset = data.offset;
+  } while (offset);
+
+  return records;
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  try {
+    setCommonHeaders(res);
+
+    if (req.method !== "GET") {
+      res.setHeader("Allow", "GET");
+      return res.status(405).json({ error: "Method Not Allowed" });
+    }
+
+    const records = await airtableListAll(TABLE_NAME);
+
+    return res.status(200).json({
+      records: records.map((r) => ({
+        id: r.id,
+        createdTime: r.createdTime,
+        fields: r.fields,
+      })),
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return res.status(500).json({ error: message });
+  }
+}
