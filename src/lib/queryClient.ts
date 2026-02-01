@@ -29,6 +29,10 @@ function buildApiUrl(queryKey: unknown[]): string {
   if (queryKey[0] === "/api/camps" && queryKey.length === 1) {
     return "/api/camps";
   }
+  // Camp IDs with option_name (for sort): ["/api/camp-ids-with-option-name"] -> /api/camp-ids-with-option-name
+  if (queryKey[0] === "/api/camp-ids-with-option-name") {
+    return "/api/camp-ids-with-option-name";
+  }
   // Camp by slug: ["/api/camps", slug] -> /api/camps_slug?slug=...
   if (queryKey[0] === "/api/camps" && queryKey.length === 2 && typeof queryKey[1] === "string") {
     return `/api/camps_slug?slug=${encodeURIComponent(queryKey[1])}`;

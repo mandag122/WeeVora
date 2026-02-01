@@ -50,7 +50,8 @@ async function fetchRegistrationOptionsTable(
   const campIdsWithDetail = new Set<string>();
   for (const rec of allRecords) {
     const fields = rec.fields || {};
-    const campId = Array.isArray(fields.Camps) ? (fields.Camps[0] as string) : "";
+    const raw = fields.Camps?.[0];
+    const campId = typeof raw === "string" ? raw : (raw && typeof raw === "object" && "id" in raw ? (raw as { id: string }).id : "");
     const optionName = String(fields.option_name ?? fields["Option Name"] ?? "").trim();
     if (campId && optionName) {
       campIdsWithDetail.add(campId);

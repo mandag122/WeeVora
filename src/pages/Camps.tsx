@@ -60,9 +60,9 @@ function getRestDetailScore(camp: Camp): number {
   return score;
 }
 
-/** True only if API says so; undefined treated as false. */
-function hasRegistrationDetail(camp: Camp): boolean {
-  return camp.hasRegistrationDetail === true;
+/** True if camp id is in the list from /api/camp-ids-with-option-name (option_name in Registration_Options). */
+function campHasOptionName(campId: string, idsSet: Set<string>): boolean {
+  return idsSet.has(campId);
 }
 
 export default function Camps() {
@@ -94,7 +94,15 @@ export default function Camps() {
     queryKey: ["/api/camps"],
   });
 
+  const { data: campIdsWithOptionName = [] } = useQuery<string[]>({
+    queryKey: ["/api/camp-ids-with-option-name"],
+  });
+
   const camps = Array.isArray(data) ? data : [];
+  const idsWithOptionNameSet = useMemo(
+    () => new Set(Array.isArray(campIdsWithOptionName) ? campIdsWithOptionName : []),
+    [campIdsWithOptionName]
+  );
 
   const uniqueLocations = useMemo(() => {
     const cities = camps
@@ -197,9 +205,9 @@ export default function Camps() {
         case "name-desc":
           return b.name.localeCompare(a.name);
         case "detail": {
-          const aHas = hasRegistrationDetail(a);
-          const bHas = hasRegistrationDetail(b);
-          // Camp with registration detail always above camp without
+          const aHas = campHasOptionName(a.id, idsWithOptionNameSet);
+          const bHas = campHasOptionName(b.id, idsWithOptionNameSet);
+          // Camp with option_name in Registration_Options always above camp without
           if (aHas && !bHas) return -1;
           if (!aHas && bHas) return 1;
           const aRest = getRestDetailScore(a);
@@ -217,7 +225,7 @@ export default function Camps() {
     });
 
     return sorted;
-  }, [filteredCamps, sortBy]);
+  }, [filteredCamps, sortBy, idsWithOptionNameSet]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camps">
