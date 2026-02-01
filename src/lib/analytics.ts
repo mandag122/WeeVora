@@ -10,8 +10,13 @@ declare global {
 }
 
 function gtagEvent(eventName: string, params?: Record<string, string | number | boolean>) {
-  if (typeof window !== "undefined" && window.gtag) {
+  if (typeof window === "undefined") return;
+  // Always log so you can confirm tracking runs (remove or gate on NODE_ENV later)
+  console.log("[WeeVora GA]", eventName, params ?? {});
+  if (window.gtag) {
     window.gtag("event", eventName, params);
+  } else {
+    console.warn("[WeeVora GA] gtag not found – Google tag script may be blocked or not loaded.");
   }
 }
 
