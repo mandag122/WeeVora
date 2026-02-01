@@ -6,7 +6,7 @@ const features = [
   {
     icon: folderIcon,
     title: "Camp Directory",
-    description: "Every summer camp in Lake County with registration dates, costs, and details."
+    description: "We're working to add every summer camp in Lake County with registration dates, costs, and details so you have them all at your fingertips."
   },
   {
     icon: searchIcon,
@@ -37,7 +37,7 @@ export function Features() {
             Planning summer just got easier
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to find and organize the best camps for your kids
+            Find tons of fun options for your kids this summer, and plan flawlessly!
           </p>
         </div>
 
