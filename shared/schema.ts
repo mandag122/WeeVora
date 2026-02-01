@@ -5,23 +5,25 @@ export const campInterests = [
   "Sports",
   "Arts",
   "STEM",
-  "Performing Arts",
-  "Outdoor",
-  "Academic",
-  "Multi-Activity"
+  "Nature",
+  "Music",
+  "Drama",
+  "Equestrian",
+  "Other"
 ] as const;
 
 export type CampInterest = typeof campInterests[number];
 
-// Interest colors for visual distinction
+// Interest colors for visual distinction (matching Airtable colors)
 export const interestColors: Record<CampInterest, string> = {
   "Sports": "#558B2F",
   "Arts": "#FF7043",
   "STEM": "#117A8B",
-  "Performing Arts": "#C2395A",
-  "Outdoor": "#4A8B6F",
-  "Academic": "#5B2C6F",
-  "Multi-Activity": "#3D4AA3"
+  "Nature": "#4A8B6F",
+  "Music": "#3D4AA3",
+  "Drama": "#C2395A",
+  "Equestrian": "#F9B233",
+  "Other": "#6B7280"
 };
 
 // Legacy aliases for backwards compatibility
