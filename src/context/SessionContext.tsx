@@ -16,6 +16,8 @@ interface SessionContextType {
   removeSession: (sessionId: string) => void;
   setDateRange: (range: DateRange) => void;
   clearAllSessions: () => void;
+  isCalendarOpen: boolean;
+  setCalendarOpen: (open: boolean) => void;
 }
 
 const SessionContext = createContext<SessionContextType | null>(null);
@@ -38,6 +40,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       return defaultDateRange;
     }
   });
+
+  const [isCalendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSessions));
@@ -72,7 +76,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       toggleSession,
       removeSession,
       setDateRange,
-      clearAllSessions
+      clearAllSessions,
+      isCalendarOpen,
+      setCalendarOpen
     }}>
       {children}
     </SessionContext.Provider>

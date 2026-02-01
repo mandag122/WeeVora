@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SessionSelector } from "@/components/SessionSelector";
 import { SessionCalendar } from "@/components/SessionCalendar";
+import { MobileCalendarFAB } from "@/components/MobileCalendarFAB";
 import { CampCard } from "@/components/CampCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -350,6 +351,7 @@ export default function CampDetail() {
         </div>
       </main>
       <Footer />
+      <MobileCalendarFAB />
     </div>
   );
 }

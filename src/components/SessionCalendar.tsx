@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useSessionContext } from "@/context/SessionContext";
 import { trackCalendarOpened, trackSessionRemovedFromCalendar } from "@/lib/analytics";
 import type { SelectedSession, DateRange } from "@shared/schema";
 import { 
@@ -497,10 +498,13 @@ export function SessionCalendar({
   onClearAll
 }: SessionCalendarProps) {
   const { toast } = useToast();
+  const sessionContext = useSessionContext();
+  const [localExpanded, setLocalExpanded] = useState(false);
+  const isExpanded = sessionContext ? sessionContext.isCalendarOpen : localExpanded;
+  const setIsExpanded = sessionContext ? sessionContext.setCalendarOpen : setLocalExpanded;
   const [currentMonth, setCurrentMonth] = useState(() => {
     return dateRange.start ? parseISO(dateRange.start) : new Date();
   });
-  const [isExpanded, setIsExpanded] = useState(false);
   const [sessionToRemove, setSessionToRemove] = useState<SelectedSession | null>(null);
   const [showOverlapAlert, setShowOverlapAlert] = useState(false);
   const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
@@ -908,16 +912,6 @@ export function SessionCalendar({
         />
       </div>
 
-      {/* Mobile-only sticky button: opens calendar popout */}
-      <Button
-        type="button"
-        className="fixed bottom-0 left-0 right-0 z-50 rounded-none h-14 text-base font-semibold bg-eggplant hover:bg-eggplant-light text-white shadow-lg md:hidden"
-        onClick={() => setIsExpanded(true)}
-        data-testid="button-mobile-view-calendar"
-      >
-        <Calendar className="w-5 h-5 mr-2" />
-        View Calendar
-      </Button>
     </>
   );
 }
