@@ -114,7 +114,7 @@ function CalendarGrid({
                 ${!isCurrentMonth ? "opacity-30" : ""}
                 ${isToday ? "border-eggplant bg-eggplant/5" : ""}
                 ${hasMultiple ? "ring-2 ring-gold/50" : ""}
-                ${onDayClick && daySessions.length > 0 ? "cursor-pointer hover:bg-muted/50" : ""}
+                ${onDayClick ? "cursor-pointer hover:bg-muted/50" : ""}
               `}
             >
               <span className={`${compact ? "text-[10px]" : "text-xs sm:text-sm"} ${isToday ? "font-bold text-eggplant" : "text-muted-foreground"}`}>
@@ -657,6 +657,7 @@ export function SessionCalendar({
           <CalendarGrid 
             currentMonth={currentMonth}
             selectedSessions={selectedSessions}
+            onDayClick={() => setIsExpanded(true)}
           />
 
           <div className="border-t pt-3 sm:pt-4">
