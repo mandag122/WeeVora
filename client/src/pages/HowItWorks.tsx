@@ -52,9 +52,9 @@ export default function HowItWorks() {
                 </div>
                 <div>
                   <h3 className="font-bold text-lg text-gold-dark mb-2">
-                    Important: WeeVora is a Planning Tool Only
+                    Important: <span className="text-foreground">WeeVora is a Planning Tool Only</span>
                   </h3>
-                  <p className="text-sm text-gold-dark leading-relaxed">
+                  <p className="text-sm text-foreground leading-relaxed">
                     WeeVora helps you discover, compare, and organize summer camp options—but <strong>we do not process registrations or payments</strong>. Once you've built your ideal schedule, you must visit each camp's official website to register and pay. Think of WeeVora as your summer camp planner, not your registration portal.
                   </p>
                 </div>
