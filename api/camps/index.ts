@@ -51,9 +51,9 @@ async function fetchRegistrationOptionsTable(
   for (const rec of allRecords) {
     const fields = rec.fields || {};
     const campId = Array.isArray(fields.Camps) ? (fields.Camps[0] as string) : "";
-    const optionName = String(fields.option_name ?? "").trim();
-    const datesCsv = String(fields.dates_csv ?? "").trim();
-    const price = String(fields.price ?? "").trim();
+    const optionName = String(fields.option_name ?? fields["Option Name"] ?? "").trim();
+    const datesCsv = String(fields.dates_csv ?? fields["Dates CSV"] ?? "").trim();
+    const price = String(fields.price ?? fields.Price ?? "").trim();
     if (campId && optionName && datesCsv && price) {
       campIdsWithDetail.add(campId);
     }

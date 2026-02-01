@@ -147,9 +147,10 @@ export async function fetchCamps(): Promise<Camp[]> {
     const campIdsWithRegistrationDetail = new Set<string>();
     for (const rec of optionRecords) {
       const campId = rec.fields.Camps?.[0];
-      const optionName = (rec.fields.option_name ?? "").toString().trim();
-      const datesCsv = (rec.fields.dates_csv ?? "").toString().trim();
-      const price = (rec.fields.price ?? "").toString().trim();
+      const f = rec.fields as Record<string, unknown>;
+      const optionName = String(f?.option_name ?? f?.["Option Name"] ?? "").trim();
+      const datesCsv = String(f?.dates_csv ?? f?.["Dates CSV"] ?? "").trim();
+      const price = String(f?.price ?? f?.Price ?? "").trim();
       if (campId && optionName && datesCsv && price) {
         campIdsWithRegistrationDetail.add(campId);
       }

@@ -39,12 +39,12 @@ const defaultFilters: FilterState = {
 type SortOption = "registration" | "name-asc" | "name-desc" | "detail";
 
 /**
- * Score 0–N: highest weight = has Registration_Options with option_name, dates_csv, price;
- * next = description; then rest of visible detail.
+ * Score: highest weight = has Registration_Options with option_name, dates_csv, price (100 pts so it always wins);
+ * next = description; then rest of visible detail (1 pt each).
  */
 function getCampDetailScore(camp: Camp): number {
   let score = 0;
-  if (camp.hasRegistrationDetail) score += 10;
+  if (camp.hasRegistrationDetail) score += 100;
   const desc = camp.description?.trim() ?? "";
   if (desc.length >= 50) score += 3;
   else if (desc.length >= 20) score += 1;
