@@ -82,7 +82,7 @@ export function CampCard({ camp, source }: CampCardProps) {
         className={`group relative overflow-hidden border-border/50 shadow-paper hover:shadow-paper-hover transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
           !hasRegistrationOpens ? "opacity-60" : ""
         } ${
-          camp.waitlistOnly ? "bg-rose/5 border-rose/30" : "bg-white"
+          camp.waitlistOnly ? "bg-rose/15 border-rose/30" : "bg-white"
         }`}
         data-testid={`card-camp-${camp.id}`}
       >

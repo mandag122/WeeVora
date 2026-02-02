@@ -209,7 +209,7 @@ export default function CampDetail() {
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            <Card className={`shadow-paper overflow-hidden ${camp.waitlistOnly ? "bg-rose/5 border-rose/30 border" : "bg-white border-border/50"}`}>
+            <Card className={`shadow-paper overflow-hidden ${camp.waitlistOnly ? "bg-rose/15 border-rose/30 border" : "bg-white border-border/50"}`}>
               <div 
                 className="h-4"
                 style={{ backgroundColor: camp.waitlistOnly ? "hsl(340 65% 47%)" : (camp.color || "#5B2C6F") }}
