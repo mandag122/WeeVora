@@ -30,7 +30,7 @@ function getRegistrationStatus(camp: Camp) {
     return { status: "upcoming", text: `Opens ${format(regOpens, "MMMM d, yyyy")}`, color: "bg-yellow-100 text-yellow-700" };
   }
   if (camp.waitlistOnly) {
-    return { status: "waitlist", text: "Waitlist Only", color: "bg-orange-100 text-orange-700" };
+    return { status: "waitlist", text: "WAITLIST ONLY", color: "bg-rose text-white" };
   }
   if (regCloses) {
     return { status: "open", text: `Open until ${format(regCloses, "MMMM d, yyyy")}`, color: "bg-green-100 text-green-700" };
@@ -209,10 +209,10 @@ export default function CampDetail() {
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            <Card className="bg-white border-border/50 shadow-paper overflow-hidden">
+            <Card className={`shadow-paper overflow-hidden ${camp.waitlistOnly ? "bg-rose/5 border-rose/30 border" : "bg-white border-border/50"}`}>
               <div 
                 className="h-4"
-                style={{ backgroundColor: camp.color || "#5B2C6F" }}
+                style={{ backgroundColor: camp.waitlistOnly ? "hsl(340 65% 47%)" : (camp.color || "#5B2C6F") }}
               />
               <CardContent className="p-4 sm:p-6 space-y-4">
                 <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
