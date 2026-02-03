@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { MapPin, Clock, Users, ExternalLink, Sun } from "lucide-react";
+import { MapPin, Clock, Users, ExternalLink, Sun, Calendar } from "lucide-react";
 import { trackCampCardClick, trackRegisterWebsiteClick } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,17 @@ export function CampCard({ camp, source }: CampCardProps) {
       : camp.priceMin
         ? `From $${camp.priceMin}`
         : null;
+
+  const seasonStart = safeParseISO(camp.seasonStart);
+  const seasonEnd = safeParseISO(camp.seasonEnd);
+  const dateRange =
+    seasonStart && seasonEnd
+      ? `${format(seasonStart, "MMMM d")} to ${format(seasonEnd, "MMMM d")}`
+      : seasonStart
+        ? `From ${format(seasonStart, "MMMM d")}`
+        : seasonEnd
+          ? `Until ${format(seasonEnd, "MMMM d")}`
+          : null;
 
   // ✅ SAFETY: categories may be missing/null depending on API data
   const categories: string[] = Array.isArray((camp as any).categories) ? (camp as any).categories : [];
@@ -158,6 +169,13 @@ export function CampCard({ camp, source }: CampCardProps) {
               <div className="flex items-center gap-1.5">
                 <Clock className="w-4 h-4 text-forest" />
                 <span>{camp.campHours}</span>
+              </div>
+            )}
+
+            {dateRange && (
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-rose" />
+                <span>{dateRange}</span>
               </div>
             )}
           </div>
