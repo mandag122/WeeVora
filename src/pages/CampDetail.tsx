@@ -19,6 +19,7 @@ import { useSessionContext } from "@/context/SessionContext";
 import { format, isPast, isFuture } from "date-fns";
 import { safeParseISO } from "@/lib/dateUtils";
 import { trackRegisterWebsiteClick, trackViewAvailableSessions } from "@/lib/analytics";
+import ReactMarkdown from "react-markdown";
 
 function getRegistrationStatus(camp: Camp) {
   const regCloses = safeParseISO(camp.registrationCloses);
@@ -382,9 +383,9 @@ export default function CampDetail() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap">
-                    {camp.description}
-                  </p>
+                  <div className="prose prose-sm max-w-none text-foreground/80 leading-relaxed [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:my-2 [&_ol]:my-2">
+                    <ReactMarkdown>{camp.description}</ReactMarkdown>
+                  </div>
                   {camp.additionalInfo && (
                     <div className="mt-4 pt-4 border-t border-border/30">
                       <p className="text-sm text-muted-foreground whitespace-pre-wrap">

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Search, X, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -306,17 +306,6 @@ function MobileFilterSheetContent({
   return (
     <div className="flex flex-col h-full">
       <div className="flex-shrink-0 space-y-4 pb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search camps..."
-            value={filters.search}
-            onChange={(e) => onFilterChange({ search: e.target.value })}
-            className="pl-10 rounded-full border-border/50 focus:border-eggplant"
-            data-testid="input-search-sheet"
-          />
-        </div>
         {activeFilterCount > 0 && (
           <div className="flex items-center justify-between">
             <Badge variant="secondary" className="bg-eggplant/10 text-eggplant">
@@ -559,37 +548,19 @@ export function CampFilters(props: CampFiltersProps) {
 }
 
 function MobileFilterBar(props: CampFiltersProps) {
-  const [searchActive, setSearchActive] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const searchRef = useRef<HTMLInputElement>(null);
-
-  const handleSearchBarClick = () => {
-    if (!searchActive) {
-      setSearchActive(true);
-      setTimeout(() => searchRef.current?.focus(), 0);
-    }
-  };
-
   const resultCount = props.resultCount ?? 0;
 
   return (
     <>
       <div className="flex gap-2 mb-4 min-w-0 w-full">
-        <div
-          className="relative flex-1 min-w-0 overflow-hidden rounded-full"
-          onClick={handleSearchBarClick}
-          role="button"
-          tabIndex={0}
-          aria-label="Search camps"
-        >
+        <div className="relative flex-1 min-w-0 overflow-hidden rounded-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
           <Input
-            ref={searchRef}
             type="search"
             placeholder="Search camps..."
             value={props.filters.search}
             onChange={(e) => props.onFilterChange({ search: e.target.value })}
-            readOnly={!searchActive}
             className="pl-10 rounded-full border-border/50 min-w-0 w-full max-w-full focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-offset-0 focus-visible:ring-eggplant/30"
             data-testid="input-search-mobile"
           />
