@@ -37,29 +37,7 @@ const defaultFilters: FilterState = {
   dateEnd: null,
 };
 
-type SortOption = "registration" | "name-asc" | "name-desc" | "detail";
-
-/** Rest of detail score (description + other fields). Used for tiebreaker within detail / no-detail groups. */
-function getRestDetailScore(camp: Camp): number {
-  let score = 0;
-  const desc = camp.description?.trim() ?? "";
-  if (desc.length >= 50) score += 3;
-  else if (desc.length >= 20) score += 1;
-  if (camp.organization?.trim()) score += 1;
-  if (camp.categories?.length) score += 1;
-  if (camp.ageMin != null || camp.ageMax != null) score += 1;
-  if (camp.locationCity?.trim()) score += 1;
-  if (camp.locationAddress?.trim()) score += 1;
-  if (camp.priceMin != null || camp.priceMax != null) score += 1;
-  if (camp.websiteUrl?.trim()) score += 1;
-  if (camp.campHours?.trim()) score += 1;
-  if (camp.extendedHoursInfo?.trim()) score += 1;
-  if (camp.siblingDiscountNote?.trim()) score += 1;
-  const addl = camp.additionalInfo?.trim() ?? "";
-  if (addl.length >= 20) score += 1;
-  if (camp.campSchedule?.length) score += 1;
-  return score;
-}
+type SortOption = "registration" | "name-asc" | "name-desc";
 
 /** True if camp id is in the list from /api/camp-ids-with-option-name (option_name in Registration_Options). */
 function campHasOptionName(campId: string, idsSet: Set<string>): boolean {
@@ -216,12 +194,6 @@ export default function Camps() {
           return a.name.localeCompare(b.name);
         case "name-desc":
           return b.name.localeCompare(a.name);
-        case "detail": {
-          const aRest = getRestDetailScore(a);
-          const bRest = getRestDetailScore(b);
-          if (aRest !== bRest) return bRest - aRest;
-          return a.name.localeCompare(b.name);
-        }
         case "registration":
         default: {
           const aParsed = safeParseISO(a.registrationOpens);
@@ -308,7 +280,6 @@ export default function Camps() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="registration">Registration Date</SelectItem>
-                  <SelectItem value="detail">Most detail first</SelectItem>
                   <SelectItem value="name-asc">Name A-Z</SelectItem>
                   <SelectItem value="name-desc">Name Z-A</SelectItem>
                 </SelectContent>
