@@ -397,6 +397,22 @@ export default function CampDetail() {
               </Card>
             )}
 
+            {camp.pricingDetails && (
+              <Card className="bg-white border-border/50 shadow-paper">
+                <CardHeader>
+                  <CardTitle className="text-lg text-eggplant flex items-center gap-2">
+                    <DollarSign className="w-5 h-5" />
+                    Pricing Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-sm max-w-none text-foreground/80 leading-relaxed [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:my-2 [&_ol]:my-2">
+                    <ReactMarkdown>{camp.pricingDetails}</ReactMarkdown>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <div id="available-sessions">
               <SessionSelector
                 camp={camp}

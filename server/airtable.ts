@@ -39,6 +39,7 @@ interface AirtableCampFields {
   "Website"?: string;
   "Color"?: string;
   "Additional Info"?: string;
+  "pricing_details"?: string;
   "camp_id"?: number;
   "Registration_Options"?: string[];
   "Schedule Availability"?: string[];
@@ -188,6 +189,7 @@ export async function fetchCamps(): Promise<Camp[]> {
       websiteUrl: record.fields.Website || null,
       color: record.fields.Color || null,
       additionalInfo: record.fields["Additional Info"] || null,
+      pricingDetails: record.fields["pricing_details"] || null,
       campSchedule: record.fields["Schedule Availability"] || [],
       hasRegistrationDetail: campIdsWithRegistrationDetail.has(record.id)
     }));

@@ -33,6 +33,7 @@ export interface CampResponse {
   websiteUrl: string | null;
   color: string | null;
   additionalInfo: string | null;
+  pricingDetails: string | null;
   campSchedule: string[];
 }
 
@@ -115,6 +116,7 @@ export async function getCamps(): Promise<CampResponse[]> {
       websiteUrl: (fields.Website as string) || null,
       color: (fields.Color as string) || null,
       additionalInfo: (fields["Additional Info"] as string) || null,
+      pricingDetails: (fields["pricing_details"] as string) || null,
       campSchedule: Array.isArray(fields["Schedule Availability"]) ? (fields["Schedule Availability"] as string[]) : [],
     };
   });
