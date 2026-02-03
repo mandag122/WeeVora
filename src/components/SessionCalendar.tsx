@@ -426,7 +426,7 @@ function DateRangePicker({
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 sm:w-80 p-4" align="start">
+      <PopoverContent className="w-[min(calc(100vw-2rem),22rem)] sm:w-96 p-4" align="start">
         <div className="space-y-4">
           <h4 className="font-medium text-sm">Set Calendar View</h4>
           
@@ -449,25 +449,25 @@ function DateRangePicker({
           </div>
           
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0">
               <Label htmlFor="start-date" className="text-xs">Start Date</Label>
               <Input
                 id="start-date"
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="text-sm"
+                className="text-sm w-full min-w-0"
                 data-testid="input-start-date"
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0">
               <Label htmlFor="end-date" className="text-xs">End Date</Label>
               <Input
                 id="end-date"
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="text-sm"
+                className="text-sm w-full min-w-0"
                 data-testid="input-end-date"
               />
             </div>
