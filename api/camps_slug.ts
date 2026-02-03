@@ -79,6 +79,7 @@ async function getCamps(): Promise<Record<string, unknown>[]> {
       websiteUrl: (fields.Website as string) || null,
       color: (fields.Color as string) || null,
       additionalInfo: (fields["Additional Info"] as string) || null,
+      pricingDetails: (fields["pricing_details"] as string) || null,
       campSchedule: Array.isArray(fields["Schedule Availability"]) ? (fields["Schedule Availability"] as string[]) : [],
     };
   });
