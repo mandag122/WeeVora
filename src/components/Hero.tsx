@@ -24,7 +24,7 @@ export function Hero() {
             Weave together your perfect summer
           </h1>
           <p className="text-lg md:text-xl text-foreground/80 mb-8 leading-relaxed max-w-2xl">
-            Your copilot for summer camps, activities, and keeping the kids busy.
+            WeeVora is your copilot for summer camps, activities, and keeping the kids busy.
             Find, compare, and plan summer camps across Lake County, Illinois.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
