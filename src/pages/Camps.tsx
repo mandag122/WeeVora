@@ -39,6 +39,64 @@ const defaultFilters: FilterState = {
 
 type SortOption = "registration" | "name-asc" | "name-desc";
 
+const SORT_OPTIONS: SortOption[] = ["registration", "name-asc", "name-desc"];
+
+function parseFiltersAndSortFromSearch(search: string): { filters: FilterState; sortBy: SortOption } {
+  const params = new URLSearchParams(search);
+  const get = (k: string) => params.get(k);
+  const getNum = (k: string) => {
+    const v = params.get(k);
+    if (v === null || v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  const getList = (k: string) => {
+    const v = params.get(k);
+    if (!v) return [];
+    return v.split(",").map((s) => decodeURIComponent(s.trim())).filter(Boolean);
+  };
+  const locationSingle = get("location");
+  const locations = locationSingle ? [locationSingle] : getList("locations");
+  const status = get("status");
+  const registrationStatus = status === "open" || status === "upcoming" ? status : "all";
+  return {
+    filters: {
+      search: get("search") ?? "",
+      categories: getList("categories"),
+      ageMin: getNum("ageMin"),
+      ageMax: getNum("ageMax"),
+      locations,
+      priceMin: getNum("priceMin"),
+      priceMax: getNum("priceMax"),
+      registrationStatus,
+      extendedHoursOnly: params.get("extended") === "1",
+      campSchedule: getList("schedule"),
+      dateStart: get("dateStart") || null,
+      dateEnd: get("dateEnd") || null,
+    },
+    sortBy: SORT_OPTIONS.includes(get("sort") as SortOption) ? (get("sort") as SortOption) : "registration",
+  };
+}
+
+function filtersAndSortToSearch(filters: FilterState, sortBy: SortOption): string {
+  const params = new URLSearchParams();
+  if (filters.search) params.set("search", filters.search);
+  if (filters.categories.length) params.set("categories", filters.categories.map(encodeURIComponent).join(","));
+  if (filters.ageMin != null) params.set("ageMin", String(filters.ageMin));
+  if (filters.ageMax != null) params.set("ageMax", String(filters.ageMax));
+  if (filters.locations.length) params.set("locations", filters.locations.map(encodeURIComponent).join(","));
+  if (filters.priceMin != null) params.set("priceMin", String(filters.priceMin));
+  if (filters.priceMax != null) params.set("priceMax", String(filters.priceMax));
+  if (filters.registrationStatus !== "all") params.set("status", filters.registrationStatus);
+  if (filters.extendedHoursOnly) params.set("extended", "1");
+  if (filters.campSchedule.length) params.set("schedule", filters.campSchedule.map(encodeURIComponent).join(","));
+  if (filters.dateStart) params.set("dateStart", filters.dateStart);
+  if (filters.dateEnd) params.set("dateEnd", filters.dateEnd);
+  if (sortBy !== "registration") params.set("sort", sortBy);
+  const q = params.toString();
+  return q ? `?${q}` : "";
+}
+
 /** True if camp id is in the list from /api/camp-ids-with-option-name (option_name in Registration_Options). */
 function campHasOptionName(campId: string, idsSet: Set<string>): boolean {
   return idsSet.has(campId);
@@ -47,8 +105,16 @@ function campHasOptionName(campId: string, idsSet: Set<string>): boolean {
 export default function Camps() {
   const [location] = useLocation();
 
-  const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [sortBy, setSortBy] = useState<SortOption>("registration");
+  const [filters, setFilters] = useState<FilterState>(() => {
+    if (typeof window === "undefined") return defaultFilters;
+    const { filters: f } = parseFiltersAndSortFromSearch(window.location.search);
+    return f;
+  });
+  const [sortBy, setSortBy] = useState<SortOption>(() => {
+    if (typeof window === "undefined") return "registration";
+    const { sortBy: s } = parseFiltersAndSortFromSearch(window.location.search);
+    return s;
+  });
 
   // ✅ SAFETY: context can be undefined / partially-initialized during refactors.
   const session = useSessionContext?.();
@@ -60,14 +126,24 @@ export default function Camps() {
   // ✅ THE IMPORTANT ONE: never let this be undefined
   const dateRange = (session as any)?.dateRange ?? [null, null];
 
+  // Sync filters/sort from URL when returning to this page (e.g. back from camp detail)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const locationParam = params.get("location");
-    if (locationParam) {
-      setFilters((prev) => ({ ...prev, locations: [locationParam] }));
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    const { filters: f, sortBy: s } = parseFiltersAndSortFromSearch(search);
+    setFilters(f);
+    setSortBy(s);
   }, [location]);
+
+  // Push current filters/sort to URL so back button restores this view
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const path = location.startsWith("/camps") ? "/camps" : location.split("?")[0];
+    const search = filtersAndSortToSearch(filters, sortBy);
+    const url = `${path}${search}`;
+    if (window.location.pathname + window.location.search !== url) {
+      window.history.replaceState(null, "", url);
+    }
+  }, [location, filters, sortBy]);
 
   const { data, isLoading, error } = useQuery<Camp[]>({
     queryKey: ["/api/camps"],

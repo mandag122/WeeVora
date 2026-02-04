@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRoute, Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
 import { ArrowLeft, MapPin, Clock, Users, Calendar, DollarSign, ExternalLink, Info } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -39,8 +39,17 @@ function getRegistrationStatus(camp: Camp) {
   return null;
 }
 
+function goBackToCamps(setLocation: (path: string) => void) {
+  if (typeof window !== "undefined" && window.history.length > 1) {
+    window.history.back();
+  } else {
+    setLocation("/camps");
+  }
+}
+
 export default function CampDetail() {
   const [, params] = useRoute("/camps/:slug");
+  const [, setLocation] = useLocation();
   const slug = params?.slug;
   
   const session = useSessionContext();
@@ -173,12 +182,13 @@ export default function CampDetail() {
             <p className="text-muted-foreground mb-6">
               The camp you're looking for doesn't exist or has been removed.
             </p>
-            <Link href="/camps">
-              <Button className="bg-eggplant hover:bg-eggplant-light">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Camps
-              </Button>
-            </Link>
+            <Button
+              className="bg-eggplant hover:bg-eggplant-light"
+              onClick={() => goBackToCamps(setLocation)}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Camps
+            </Button>
           </div>
         </main>
         <Footer />
@@ -199,7 +209,15 @@ export default function CampDetail() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/camps">Camps</BreadcrumbLink>
+              <BreadcrumbLink
+                href="/camps"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  goBackToCamps(setLocation);
+                }}
+              >
+                Camps
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
