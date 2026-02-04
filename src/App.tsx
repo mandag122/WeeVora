@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -19,7 +19,13 @@ const GA_MEASUREMENT_ID = "G-3LK35KT7RL";
 
 function ScrollToTop() {
   const [location] = useLocation();
+  const prevPathRef = useRef<string>("");
   useEffect(() => {
+    const path = location.split("?")[0];
+    const prevPath = prevPathRef.current;
+    prevPathRef.current = path;
+    const isBackToList = path === "/camps" && /^\/camps\/[^/]+$/.test(prevPath);
+    if (isBackToList) return;
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location]);
   return null;
