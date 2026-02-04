@@ -540,7 +540,7 @@ export function CampFilters(props: CampFiltersProps) {
       data-testid="sidebar-filters"
     >
       <h2 className="font-semibold text-lg text-eggplant p-5 pb-0 mb-4">Filters</h2>
-      <div className="overflow-y-auto flex-1 px-5 pb-5">
+      <div className="overflow-y-auto flex-1 px-5 pt-1 pb-5">
         <FilterContent {...props} />
       </div>
     </aside>
