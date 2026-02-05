@@ -23,7 +23,7 @@ export function Hero() {
           <h1 className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl text-eggplant mb-4 leading-tight tracking-tight">
             Weave together your perfect summer
           </h1>
-          <p className="text-lg md:text-xl text-foreground/80 mb-8 leading-relaxed max-w-2xl">
+          <p className="text-lg md:text-xl text-eggplant/95 font-medium mb-8 leading-relaxed max-w-2xl drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
             WeeVora is your copilot for summer camps, activities, and keeping the kids busy.
             Find, compare, and plan summer camps across Lake County, Illinois.
           </p>
@@ -38,9 +38,8 @@ export function Hero() {
             </Link>
             <Link href="/how-it-works">
               <Button
-                variant="outline"
                 size="lg"
-                className="border-2 border-eggplant text-eggplant hover:bg-eggplant hover:text-white rounded-full px-8 py-6 text-lg transition-all"
+                className="bg-eggplant hover:bg-eggplant-light text-white font-semibold rounded-full px-8 py-6 text-lg shadow-paper transition-all hover:-translate-y-1"
               >
                 How It Works
               </Button>
