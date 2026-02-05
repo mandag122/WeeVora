@@ -215,10 +215,10 @@ export default function Camps() {
         const campStart = safeParseISO(camp.seasonStart);
         const campEnd = safeParseISO(camp.seasonEnd);
 
-        if (filterStart && filterEnd && campStart && campEnd) {
-          const overlaps = campStart <= filterEnd && campEnd >= filterStart;
-          if (!overlaps) return false;
-        }
+        if (!filterStart || !filterEnd) return true;
+        if (!campStart || !campEnd) return false;
+        const overlaps = campStart <= filterEnd && campEnd >= filterStart;
+        if (!overlaps) return false;
       }
 
       if (filters.extendedHoursOnly && !camp.extendedHours) {
