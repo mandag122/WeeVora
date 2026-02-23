@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRoute, Link, useLocation } from "wouter";
 import { ArrowLeft, MapPin, Clock, Users, Calendar, DollarSign, ExternalLink, Info } from "lucide-react";
 import { Header } from "@/components/Header";
@@ -51,7 +51,10 @@ export default function CampDetail() {
   const [, params] = useRoute("/camps/:slug");
   const [, setLocation] = useLocation();
   const slug = params?.slug;
-  
+  const queryClient = useQueryClient();
+  const cachedList = queryClient.getQueryData<Camp[]>(["/api/camps"]);
+  const cachedCamp = slug && cachedList?.find((c) => (c.slug as string) === slug);
+
   const session = useSessionContext();
   const selectedSessions = session?.selectedSessions ?? [];
   const dateRange = session?.dateRange ?? { start: "2026-06-01", end: "2026-08-31" };
@@ -66,7 +69,8 @@ export default function CampDetail() {
 
   const { data: camp, isLoading: campLoading, error: campError } = useQuery<Camp>({
     queryKey: ["/api/camps", slug],
-    enabled: !!slug
+    enabled: !!slug && !cachedCamp,
+    initialData: cachedCamp,
   });
 
   const { data: sessions = [] } = useQuery<RegistrationOption[]>({

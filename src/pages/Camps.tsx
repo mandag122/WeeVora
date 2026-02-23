@@ -97,9 +97,9 @@ function filtersAndSortToSearch(filters: FilterState, sortBy: SortOption): strin
   return q ? `?${q}` : "";
 }
 
-/** True if camp id is in the list from /api/camp-ids-with-option-name (option_name in Registration_Options). */
-function campHasOptionName(campId: string, idsSet: Set<string>): boolean {
-  return idsSet.has(campId);
+/** True if camp has registration detail (option_name in Registration_Options). Used for sort tiebreaker. */
+function campHasOptionName(camp: Camp): boolean {
+  return camp.hasRegistrationDetail === true;
 }
 
 export default function Camps() {
@@ -149,15 +149,7 @@ export default function Camps() {
     queryKey: ["/api/camps"],
   });
 
-  const { data: campIdsWithOptionName = [] } = useQuery<string[]>({
-    queryKey: ["/api/camp-ids-with-option-name"],
-  });
-
   const camps = Array.isArray(data) ? data : [];
-  const idsWithOptionNameSet = useMemo(
-    () => new Set(Array.isArray(campIdsWithOptionName) ? campIdsWithOptionName : []),
-    [campIdsWithOptionName]
-  );
 
   const uniqueLocations = useMemo(() => {
     const cities = camps
@@ -259,9 +251,8 @@ export default function Camps() {
     const sorted = [...filteredCamps];
 
     sorted.sort((a, b) => {
-      // First: camps with option_name in Registration_Options above camps without (so YMCA with options is never below Kamins/On Course without)
-      const aHas = campHasOptionName(a.id, idsWithOptionNameSet);
-      const bHas = campHasOptionName(b.id, idsWithOptionNameSet);
+      const aHas = campHasOptionName(a);
+      const bHas = campHasOptionName(b);
       if (aHas && !bHas) return -1;
       if (!aHas && bHas) return 1;
       // Same group: respect the chosen sort (Registration Date, Name, etc.)
@@ -282,7 +273,7 @@ export default function Camps() {
     });
 
     return sorted;
-  }, [filteredCamps, sortBy, idsWithOptionNameSet]);
+  }, [filteredCamps, sortBy]);
 
   // Inject schema.org ItemList for SEO
   useEffect(() => {
