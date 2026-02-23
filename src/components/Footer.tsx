@@ -1,24 +1,15 @@
-import { useMemo } from "react";
 import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
 import weeVoraLogo from "../assets/weevora-logo.png";
 import { SiInstagram, SiFacebook } from "react-icons/si";
-import type { Camp } from "@shared/schema";
+
+const LAKE_COUNTY_CITIES = [
+  "Antioch", "Barrington", "Buffalo Grove", "Deerfield", "Fox Lake",
+  "Grayslake", "Gurnee", "Highland Park", "Lake Bluff", "Lake Forest",
+  "Libertyville", "Lincolnshire", "Mundelein", "North Chicago", "Round Lake",
+  "Round Lake Beach", "Vernon Hills", "Waukegan", "Zion"
+].sort();
 
 export function Footer() {
-  const { data } = useQuery<Camp[]>({
-    queryKey: ["/api/camps"]
-  });
-
-  const camps = Array.isArray(data) ? data : [];
-
-  const availableCities = useMemo(() => {
-    const cities = camps
-      .map(c => c.locationCity)
-      .filter((city): city is string => !!city && city.trim() !== "");
-    return Array.from(new Set(cities)).sort();
-  }, [camps]);
-
   return (
     <footer className="bg-eggplant text-white/90 pt-12 pb-8">
       <div className="container mx-auto px-4">
@@ -60,21 +51,17 @@ export function Footer() {
               Lake County Camps by City
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2">
-              {availableCities.length > 0 ? (
-                availableCities.map((city) => (
-                  <Link 
-                    key={city} 
-                    href={`/camps?location=${encodeURIComponent(city)}`}
-                    className="text-white/70 hover:text-gold text-sm transition-colors"
-                    data-testid={`link-city-${city.toLowerCase().replace(/\s+/g, '-')}`}
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  >
-                    {city}
-                  </Link>
-                ))
-              ) : (
-                <p className="text-white/50 text-sm col-span-3">Loading cities...</p>
-              )}
+              {LAKE_COUNTY_CITIES.map((city) => (
+                <Link
+                  key={city}
+                  href={`/camps?location=${encodeURIComponent(city)}`}
+                  className="text-white/70 hover:text-gold text-sm transition-colors"
+                  data-testid={`link-city-${city.toLowerCase().replace(/\s+/g, '-')}`}
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                >
+                  {city}
+                </Link>
+              ))}
             </div>
           </div>
 
