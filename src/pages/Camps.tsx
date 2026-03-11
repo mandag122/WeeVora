@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -104,6 +104,7 @@ function campHasOptionName(camp: Camp): boolean {
 
 export default function Camps() {
   const [location] = useLocation();
+  const searchString = useSearch();
 
   const [filters, setFilters] = useState<FilterState>(() => {
     if (typeof window === "undefined") return defaultFilters;
@@ -126,13 +127,13 @@ export default function Camps() {
   // ✅ THE IMPORTANT ONE: never let this be undefined
   const dateRange = (session as any)?.dateRange ?? [null, null];
 
-  // Sync filters/sort from URL when returning to this page (e.g. back from camp detail)
+  // Sync filters/sort from URL (e.g. footer city link ?location=Gurnee, or back from camp detail)
   useEffect(() => {
-    const search = typeof window !== "undefined" ? window.location.search : "";
+    const search = typeof searchString === "string" && searchString.length > 0 ? `?${searchString.replace(/^\?/, "")}` : (typeof window !== "undefined" ? window.location.search : "");
     const { filters: f, sortBy: s } = parseFiltersAndSortFromSearch(search);
     setFilters(f);
     setSortBy(s);
-  }, [location]);
+  }, [location, searchString]);
 
   // Push current filters/sort to URL so back button restores this view
   useEffect(() => {

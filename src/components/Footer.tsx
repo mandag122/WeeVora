@@ -2,12 +2,12 @@ import { Link } from "wouter";
 import weeVoraLogo from "../assets/weevora-logo.png";
 import { SiInstagram, SiFacebook } from "react-icons/si";
 
-const LAKE_COUNTY_CITIES = [
+const LAKE_COUNTY_CITIES = Array.from(new Set([
   "Antioch", "Barrington", "Buffalo Grove", "Deerfield", "Fox Lake",
   "Grayslake", "Gurnee", "Highland Park", "Lake Bluff", "Lake Forest",
   "Libertyville", "Lincolnshire", "Mundelein", "North Chicago", "Round Lake",
   "Round Lake Beach", "Vernon Hills", "Waukegan", "Zion"
-].sort();
+])).sort();
 
 export function Footer() {
   return (
