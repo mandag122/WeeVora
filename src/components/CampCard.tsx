@@ -21,12 +21,12 @@ function getRegistrationStatus(camp: Camp): {
   text: string;
   badgeClass: string;
 } {
+  if (camp.waitlistOnly) {
+    return { status: "waitlist", text: "WAITLIST ONLY", badgeClass: "bg-rose text-white" };
+  }
   const regCloses = safeParseISO(camp.registrationCloses);
   if (regCloses && isPast(regCloses)) {
     return { status: "closed", text: "Closed", badgeClass: "bg-red-500 text-white" };
-  }
-  if (camp.waitlistOnly) {
-    return { status: "waitlist", text: "WAITLIST ONLY", badgeClass: "bg-rose text-white" };
   }
   const regOpens = safeParseISO(camp.registrationOpens);
   if (regOpens && isFuture(regOpens)) {
@@ -72,6 +72,7 @@ export function CampCard({ camp, source }: CampCardProps) {
 
   const firstCategory = (categories[0] as CampCategory | undefined) ?? undefined;
   const bannerColor =
+    (camp.waitlistOnly ? "hsl(340 65% 47%)" : null) ||
     camp.color ||
     (firstCategory && categoryColors[firstCategory]) ||
     "#5B2C6F";

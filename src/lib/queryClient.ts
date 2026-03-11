@@ -24,7 +24,7 @@ export async function apiRequest(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
-function buildApiUrl(queryKey: unknown[]): string {
+function buildApiUrl(queryKey: readonly unknown[]): string {
   // Camp list: ["/api/camps"] -> /api/camps
   if (queryKey[0] === "/api/camps" && queryKey.length === 1) {
     return "/api/camps";

@@ -22,6 +22,9 @@ import { trackRegisterWebsiteClick, trackViewAvailableSessions } from "@/lib/ana
 import ReactMarkdown from "react-markdown";
 
 function getRegistrationStatus(camp: Camp) {
+  if (camp.waitlistOnly) {
+    return { status: "waitlist", text: "WAITLIST ONLY", color: "bg-rose text-white" };
+  }
   const regCloses = safeParseISO(camp.registrationCloses);
   if (regCloses && isPast(regCloses)) {
     return { status: "closed", text: "Registration Closed", color: "bg-red-100 text-red-700" };
@@ -29,9 +32,6 @@ function getRegistrationStatus(camp: Camp) {
   const regOpens = safeParseISO(camp.registrationOpens);
   if (regOpens && isFuture(regOpens)) {
     return { status: "upcoming", text: `Opens ${format(regOpens, "MMMM d, yyyy")}`, color: "bg-yellow-100 text-yellow-700" };
-  }
-  if (camp.waitlistOnly) {
-    return { status: "waitlist", text: "WAITLIST ONLY", color: "bg-rose text-white" };
   }
   if (regCloses) {
     return { status: "open", text: `Open until ${format(regCloses, "MMMM d, yyyy")}`, color: "bg-green-100 text-green-700" };
@@ -53,7 +53,8 @@ export default function CampDetail() {
   const slug = params?.slug;
   const queryClient = useQueryClient();
   const cachedList = queryClient.getQueryData<Camp[]>(["/api/camps"]);
-  const cachedCamp = slug && cachedList?.find((c) => (c.slug as string) === slug);
+  const cachedCamp: Camp | undefined =
+    slug && cachedList ? cachedList.find((c) => (c.slug as string) === slug) : undefined;
 
   const session = useSessionContext();
   const selectedSessions = session?.selectedSessions ?? [];
@@ -70,7 +71,7 @@ export default function CampDetail() {
   const { data: camp, isLoading: campLoading, error: campError } = useQuery<Camp>({
     queryKey: ["/api/camps", slug],
     enabled: !!slug && !cachedCamp,
-    initialData: cachedCamp,
+    ...(cachedCamp ? { initialData: cachedCamp } : {}),
   });
 
   const { data: sessions = [] } = useQuery<RegistrationOption[]>({
