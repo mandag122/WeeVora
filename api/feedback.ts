@@ -1,7 +1,7 @@
 /** Vercel serverless handler for POST /api/feedback. */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createFeedbackRecord } from "./_lib/airtable";
-import { sendError } from "./_lib/respond";
+import { createFeedbackRecord } from "./_lib/airtable.js";
+import { sendError } from "./_lib/respond.js";
 
 // Airtable field names (exact)
 const F_NAME = "Name";

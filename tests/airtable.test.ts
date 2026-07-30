@@ -6,7 +6,7 @@ import {
   getCamps,
   readCredential,
   checkAirtableConnection,
-} from "../api/_lib/airtable";
+} from "../api/_lib/airtable.js";
 
 const realFetch = globalThis.fetch;
 

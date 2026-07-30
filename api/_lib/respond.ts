@@ -3,7 +3,7 @@
  * browser as a real status code with a diagnosable message.
  */
 import type { VercelResponse } from "@vercel/node";
-import { describeError } from "./airtable";
+import { describeError } from "./airtable.js";
 
 export function sendError(res: VercelResponse, context: string, error: unknown): VercelResponse {
   const { status, body } = describeError(error);

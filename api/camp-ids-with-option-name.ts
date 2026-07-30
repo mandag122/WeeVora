@@ -3,8 +3,8 @@
  * Used by the frontend for the "most detail first" sort.
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getCampIdsWithOptionName } from "./_lib/airtable";
-import { sendError } from "./_lib/respond";
+import { getCampIdsWithOptionName } from "./_lib/airtable.js";
+import { sendError } from "./_lib/respond.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<VercelResponse | void> {
   if (req.method !== "GET") {

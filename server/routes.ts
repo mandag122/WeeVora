@@ -10,7 +10,7 @@ import {
   getCamps,
   getSessionsForCamp,
   selectSimilarCamps,
-} from "../api/_lib/airtable";
+} from "../api/_lib/airtable.js";
 
 function sendError(res: Response, context: string, error: unknown): Response {
   const { status, body } = describeError(error);

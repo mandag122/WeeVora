@@ -1,7 +1,7 @@
 /** Vercel handler for GET /api/camps_slug?slug=:slug */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getCampBySlug } from "./_lib/airtable";
-import { sendError } from "./_lib/respond";
+import { getCampBySlug } from "./_lib/airtable.js";
+import { sendError } from "./_lib/respond.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<VercelResponse | void> {
   if (req.method !== "GET") {

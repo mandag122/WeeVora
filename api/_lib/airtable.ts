@@ -9,7 +9,7 @@
  *     working site with an empty base.
  */
 import { createHash } from "node:crypto";
-import type { Camp, RegistrationOption } from "../../shared/schema";
+import type { Camp, RegistrationOption } from "../../shared/schema.js";
 
 const AIRTABLE_API_BASE = "https://api.airtable.com/v0";
 const DEFAULT_CAMPS_TABLE = "Camps";

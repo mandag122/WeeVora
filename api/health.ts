@@ -17,9 +17,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
   };
 
-  let airtableModule: typeof import("./_lib/airtable");
+  let airtableModule: typeof import("./_lib/airtable.js");
   try {
-    airtableModule = await import("./_lib/airtable");
+    airtableModule = await import("./_lib/airtable.js");
   } catch (error) {
     return res.status(500).json({
       ok: false,

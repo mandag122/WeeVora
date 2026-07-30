@@ -1,7 +1,7 @@
 /** Raw record dump of the camps table, kept for ad-hoc/debug use. */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getAirtableConfig, listRecords } from "./_lib/airtable";
-import { sendError } from "./_lib/respond";
+import { getAirtableConfig, listRecords } from "./_lib/airtable.js";
+import { sendError } from "./_lib/respond.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<VercelResponse | void> {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
