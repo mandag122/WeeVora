@@ -3,7 +3,7 @@
  * Writes to the Airtable Feedback table with Name, Email, Subject, Message (matches the Express server).
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createFeedbackRecord, describeError } from "./_lib/airtable";
+import { createFeedbackRecord, describeError } from "./_lib/airtable.js";
 
 function asString(value: unknown): string | undefined {
   return typeof value === "string" ? value.trim() : undefined;

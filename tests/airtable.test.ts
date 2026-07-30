@@ -5,8 +5,9 @@ import {
   describeError,
   getCamps,
   readCredential,
+  resolveCampImage,
   checkAirtableConnection,
-} from "../api/_lib/airtable";
+} from "../api/_lib/airtable.js";
 
 const realFetch = globalThis.fetch;
 
@@ -101,6 +102,93 @@ test("getCamps maps records, drops hidden ones, and follows pagination", async (
   assert.equal(camps[0].hasRegistrationDetail, true);
   assert.equal(camps[1].hasRegistrationDetail, false);
   assert.deepEqual({ min: camps[0].ageMin, max: camps[0].ageMax }, { min: 5, max: 12 });
+});
+
+test("camps without a Primary Image expose no image urls at all", async () => {
+  stubFetch((url) =>
+    url.includes("Registration_Options")
+      ? { status: 200, body: { records: [] } }
+      : {
+          status: 200,
+          body: {
+            records: [
+              campRecord("recNoPhotos0001", "No Photo Camp"),
+              // Gallery photos without a primary must stay hidden, so the page has nothing to render.
+              campRecord("recGalleryOnly1", "Gallery Only Camp", {
+                "Gallery Images": [{ url: "https://airtable.example/g1.jpg" }],
+              }),
+            ],
+          },
+        },
+  );
+
+  for (const camp of await getCamps()) {
+    assert.equal(camp.imageUrl, null);
+    assert.deepEqual(camp.galleryImages, []);
+  }
+});
+
+test("camp photos are exposed as stable /api/camp-image paths, never Airtable's expiring urls", async () => {
+  stubFetch((url) =>
+    url.includes("Registration_Options")
+      ? { status: 200, body: { records: [] } }
+      : {
+          status: 200,
+          body: {
+            records: [
+              campRecord("recPhotoCamp001", "Photo Camp", {
+                "Primary Image": [{ url: "https://airtable.example/primary.jpg", filename: "primary.jpg" }],
+                "Gallery Images": [
+                  ...Array.from({ length: 10 }, (_, i) => ({ url: `https://airtable.example/g${i}.jpg` })),
+                  { filename: "no-url.jpg" },
+                ],
+              }),
+            ],
+          },
+        },
+  );
+
+  const [camp] = await getCamps();
+
+  assert.equal(camp.imageUrl, "/api/camp-image?camp=recPhotoCamp001&i=0");
+  assert.equal(camp.galleryImages.length, 9, "gallery is capped so primary + gallery stays at 10");
+  assert.equal(camp.galleryImages[0], "/api/camp-image?camp=recPhotoCamp001&i=1");
+  assert.ok(
+    !JSON.stringify(camp).includes("airtable.example"),
+    "expiring Airtable urls must never reach the browser",
+  );
+});
+
+test("resolveCampImage returns the current url, preferring Airtable's thumbnails", async () => {
+  stubFetch(() => ({
+    status: 200,
+    body: {
+      id: "recPhotoCamp001",
+      fields: {
+        "Camp Name": "Photo Camp",
+        "Primary Image": [
+          {
+            url: "https://airtable.example/full.jpg",
+            thumbnails: { small: { url: "https://airtable.example/small.jpg" }, large: { url: "https://airtable.example/large.jpg" } },
+          },
+        ],
+        "Gallery Images": [{ url: "https://airtable.example/g1.jpg" }],
+      },
+    },
+  }));
+
+  assert.equal(await resolveCampImage("recPhotoCamp001", 0, "full"), "https://airtable.example/full.jpg");
+  assert.equal(await resolveCampImage("recPhotoCamp001", 0, "large"), "https://airtable.example/large.jpg");
+  assert.equal(await resolveCampImage("recPhotoCamp001", 1, "full"), "https://airtable.example/g1.jpg");
+  // No thumbnail generated for this attachment, so it falls back to the original.
+  assert.equal(await resolveCampImage("recPhotoCamp001", 1, "small"), "https://airtable.example/g1.jpg");
+  assert.equal(await resolveCampImage("recPhotoCamp001", 5, "full"), null, "out of range is a missing image");
+});
+
+test("resolveCampImage reports a deleted camp as a missing image rather than an error", async () => {
+  stubFetch(() => ({ status: 404, body: { error: { type: "MODEL_ID_NOT_FOUND" } } }));
+
+  assert.equal(await resolveCampImage("recDeleted00001", 0, "full"), null);
 });
 
 test("getCamps still returns camps when only the sort-hint table fails", async () => {

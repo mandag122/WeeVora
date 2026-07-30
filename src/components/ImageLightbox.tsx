@@ -3,11 +3,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface ImageLightboxProps {
+  /** Used for image alt text. */
+  campName: string;
   /** Combined [primaryImage, ...galleryImages] array, up to 10 total. */
   images: string[];
   /** Index currently open, or null when the lightbox should be closed. */
   index: number | null;
   onIndexChange: (index: number | null) => void;
+  /** Called when a photo fails to load, so the parent can drop it instead of showing it broken. */
+  onImageError: (url: string) => void;
 }
 
 /**
@@ -15,8 +19,10 @@ interface ImageLightboxProps {
  * camp photo. Supports left/right arrow buttons and arrow-key navigation to
  * cycle through every photo for the camp.
  */
-export function ImageLightbox({ images, index, onIndexChange }: ImageLightboxProps) {
+export function ImageLightbox({ campName, images, index, onIndexChange, onImageError }: ImageLightboxProps) {
   const open = index !== null && images.length > 0;
+  // A photo dropped while the viewer is open would otherwise leave the index past the end.
+  const safeIndex = Math.min(index ?? 0, images.length - 1);
 
   const goTo = useCallback(
     (next: number) => {
@@ -29,16 +35,16 @@ export function ImageLightbox({ images, index, onIndexChange }: ImageLightboxPro
   useEffect(() => {
     if (!open) return;
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "ArrowRight") goTo((index as number) + 1);
-      if (e.key === "ArrowLeft") goTo((index as number) - 1);
+      if (e.key === "ArrowRight") goTo(safeIndex + 1);
+      if (e.key === "ArrowLeft") goTo(safeIndex - 1);
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [open, index, goTo]);
+  }, [open, safeIndex, goTo]);
 
   if (!open) return null;
 
-  const current = images[index as number];
+  const current = images[safeIndex];
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onIndexChange(null)}>
@@ -51,7 +57,7 @@ export function ImageLightbox({ images, index, onIndexChange }: ImageLightboxPro
             <button
               type="button"
               aria-label="Previous photo"
-              onClick={() => goTo((index as number) - 1)}
+              onClick={() => goTo(safeIndex - 1)}
               className="absolute left-1 sm:left-2 z-10 p-2 rounded-full bg-white/90 hover:bg-white text-eggplant shadow"
               data-testid="button-lightbox-prev"
             >
@@ -61,8 +67,9 @@ export function ImageLightbox({ images, index, onIndexChange }: ImageLightboxPro
 
           <img
             src={current}
-            alt=""
+            alt={`${campName} camp photo ${safeIndex + 1}`}
             className="max-h-[80vh] max-w-full rounded-md object-contain"
+            onError={() => onImageError(current)}
             data-testid="img-lightbox-current"
           />
 
@@ -70,7 +77,7 @@ export function ImageLightbox({ images, index, onIndexChange }: ImageLightboxPro
             <button
               type="button"
               aria-label="Next photo"
-              onClick={() => goTo((index as number) + 1)}
+              onClick={() => goTo(safeIndex + 1)}
               className="absolute right-1 sm:right-2 z-10 p-2 rounded-full bg-white/90 hover:bg-white text-eggplant shadow"
               data-testid="button-lightbox-next"
             >
@@ -81,7 +88,7 @@ export function ImageLightbox({ images, index, onIndexChange }: ImageLightboxPro
 
         {images.length > 1 && (
           <p className="text-center text-xs text-white/70 mt-1" data-testid="text-lightbox-counter">
-            {(index as number) + 1} / {images.length}
+            {safeIndex + 1} / {images.length}
           </p>
         )}
       </DialogContent>
