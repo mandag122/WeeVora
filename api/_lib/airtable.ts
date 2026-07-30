@@ -305,6 +305,18 @@ function isHidden(record: AirtableRecord): boolean {
   return record.fields?.hide === true || record.fields?.Hide === true;
 }
 
+/** Airtable attachment fields come back as [{ url, filename, ... }]; extract just the URLs, skipping anything malformed. */
+function getAttachmentUrls(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((attachment) =>
+      attachment && typeof attachment === "object" && "url" in attachment
+        ? (attachment as { url?: unknown }).url
+        : undefined
+    )
+    .filter((url): url is string => typeof url === "string" && url.length > 0);
+}
+
 function mapCampRecord(record: AirtableRecord, hasRegistrationDetail: boolean): Camp {
   const fields = record.fields ?? {};
   const age = parseAgeGroup(fields["Age Group"]);
@@ -338,6 +350,10 @@ function mapCampRecord(record: AirtableRecord, hasRegistrationDetail: boolean): 
     pricingDetails: (fields.pricing_details as string) || null,
     campSchedule: Array.isArray(fields["Schedule Availability"]) ? (fields["Schedule Availability"] as string[]) : [],
     hasRegistrationDetail,
+    // "Primary Image" is an Attachment field -- only the first upload is used as the hero photo.
+    imageUrl: getAttachmentUrls(fields["Primary Image"])[0] ?? null,
+    // "Gallery Images" is an Attachment field -- capped at 9 so Primary + Gallery never exceeds 10 photos.
+    galleryImages: getAttachmentUrls(fields["Gallery Images"]).slice(0, 9),
   };
 }
 
