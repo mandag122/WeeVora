@@ -90,7 +90,9 @@ export function CampImageHeader({
                   data-testid={`button-gallery-thumb-${i}`}
                 >
                   <img
-                    src={campImageSrc(url, "small")}
+                    // Airtable's "small" thumbnail is only 24x36px - far too little for a 64x86
+                    // box on a retina screen. "large" is 512px on the long edge and still ~66KB.
+                    src={campImageSrc(url, "large")}
                     alt={`${campName} camp photo ${absoluteIndex + 1}`}
                     className="w-full h-full object-cover"
                     loading="lazy"
