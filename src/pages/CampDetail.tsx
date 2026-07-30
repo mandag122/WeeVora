@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRoute, Link, useLocation } from "wouter";
 import { ArrowLeft, MapPin, Clock, Users, Calendar, DollarSign, ExternalLink, Info } from "lucide-react";
@@ -8,6 +8,8 @@ import { SessionSelector } from "@/components/SessionSelector";
 import { SessionCalendar } from "@/components/SessionCalendar";
 import { MobileCalendarFAB } from "@/components/MobileCalendarFAB";
 import { CampCard } from "@/components/CampCard";
+import { CampImageHeader } from "@/components/CampImageHeader";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,7 +66,8 @@ export default function CampDetail() {
   const removeSession = session?.removeSession ?? (() => {});
   const setDateRange = session?.setDateRange ?? (() => {});
   const clearAllSessions = session?.clearAllSessions ?? (() => {});
-  
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
@@ -246,20 +249,31 @@ export default function CampDetail() {
               />
               <CardContent className="p-4 sm:p-6 space-y-4">
                 <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
-                  <div className="min-w-0 flex-1">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-eggplant mb-1" data-testid="text-camp-name">
-                      {camp.name}
-                    </h1>
-                    {camp.organization && (
-                      <p className="text-sm sm:text-lg text-muted-foreground">
-                        {camp.organization}
-                      </p>
+                  <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
+                      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-eggplant mb-1" data-testid="text-camp-name">
+                        {camp.name}
+                      </h1>
+                      {camp.organization && (
+                        <p className="text-sm sm:text-lg text-muted-foreground">
+                          {camp.organization}
+                        </p>
+                      )}
+                    </div>
+                    {regStatus && (
+                      <Badge className={`${regStatus.color} text-sm px-3 py-1`}>
+                        {regStatus.text}
+                      </Badge>
                     )}
                   </div>
-                  {regStatus && (
-                    <Badge className={`${regStatus.color} text-sm px-3 py-1`}>
-                      {regStatus.text}
-                    </Badge>
+                  {/* Photo header: only rendered when a Primary Image exists in Airtable. Gallery
+                      thumbnails within it only show if Gallery Images also exist for this camp. */}
+                  {camp.imageUrl && (
+                    <CampImageHeader
+                      imageUrl={camp.imageUrl}
+                      galleryImages={camp.galleryImages}
+                      onImageClick={(index) => setLightboxIndex(index)}
+                    />
                   )}
                 </div>
 
@@ -478,6 +492,11 @@ export default function CampDetail() {
       </main>
       <Footer />
       <MobileCalendarFAB />
+      <ImageLightbox
+        images={camp.imageUrl ? [camp.imageUrl, ...camp.galleryImages] : []}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+      />
     </div>
   );
 }

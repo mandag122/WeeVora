@@ -99,7 +99,11 @@ export const campSchema = z.object({
   pricingDetails: z.string().nullable(),
   campSchedule: z.array(z.string()).default([]),
   /** True if camp has at least one Registration_Options row with option_name filled. Used for "Most detail first" sort. */
-  hasRegistrationDetail: z.boolean().optional()
+  hasRegistrationDetail: z.boolean().optional(),
+  /** Airtable "Primary Image" attachment field -- first/only attachment's URL, or null if none uploaded. */
+  imageUrl: z.string().nullable(),
+  /** Airtable "Gallery Images" attachment field -- up to 9 additional photo URLs (10 total with imageUrl). */
+  galleryImages: z.array(z.string()).default([])
 });
 
 export type Camp = z.infer<typeof campSchema>;
