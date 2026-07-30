@@ -279,6 +279,13 @@ export async function listRecords(table: string, config?: AirtableConfig): Promi
   return records;
 }
 
+/** Fetches a single record. Throws AirtableError with upstreamStatus 404 when it doesn't exist. */
+export async function getRecord(table: string, recordId: string, config?: AirtableConfig): Promise<AirtableRecord> {
+  const resolved = config ?? getAirtableConfig();
+  const url = `${AIRTABLE_API_BASE}/${resolved.baseId}/${encodeURIComponent(table)}/${encodeURIComponent(recordId)}`;
+  return (await airtableFetch(url, { method: "GET" }, resolved, table)) as AirtableRecord;
+}
+
 function generateSlug(name: string, id: string): string {
   const base = (name || "")
     .toLowerCase()
@@ -305,22 +312,78 @@ function isHidden(record: AirtableRecord): boolean {
   return record.fields?.hide === true || record.fields?.Hide === true;
 }
 
-/** Airtable attachment fields come back as [{ url, filename, ... }]; extract just the URLs, skipping anything malformed. */
-function getAttachmentUrls(value: unknown): string[] {
+/** Primary + gallery is capped at 10 photos per camp. */
+const MAX_GALLERY_IMAGES = 9;
+
+export type ImageSize = "small" | "large" | "full";
+
+interface AirtableAttachment {
+  url: string;
+  thumbnails?: Partial<Record<ImageSize, { url?: unknown } | undefined>>;
+}
+
+/** Airtable attachment fields come back as [{ url, thumbnails, ... }]; drop anything without a url. */
+function getAttachments(value: unknown): AirtableAttachment[] {
   if (!Array.isArray(value)) return [];
-  return value
-    .map((attachment) =>
-      attachment && typeof attachment === "object" && "url" in attachment
-        ? (attachment as { url?: unknown }).url
-        : undefined
-    )
-    .filter((url): url is string => typeof url === "string" && url.length > 0);
+  return value.filter(
+    (attachment): attachment is AirtableAttachment =>
+      Boolean(attachment) &&
+      typeof attachment === "object" &&
+      typeof (attachment as { url?: unknown }).url === "string" &&
+      (attachment as { url: string }).url.length > 0,
+  );
+}
+
+/**
+ * The camp's photos as one list: primary first, then gallery. Gallery photos are dropped when
+ * there is no primary, because the detail page only shows thumbnails alongside a primary photo.
+ */
+function getCampAttachments(fields: Record<string, unknown>): AirtableAttachment[] {
+  const primary = getAttachments(fields["Primary Image"]).slice(0, 1);
+  if (primary.length === 0) return [];
+  return [...primary, ...getAttachments(fields["Gallery Images"]).slice(0, MAX_GALLERY_IMAGES)];
+}
+
+/**
+ * Airtable's attachment urls are signed and expire about two hours after the API hands them to
+ * us, so they are never sent to the browser. The browser gets this stable path instead and
+ * /api/camp-image resolves it against Airtable at request time.
+ */
+export function campImagePath(recordId: string, index: number): string {
+  return `/api/camp-image?camp=${encodeURIComponent(recordId)}&i=${index}`;
+}
+
+/**
+ * Current Airtable url for one of a camp's photos, or null when that photo no longer exists.
+ * `size` picks an Airtable-generated thumbnail so a 46px square doesn't download a 4MB original.
+ */
+export async function resolveCampImage(recordId: string, index: number, size: ImageSize): Promise<string | null> {
+  const config = getAirtableConfig();
+
+  let record: AirtableRecord;
+  try {
+    record = await getRecord(config.campsTable, recordId, config);
+  } catch (error) {
+    // A deleted or mistyped record is a missing image, not a server fault.
+    if (error instanceof AirtableError && error.upstreamStatus === 404) return null;
+    throw error;
+  }
+
+  const attachment = getCampAttachments(record.fields ?? {})[index];
+  if (!attachment) return null;
+
+  if (size !== "full") {
+    const thumbnail = attachment.thumbnails?.[size]?.url;
+    if (typeof thumbnail === "string" && thumbnail.length > 0) return thumbnail;
+  }
+  return attachment.url;
 }
 
 function mapCampRecord(record: AirtableRecord, hasRegistrationDetail: boolean): Camp {
   const fields = record.fields ?? {};
   const age = parseAgeGroup(fields["Age Group"]);
   const name = (fields["Camp Name"] as string) || "Unnamed Camp";
+  const attachments = getCampAttachments(fields);
 
   return {
     id: record.id,
@@ -350,10 +413,9 @@ function mapCampRecord(record: AirtableRecord, hasRegistrationDetail: boolean): 
     pricingDetails: (fields.pricing_details as string) || null,
     campSchedule: Array.isArray(fields["Schedule Availability"]) ? (fields["Schedule Availability"] as string[]) : [],
     hasRegistrationDetail,
-    // "Primary Image" is an Attachment field -- only the first upload is used as the hero photo.
-    imageUrl: getAttachmentUrls(fields["Primary Image"])[0] ?? null,
-    // "Gallery Images" is an Attachment field -- capped at 9 so Primary + Gallery never exceeds 10 photos.
-    galleryImages: getAttachmentUrls(fields["Gallery Images"]).slice(0, 9),
+    // Empty when the "Primary Image" attachment field is empty, so nothing renders a photo slot.
+    imageUrl: attachments.length > 0 ? campImagePath(record.id, 0) : null,
+    galleryImages: attachments.slice(1).map((_, index) => campImagePath(record.id, index + 1)),
   };
 }
 

@@ -9,6 +9,7 @@ import {
   getCampIdsWithOptionName,
   getCamps,
   getSessionsForCamp,
+  resolveCampImage,
   selectSimilarCamps,
 } from "../api/_lib/airtable.js";
 
@@ -31,6 +32,32 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
     const airtable = await checkAirtableConnection();
     return res.status(airtable.ok ? 200 : 503).json({ ok: airtable.ok, ...runtime, airtable });
+  });
+
+  // Mirrors api/camp-image.ts: resolves a camp photo to its current (expiring) Airtable url.
+  app.get("/api/camp-image", async (req, res) => {
+    const camp = String(req.query.camp ?? "");
+    const index = Number(req.query.i ?? NaN);
+    const size = String(req.query.size ?? "full");
+
+    if (!/^rec[A-Za-z0-9]{10,20}$/.test(camp) || !Number.isInteger(index) || index < 0 || index > 9) {
+      return res.status(400).json({ error: "Invalid image request" });
+    }
+    if (size !== "small" && size !== "large" && size !== "full") {
+      return res.status(400).json({ error: "Invalid image request" });
+    }
+
+    try {
+      const target = await resolveCampImage(camp, index, size);
+      if (!target) {
+        res.setHeader("Cache-Control", "public, max-age=60, s-maxage=60");
+        return res.status(404).json({ error: "Image not found" });
+      }
+      res.setHeader("Cache-Control", "public, max-age=600, s-maxage=1800");
+      return res.redirect(302, target);
+    } catch (error) {
+      return sendError(res, "GET /api/camp-image", error);
+    }
   });
 
   // Camp IDs that have option_name in Registration_Options (for "most detail first" sort)

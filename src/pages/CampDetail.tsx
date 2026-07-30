@@ -67,6 +67,7 @@ export default function CampDetail() {
   const setDateRange = session?.setDateRange ?? (() => {});
   const clearAllSessions = session?.clearAllSessions ?? (() => {});
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [brokenImages, setBrokenImages] = useState<string[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -211,9 +212,36 @@ export default function CampDetail() {
   }
 
   const regStatus = getRegistrationStatus(camp);
-  // A camp served by an older deployment has no galleryImages; without this the header and
-  // lightbox would throw on undefined and take the whole page down.
+
+  // Photos are hidden rather than shown broken: an image that fails to load (removed in Airtable
+  // mid-session, say) is dropped here, and losing the primary hides the whole cluster, matching
+  // the rule that gallery thumbnails only appear alongside a primary photo.
   const galleryImages = camp.galleryImages ?? [];
+  const primaryImage = camp.imageUrl && !brokenImages.includes(camp.imageUrl) ? camp.imageUrl : null;
+  const visibleGallery = primaryImage ? galleryImages.filter((url) => !brokenImages.includes(url)) : [];
+  const lightboxImages = primaryImage ? [primaryImage, ...visibleGallery] : [];
+  const markImageBroken = (url: string) =>
+    setBrokenImages((previous) => (previous.includes(url) ? previous : [...previous, url]));
+
+  const titleAndStatus = (
+    <>
+      <div className="min-w-0 flex-1">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-eggplant mb-1" data-testid="text-camp-name">
+          {camp.name}
+        </h1>
+        {camp.organization && (
+          <p className="text-sm sm:text-lg text-muted-foreground">
+            {camp.organization}
+          </p>
+        )}
+      </div>
+      {regStatus && (
+        <Badge className={`${regStatus.color} text-sm px-3 py-1`}>
+          {regStatus.text}
+        </Badge>
+      )}
+    </>
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camp-detail">
@@ -251,32 +279,25 @@ export default function CampDetail() {
                 style={{ backgroundColor: camp.waitlistOnly ? "hsl(340 65% 47%)" : (camp.color || "#5B2C6F") }}
               />
               <CardContent className="p-4 sm:p-6 space-y-4">
+                {/* With no Primary Image in Airtable this is the original title row, unchanged.
+                    The extra wrapper only exists to make room for the photo cluster. */}
                 <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4 flex-1 min-w-0">
-                    <div className="min-w-0 flex-1">
-                      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-eggplant mb-1" data-testid="text-camp-name">
-                        {camp.name}
-                      </h1>
-                      {camp.organization && (
-                        <p className="text-sm sm:text-lg text-muted-foreground">
-                          {camp.organization}
-                        </p>
-                      )}
-                    </div>
-                    {regStatus && (
-                      <Badge className={`${regStatus.color} text-sm px-3 py-1`}>
-                        {regStatus.text}
-                      </Badge>
-                    )}
-                  </div>
-                  {/* Photo header: only rendered when a Primary Image exists in Airtable. Gallery
-                      thumbnails within it only show if Gallery Images also exist for this camp. */}
-                  {camp.imageUrl && (
-                    <CampImageHeader
-                      imageUrl={camp.imageUrl}
-                      galleryImages={galleryImages}
-                      onImageClick={(index) => setLightboxIndex(index)}
-                    />
+                  {primaryImage ? (
+                    <>
+                      <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4 flex-1 min-w-0">
+                        {titleAndStatus}
+                      </div>
+                      <CampImageHeader
+                        key={camp.id}
+                        campName={camp.name}
+                        imageUrl={primaryImage}
+                        galleryImages={visibleGallery}
+                        onImageClick={(index) => setLightboxIndex(index)}
+                        onImageError={markImageBroken}
+                      />
+                    </>
+                  ) : (
+                    titleAndStatus
                   )}
                 </div>
 
@@ -496,9 +517,11 @@ export default function CampDetail() {
       <Footer />
       <MobileCalendarFAB />
       <ImageLightbox
-        images={camp.imageUrl ? [camp.imageUrl, ...galleryImages] : []}
+        campName={camp.name}
+        images={lightboxImages}
         index={lightboxIndex}
         onIndexChange={setLightboxIndex}
+        onImageError={markImageBroken}
       />
     </div>
   );
