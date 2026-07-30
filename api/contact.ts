@@ -1,13 +1,12 @@
 /**
  * Vercel serverless handler for POST /api/contact (contact form).
- * Writes to Airtable Feedback table with Name, Email, Subject, Message (matches Express server).
+ * Writes to the Airtable Feedback table with Name, Email, Subject, Message (matches the Express server).
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { createFeedbackRecord, describeError } from "./_lib/airtable";
 
-const TABLE_NAME = "Feedback";
-
-function asString(v: unknown): string | undefined {
-  return typeof v === "string" ? v.trim() : undefined;
+function asString(value: unknown): string | undefined {
+  return typeof value === "string" ? value.trim() : undefined;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -40,44 +39,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     return res.status(400).json({ error: "Invalid email format." });
   }
 
-  const apiKey = process.env.AIRTABLE_API_KEY;
-  const baseId = process.env.AIRTABLE_BASE_ID;
-  if (!apiKey || !baseId) {
-    console.error("Contact: missing AIRTABLE_API_KEY or AIRTABLE_BASE_ID");
-    return res.status(500).json({ error: "Server configuration error. Please try again later." });
-  }
-
   try {
-    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        records: [
-          {
-            fields: {
-              Name: name,
-              Email: email,
-              Subject: subject ?? "",
-              Message: message,
-            },
-          },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Airtable contact submit error:", response.status, text);
-      return res.status(500).json({ error: "Failed to send message. Please try again later." });
-    }
-
+    await createFeedbackRecord({ Name: name, Email: email, Subject: subject ?? "", Message: message });
     return res.status(200).json({ success: true, message: "Message received" });
-  } catch (err) {
-    console.error("Contact form error:", err);
-    return res.status(500).json({ error: "Failed to send message. Please try again later." });
+  } catch (error) {
+    const { status, body } = describeError(error);
+    console.error(`[api/contact] ${body.code}: ${body.error}`);
+    // The submitter can't act on an Airtable problem, so keep the detail in the logs.
+    return res.status(status).json({ error: "Failed to send message. Please try again later." });
   }
 }

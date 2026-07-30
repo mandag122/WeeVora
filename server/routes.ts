@@ -1,153 +1,122 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { fetchCamps, getCampBySlug, getCampIdsWithOptionName, getSessionsForCamp, getSimilarCamps, submitContactForm } from "./airtable";
+import type { Express, Response } from "express";
+import { type Server } from "http";
+import {
+  checkAirtableConnection,
+  createFeedbackRecord,
+  describeAirtableConfig,
+  describeError,
+  getCampBySlug,
+  getCampIdsWithOptionName,
+  getCamps,
+  getSessionsForCamp,
+  selectSimilarCamps,
+} from "../api/_lib/airtable";
 
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
-  
-  // Camp IDs that have option_name in Registration_Options (for "Most detail first" sort)
-  app.get("/api/camp-ids-with-option-name", async (req, res) => {
+function sendError(res: Response, context: string, error: unknown): Response {
+  const { status, body } = describeError(error);
+  console.error(`[${context}] ${body.code}: ${body.error}`);
+  return res.status(status).json(body);
+}
+
+export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  app.get("/api/health", async (req, res) => {
+    const time = new Date().toISOString();
+    if (req.query.airtable !== "1" && req.query.airtable !== "true") {
+      return res.json({ ok: true, time, airtable: describeAirtableConfig() });
+    }
+    const airtable = await checkAirtableConnection();
+    return res.status(airtable.ok ? 200 : 503).json({ ok: airtable.ok, time, airtable });
+  });
+
+  // Camp IDs that have option_name in Registration_Options (for "most detail first" sort)
+  app.get("/api/camp-ids-with-option-name", async (_req, res) => {
     try {
-      const ids = await getCampIdsWithOptionName();
-      res.json(ids);
+      res.json(await getCampIdsWithOptionName());
     } catch (error) {
-      console.error("Error fetching camp IDs with option name:", error);
-      res.status(500).json({ error: "Failed to fetch" });
+      sendError(res, "GET /api/camp-ids-with-option-name", error);
     }
   });
 
-  // Get all camps
-  app.get("/api/camps", async (req, res) => {
+  app.get("/api/camps", async (_req, res) => {
     try {
-      const camps = await fetchCamps();
-      res.json(camps);
+      res.json(await getCamps());
     } catch (error) {
-      console.error("Error fetching camps:", error);
-      res.status(500).json({ error: "Failed to fetch camps" });
+      sendError(res, "GET /api/camps", error);
     }
   });
 
-  // Get single camp by slug
-  app.get("/api/camps/:slug", async (req, res) => {
+  const sendCamp = async (res: Response, context: string, slug: string) => {
+    if (!slug) return res.status(400).json({ error: "Missing slug" });
     try {
-      const { slug } = req.params;
-      const camp = await getCampBySlug(slug);
-      
-      if (!camp) {
-        return res.status(404).json({ error: "Camp not found" });
-      }
-      
-      res.json(camp);
-    } catch (error) {
-      console.error("Error fetching camp:", error);
-      res.status(500).json({ error: "Failed to fetch camp" });
-    }
-  });
-
-  // Get sessions for a camp
-  app.get("/api/camps/:slug/sessions", async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const camp = await getCampBySlug(slug);
-      
-      if (!camp) {
-        return res.status(404).json({ error: "Camp not found" });
-      }
-      
-      const sessions = await getSessionsForCamp(camp.id);
-      res.json(sessions);
-    } catch (error) {
-      console.error("Error fetching sessions:", error);
-      res.status(500).json({ error: "Failed to fetch sessions" });
-    }
-  });
-
-  // Get similar camps
-  app.get("/api/camps/:slug/similar", async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const camp = await getCampBySlug(slug);
-      
-      if (!camp) {
-        return res.status(404).json({ error: "Camp not found" });
-      }
-      
-      const similarCamps = await getSimilarCamps(camp, 4);
-      res.json(similarCamps);
-    } catch (error) {
-      console.error("Error fetching similar camps:", error);
-      res.status(500).json({ error: "Failed to fetch similar camps" });
-    }
-  });
-
-  // Same handlers via query param (so frontend can call these on Vercel without rewrites)
-  app.get("/api/camps_slug", async (req, res) => {
-    try {
-      const slug = (req.query.slug as string) || "";
-      if (!slug) return res.status(400).json({ error: "Missing slug" });
       const camp = await getCampBySlug(slug);
       if (!camp) return res.status(404).json({ error: "Camp not found" });
-      res.json(camp);
+      return res.json(camp);
     } catch (error) {
-      console.error("Error fetching camp:", error);
-      res.status(500).json({ error: "Failed to fetch camp" });
+      return sendError(res, context, error);
     }
-  });
-  app.get("/api/camps_sessions", async (req, res) => {
-    try {
-      const slug = (req.query.slug as string) || "";
-      if (!slug) return res.status(400).json({ error: "Missing slug" });
-      const camp = await getCampBySlug(slug);
-      if (!camp) return res.status(404).json({ error: "Camp not found" });
-      const sessions = await getSessionsForCamp(camp.id);
-      res.json(sessions);
-    } catch (error) {
-      console.error("Error fetching sessions:", error);
-      res.status(500).json({ error: "Failed to fetch sessions" });
-    }
-  });
-  app.get("/api/camps_similar", async (req, res) => {
-    try {
-      const slug = (req.query.slug as string) || "";
-      if (!slug) return res.status(400).json({ error: "Missing slug" });
-      const camp = await getCampBySlug(slug);
-      if (!camp) return res.status(404).json({ error: "Camp not found" });
-      const similarCamps = await getSimilarCamps(camp, 4);
-      res.json(similarCamps);
-    } catch (error) {
-      console.error("Error fetching similar camps:", error);
-      res.status(500).json({ error: "Failed to fetch similar camps" });
-    }
-  });
+  };
 
-  // Contact form submission - saves to Airtable Feedback table
+  const sendSessions = async (res: Response, context: string, slug: string) => {
+    if (!slug) return res.status(400).json({ error: "Missing slug" });
+    try {
+      const camp = await getCampBySlug(slug);
+      if (!camp) return res.status(404).json({ error: "Camp not found" });
+      return res.json(await getSessionsForCamp(camp.id));
+    } catch (error) {
+      return sendError(res, context, error);
+    }
+  };
+
+  const sendSimilar = async (res: Response, context: string, slug: string) => {
+    if (!slug) return res.status(400).json({ error: "Missing slug" });
+    try {
+      const camps = await getCamps();
+      const camp = camps.find((candidate) => candidate.slug === slug);
+      if (!camp) return res.status(404).json({ error: "Camp not found" });
+      return res.json(selectSimilarCamps(camps, camp, 4));
+    } catch (error) {
+      return sendError(res, context, error);
+    }
+  };
+
+  app.get("/api/camps/:slug", (req, res) => sendCamp(res, "GET /api/camps/:slug", req.params.slug));
+  app.get("/api/camps/:slug/sessions", (req, res) =>
+    sendSessions(res, "GET /api/camps/:slug/sessions", req.params.slug),
+  );
+  app.get("/api/camps/:slug/similar", (req, res) =>
+    sendSimilar(res, "GET /api/camps/:slug/similar", req.params.slug),
+  );
+
+  // Same handlers via query param, mirroring the Vercel rewrites so the frontend can use one URL shape.
+  app.get("/api/camps_slug", (req, res) => sendCamp(res, "GET /api/camps_slug", (req.query.slug as string) || ""));
+  app.get("/api/camps_sessions", (req, res) =>
+    sendSessions(res, "GET /api/camps_sessions", (req.query.slug as string) || ""),
+  );
+  app.get("/api/camps_similar", (req, res) =>
+    sendSimilar(res, "GET /api/camps_similar", (req.query.slug as string) || ""),
+  );
+
+  // Contact form submission - saves to the Airtable Feedback table
   app.post("/api/contact", async (req, res) => {
+    const { name, email, subject, message } = req.body ?? {};
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
     try {
-      const { name, email, subject, message } = req.body;
-      
-      if (!name || !email || !message) {
-        return res.status(400).json({ error: "Missing required fields" });
-      }
-      
-      // Basic email format validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: "Invalid email format" });
-      }
-      
-      const success = await submitContactForm({ name, email, subject, message });
-      
-      if (!success) {
-        // Still return success to user even if Airtable fails - log for review
-        console.log("Contact form (fallback log):", { name, email, subject, message });
-      }
-      
-      res.json({ success: true, message: "Message received" });
+      await createFeedbackRecord({ Name: name, Email: email, Subject: subject || "", Message: message });
+      return res.json({ success: true, message: "Message received" });
     } catch (error) {
-      console.error("Error processing contact form:", error);
-      res.status(500).json({ error: "Failed to process contact form" });
+      const { status, body } = describeError(error);
+      console.error(`[POST /api/contact] ${body.code}: ${body.error}`);
+      console.log("Contact form (fallback log):", { name, email, subject, message });
+      return res.status(status).json({ error: "Failed to send message. Please try again later." });
     }
   });
 

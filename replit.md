@@ -64,9 +64,14 @@ client/src/
 
 ### Backend Structure
 ```
+api/
+├── _lib/airtable.ts # Airtable client shared by the serverless handlers and Express
+├── _lib/respond.ts  # Error -> HTTP response helper
+└── *.ts             # Vercel serverless handlers (thin wrappers over _lib)
+
 server/
-├── airtable.ts      # Airtable API integration
-├── routes.ts        # Express API routes
+├── routes.ts        # Express API routes (same _lib client)
+├── run.ts           # Loads .env, then starts index.ts
 ├── index.ts         # Server entry point
 └── storage.ts       # Storage interface
 ```
@@ -77,6 +82,12 @@ server/
 - `GET /api/camps/:slug/sessions` - Fetch sessions for a camp
 - `GET /api/camps/:slug/similar` - Fetch similar camps
 - `POST /api/contact` - Submit contact form
+- `GET /api/health` - Liveness plus Airtable credential state; add `?airtable=1` for a live read
+
+An Airtable failure is never converted into an empty list: `/api/camps` answers 503 when the
+credentials are missing or rejected and 502 when Airtable itself misbehaves, and the message says
+which variable to fix. A camps page that renders "no camps" therefore means the base really is
+empty.
 
 ## Airtable Configuration
 The app connects to an Airtable base with the following tables:
@@ -139,7 +150,23 @@ npm run dev
 The app runs on port 5000.
 
 ### Environment Variables
-Secrets are managed through Replit Secrets. Required:
+See `.env.example` for the full list. Required:
 - `AIRTABLE_API_KEY`
 - `AIRTABLE_BASE_ID`
 - `SESSION_SECRET`
+
+Optional: `AIRTABLE_TABLE_NAME` (name or `tbl...` id of the camps table, defaults to `Camps`).
+
+Locally these come from `.env`; on Replit from Secrets; on Vercel from the project's environment
+variables. A variable already present in the environment wins over `.env` — the dev server prints a
+warning when the two disagree, because that is the usual reason a freshly rotated key appears to
+have no effect.
+
+### Rotating the Airtable token
+1. Create the new personal access token in Airtable, giving it the `data.records:read` scope
+   (plus `data.records:write` for the contact form) and adding this base to its access list.
+2. Update `AIRTABLE_API_KEY` in every environment: `.env`, Replit Secrets, and the Vercel project.
+3. Redeploy (Vercel keeps the old value until the next deployment) and restart local/Replit processes.
+4. Verify: `curl -s "https://<host>/api/health?airtable=1"` should return `"ok": true`. The response
+   includes a fingerprint of the key in use, so you can confirm the new one is live.
+5. Revoke the old token.

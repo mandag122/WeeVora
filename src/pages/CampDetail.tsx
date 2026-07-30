@@ -19,6 +19,7 @@ import { useSessionContext } from "@/context/SessionContext";
 import { format, isPast, isFuture } from "date-fns";
 import { safeParseISO } from "@/lib/dateUtils";
 import { trackRegisterWebsiteClick, trackViewAvailableSessions } from "@/lib/analytics";
+import { ApiError } from "@/lib/queryClient";
 import ReactMarkdown from "react-markdown";
 
 function getRegistrationStatus(camp: Camp) {
@@ -178,14 +179,19 @@ export default function CampDetail() {
   }
 
   if (campError || !camp) {
+    const isMissing = !campError || (campError instanceof ApiError && campError.status === 404);
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="text-center py-16">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Camp Not Found</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-4">
+              {isMissing ? "Camp Not Found" : "Camp Details Unavailable"}
+            </h1>
             <p className="text-muted-foreground mb-6">
-              The camp you're looking for doesn't exist or has been removed.
+              {isMissing
+                ? "The camp you're looking for doesn't exist or has been removed."
+                : "We couldn't load this camp right now. Please try again in a few minutes."}
             </p>
             <Button
               className="bg-eggplant hover:bg-eggplant-light"
