@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { checkAirtableConnection } from "../api/_lib/airtable";
 
 const app = express();
 const httpServer = createServer(app);
@@ -59,16 +60,26 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
-  const hasAirtableKey = Boolean(process.env.AIRTABLE_API_KEY);
-  const hasAirtableBase = Boolean(process.env.AIRTABLE_BASE_ID);
-  if (!hasAirtableKey || !hasAirtableBase) {
-    console.log("\n>>> [WeeVora] Airtable NOT configured — camps will be empty. Add a .env file in the project root (same folder as package.json) with: AIRTABLE_API_KEY=... and AIRTABLE_BASE_ID=...\n");
-  } else {
-    console.log("\n>>> [WeeVora] Airtable configured. Camps should load.\n");
-  }
+/**
+ * One live read at startup, so a revoked or mistyped key is reported here instead of showing up
+ * later as a camps page with zero results.
+ */
+async function reportAirtableStatus() {
+  const status = await checkAirtableConnection();
+  const where = `base ${status.baseIdMasked ?? "?"}, table "${status.campsTable}", key ${status.apiKeyFingerprint ?? "none"}`;
 
+  if (status.ok) {
+    console.log(`\n>>> [WeeVora] Airtable reachable (${where}). Camps should load.\n`);
+    return;
+  }
+  console.error(`\n>>> [WeeVora] Airtable check FAILED (${status.code}) — the camps pages will show an error.`);
+  console.error(`>>> ${status.error}`);
+  console.error(`>>> AIRTABLE_API_KEY: ${status.apiKey}, AIRTABLE_BASE_ID: ${status.baseId}, table: "${status.campsTable}"\n`);
+}
+
+(async () => {
   await registerRoutes(httpServer, app);
+  void reportAirtableStatus();
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
