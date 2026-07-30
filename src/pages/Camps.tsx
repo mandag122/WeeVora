@@ -357,7 +357,9 @@ export default function Camps() {
             {error ? (
               <div className="text-center py-12" data-testid="error-state">
                 <p className="text-destructive mb-4">Failed to load camps</p>
-                <p className="text-muted-foreground text-sm">Please try refreshing the page</p>
+                <p className="text-muted-foreground text-sm">
+                  Our camp listings are temporarily unavailable. Please try again in a few minutes.
+                </p>
               </div>
             ) : isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -367,8 +369,17 @@ export default function Camps() {
               </div>
             ) : sortedCamps.length === 0 ? (
               <div className="text-center py-12" data-testid="empty-state">
-                <p className="text-lg font-medium mb-2">No camps match your filters</p>
-                <p className="text-muted-foreground">Try adjusting your search criteria</p>
+                {camps.length === 0 ? (
+                  <>
+                    <p className="text-lg font-medium mb-2">No camps are listed right now</p>
+                    <p className="text-muted-foreground">Please check back soon</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-lg font-medium mb-2">No camps match your filters</p>
+                    <p className="text-muted-foreground">Try adjusting your search criteria</p>
+                  </>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,9 +1,18 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(`${status}: ${message}`);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    throw new ApiError(res.status, await readErrorMessage(res));
   }
 }
 
@@ -48,6 +57,27 @@ function buildApiUrl(queryKey: readonly unknown[]): string {
   return queryKey.join("/") as string;
 }
 
+/**
+ * Queries whose failure only costs a nicety (sort order, "similar camps" strip) and can be
+ * degraded to an empty list. Everything else must surface, so a backend outage shows up as an
+ * error state instead of an empty catalogue that looks like a working site with no camps.
+ */
+function isOptionalQuery(queryKey: readonly unknown[]): boolean {
+  if (queryKey[0] === "/api/camp-ids-with-option-name") return true;
+  return queryKey[0] === "/api/camps" && queryKey.length === 3 && queryKey[2] === "similar";
+}
+
+async function readErrorMessage(res: Response): Promise<string> {
+  const text = (await res.text().catch(() => "")) || res.statusText;
+  try {
+    const parsed = JSON.parse(text);
+    if (parsed && typeof parsed.error === "string") return parsed.error;
+  } catch {
+    // Not JSON (HTML error page, plain text from a proxy, ...) - fall through to the raw body.
+  }
+  return text;
+}
+
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
@@ -63,34 +93,21 @@ export const getQueryFn: <T>(options: {
     }
 
     if (!res.ok) {
-      const text = (await res.text()) || res.statusText;
-      if (queryKey[0] === "/api/camps" && queryKey.length === 1) {
-        console.warn(`Camps API failed (${res.status}), showing empty list:`, text.slice(0, 100));
+      const message = await readErrorMessage(res);
+      if (isOptionalQuery(queryKey)) {
+        console.warn(`${url} failed (${res.status}), continuing without it:`, message.slice(0, 200));
         return [] as never;
       }
-      if (queryKey[0] === "/api/camps" && queryKey.length === 2) {
-        console.warn(`Camp detail API failed (${res.status}), skipping:`, text.slice(0, 80));
-        return null as never;
-      }
-      if (queryKey[0] === "/api/camps" && queryKey.length >= 3) {
-        console.warn(`Camp sessions/similar API failed (${res.status}), showing empty:`, text.slice(0, 80));
-        return [] as never;
-      }
-      if (queryKey[0] === "/api/camp-ids-with-option-name") {
-        console.warn(`Camp IDs with option name failed (${res.status}), using empty list:`, text.slice(0, 80));
-        return [] as never;
-      }
-      throw new Error(`${res.status}: ${text}`);
+      throw new ApiError(res.status, message);
     }
 
     const json = await res.json();
-    if (queryKey[0] === "/api/camp-ids-with-option-name" && !Array.isArray(json)) {
-      console.warn("Camp IDs with option name returned non-array, using empty list");
+    if (isOptionalQuery(queryKey) && !Array.isArray(json)) {
+      console.warn(`${url} returned a non-array, continuing without it`);
       return [] as never;
     }
     if (queryKey[0] === "/api/camps" && queryKey.length === 1 && !Array.isArray(json)) {
-      console.warn("Camps API returned non-array, showing empty list");
-      return [] as never;
+      throw new Error(`${url} returned ${typeof json} instead of a list of camps`);
     }
     return json;
   };
