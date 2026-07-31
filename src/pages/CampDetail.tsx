@@ -248,8 +248,8 @@ export default function CampDetail() {
                 style={{ backgroundColor: camp.waitlistOnly ? "hsl(340 65% 47%)" : (camp.color || "#5B2C6F") }}
               />
               <CardContent className="p-4 sm:p-6 space-y-4">
-                <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4 flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-3 sm:gap-4">
+                  <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-4 flex-1 min-w-0">
                     <div className="min-w-0 flex-1">
                       <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-eggplant mb-1" data-testid="text-camp-name">
                         {camp.name}
@@ -266,8 +266,9 @@ export default function CampDetail() {
                       </Badge>
                     )}
                   </div>
-                  {/* Photo header: only rendered when a Primary Image exists in Airtable. Gallery
-                      thumbnails within it only show if Gallery Images also exist for this camp. */}
+                  {/* Photo header: only rendered when a Primary Image exists in Airtable.
+                      Mobile shows a single right-aligned image + chevrons; desktop keeps
+                      primary + gallery thumbs. Click opens lightbox either way. */}
                   {camp.imageUrl && (
                     <CampImageHeader
                       imageUrl={camp.imageUrl}
