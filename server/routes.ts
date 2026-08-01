@@ -10,7 +10,7 @@ import {
   getCamps,
   getSessionsForCamp,
   selectSimilarCamps,
-} from "../api/_lib/airtable";
+} from "../api/_lib/airtable.js";
 
 function sendError(res: Response, context: string, error: unknown): Response {
   const { status, body } = describeError(error);
@@ -19,13 +19,18 @@ function sendError(res: Response, context: string, error: unknown): Response {
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  // Mirrors api/ping.ts: liveness with nothing left to fail.
+  app.get("/api/ping", (_req, res) => {
+    res.json({ ok: true, time: new Date().toISOString(), runtime: process.version });
+  });
+
   app.get("/api/health", async (req, res) => {
-    const time = new Date().toISOString();
+    const runtime = { time: new Date().toISOString(), runtime: process.version };
     if (req.query.airtable !== "1" && req.query.airtable !== "true") {
-      return res.json({ ok: true, time, airtable: describeAirtableConfig() });
+      return res.json({ ok: true, ...runtime, airtable: describeAirtableConfig() });
     }
     const airtable = await checkAirtableConnection();
-    return res.status(airtable.ok ? 200 : 503).json({ ok: airtable.ok, time, airtable });
+    return res.status(airtable.ok ? 200 : 503).json({ ok: airtable.ok, ...runtime, airtable });
   });
 
   // Camp IDs that have option_name in Registration_Options (for "most detail first" sort)

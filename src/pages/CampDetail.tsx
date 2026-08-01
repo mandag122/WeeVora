@@ -211,6 +211,9 @@ export default function CampDetail() {
   }
 
   const regStatus = getRegistrationStatus(camp);
+  // A camp served by an older deployment has no galleryImages; without this the header and
+  // lightbox would throw on undefined and take the whole page down.
+  const galleryImages = camp.galleryImages ?? [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background" data-testid="page-camp-detail">
@@ -272,7 +275,7 @@ export default function CampDetail() {
                   {camp.imageUrl && (
                     <CampImageHeader
                       imageUrl={camp.imageUrl}
-                      galleryImages={camp.galleryImages}
+                      galleryImages={galleryImages}
                       onImageClick={(index) => setLightboxIndex(index)}
                     />
                   )}
@@ -494,7 +497,7 @@ export default function CampDetail() {
       <Footer />
       <MobileCalendarFAB />
       <ImageLightbox
-        images={camp.imageUrl ? [camp.imageUrl, ...camp.galleryImages] : []}
+        images={camp.imageUrl ? [camp.imageUrl, ...galleryImages] : []}
         index={lightboxIndex}
         onIndexChange={setLightboxIndex}
       />

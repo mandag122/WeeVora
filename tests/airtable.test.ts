@@ -6,7 +6,7 @@ import {
   getCamps,
   readCredential,
   checkAirtableConnection,
-} from "../api/_lib/airtable";
+} from "../api/_lib/airtable.js";
 
 const realFetch = globalThis.fetch;
 
@@ -101,6 +101,36 @@ test("getCamps maps records, drops hidden ones, and follows pagination", async (
   assert.equal(camps[0].hasRegistrationDetail, true);
   assert.equal(camps[1].hasRegistrationDetail, false);
   assert.deepEqual({ min: camps[0].ageMin, max: camps[0].ageMax }, { min: 5, max: 12 });
+});
+
+test("getCamps maps Airtable attachment fields to header image urls", async () => {
+  stubFetch((url) =>
+    url.includes("Registration_Options")
+      ? { status: 200, body: { records: [] } }
+      : {
+          status: 200,
+          body: {
+            records: [
+              campRecord("rec1", "Photo Camp", {
+                "Primary Image": [{ url: "https://airtable.example/primary.jpg", filename: "primary.jpg" }],
+                "Gallery Images": [
+                  ...Array.from({ length: 10 }, (_, i) => ({ url: `https://airtable.example/g${i}.jpg` })),
+                  { filename: "no-url.jpg" },
+                ],
+              }),
+              campRecord("rec2", "No Photo Camp"),
+            ],
+          },
+        },
+  );
+
+  const [withPhotos, withoutPhotos] = await getCamps();
+
+  assert.equal(withPhotos.imageUrl, "https://airtable.example/primary.jpg");
+  assert.equal(withPhotos.galleryImages.length, 9, "gallery is capped so primary + gallery stays at 10");
+  assert.ok(!withPhotos.galleryImages.includes(undefined as never), "attachments without a url are skipped");
+  assert.equal(withoutPhotos.imageUrl, null);
+  assert.deepEqual(withoutPhotos.galleryImages, []);
 });
 
 test("getCamps still returns camps when only the sort-hint table fails", async () => {

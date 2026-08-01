@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test, { afterEach } from "node:test";
 import type { QueryFunctionContext } from "@tanstack/react-query";
-import { ApiError, getQueryFn } from "../src/lib/queryClient";
+import { ApiError, getQueryFn } from "../src/lib/queryClient.js";
 
 const realFetch = globalThis.fetch;
 
